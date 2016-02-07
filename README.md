@@ -2,6 +2,8 @@
 
 Adds a dropdown in the header that shows you your latest private messages and a 'chat' experience for private messages similar to Facebook Messages or Google Hangouts.
 
+![image](https://cloud.githubusercontent.com/assets/5931623/12876247/eaf126cc-cdcb-11e5-8921-1c463e380f98.png)
+
 ## User notes:
 
 1. You cannot yet have multiple chats open at once. If you open a new private message topic from the messages menu, it will override any existing private message compose and message stream you have open. Multiple chats open at once may be a future feature.

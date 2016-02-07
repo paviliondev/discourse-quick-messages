@@ -1,0 +1,6 @@
+<div {{bind-attr class=":docked-post-user post.yours:yours"}} data-user-card="{{post.username}}">
+  {{avatar post avatarTemplatePath="avatar_template" usernamePath="username" imageSize="small"}}
+</div>
+<div {{bind-attr class=":docked-post-content post.yours:yours"}}>
+  {{{post.cooked}}}
+</div>

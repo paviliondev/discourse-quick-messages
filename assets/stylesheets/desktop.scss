@@ -1,0 +1,293 @@
+.messages-button-wrapper {
+  float: left;
+  .messages-button {
+    float: left;
+    position: relative;
+    .unread-private-messages {
+      top: 0px;
+      right: 0px;
+    }
+  }
+}
+
+.current-user {
+  .unread-private-messages {
+    display: none;
+  }
+}
+
+.messages-menu .panel-body-contents {
+  overflow: hidden;
+}
+
+.messages-menu-content {
+  min-height: 35px;
+
+  .spinner {
+    position: absolute;
+    left: 150px;
+    top: 5px;
+    width: 20px;
+    height: 20px;
+    border-width: 2px;
+    margin: 0 auto;
+  }
+
+  li {
+    width: 100%;
+  }
+}
+
+.messages-menu-links {
+  padding: 0 2px;
+  font-size: 14px;
+  list-style: none;
+  margin: 0;
+  line-height: 17px;
+
+  li {
+    display: inline-block;
+    padding: 5px;
+
+    .message-preview {
+      white-space: nowrap;
+      color: #333;
+      word-break: break-all;
+      text-overflow: ellipsis;
+      overflow: hidden;
+      cursor: pointer;
+      width: 100%;
+    }
+
+    .message-preview.unread {
+      color: #0088cc;
+    }
+
+    &:hover {
+      background-color: dark-light-diff($highlight, $secondary, 50%, -55%);
+    }
+
+    span {
+      color: $primary;
+    }
+
+    p {
+      margin: 0;
+      display: inline-block;
+      word-break: break-all;
+      text-overflow: ellipsis;
+    }
+  }
+
+  .message-avatar {
+    margin-right: 3px;
+  }
+
+  .fa {
+    padding-right: 6px;
+  }
+
+  .icon {
+    color: dark-light-choose(scale-color($primary, $lightness: 30%), scale-color($secondary, $lightness: 70%));
+  }
+
+  .is-warning {
+    i.fa-envelope-o {
+      &:before {
+        content: "\f0e0";
+      }
+      color: $danger;
+    }
+  }
+
+  .read {
+    background-color: $secondary;
+  }
+
+  .none {
+    padding-top: 5px;
+  }
+}
+
+.new-docked-message {
+  float: right;
+}
+
+#reply-control.docked {
+  width: 300px;
+  background-color: #f1f4f4;
+  right: 10%;
+  box-shadow: 0 0px 15px -2px rgba(0, 0, 0, 0.25);
+  border: 1px solid #E4E4E4;
+  height: 400px;
+  max-height: 400px;
+
+  &.draft {
+    .docked-post-stream,
+    .wmd-controls,
+    .submit-panel,
+    .grippie  {
+      display: none;
+    }
+  }
+
+  &.saving {
+    height: 400px !important;
+    border: 1px solid #E4E4E4 !important;
+    .saving-text {
+      display: none;
+    }
+    .toggler {
+      &:before {
+        font-family: "FontAwesome";
+        content: "\f00d";
+      }
+    }
+  }
+
+  .grippie {
+    height: 20px;
+    display: block;
+  }
+
+  .toggler {
+    top: 1px;
+    right: 25px;
+    padding: 0;
+  }
+
+  .cancel {
+    position: absolute;
+    right: 3px;
+    top: 3px;
+    font-size: 16px;
+    color: black;
+  }
+
+  .control, .control-row {
+    height: 100%;
+  }
+
+  .composer-fields {
+    height: calc(100% - 80px);
+    width: 100%;
+    overflow-x: hidden;
+    overflow-y: scroll;
+  }
+
+  .docked-post-stream {
+    padding: 10px;
+    .docked-post {
+      width: 100%;
+      display: inline-block;
+      padding: 2px 0;
+      div {
+        float: left;
+        &.yours {
+          float: right;
+        }
+      }
+      .docked-post-content {
+        width: 220px;
+        margin: 0 10px;
+        padding-bottom: 2px;
+        word-wrap: break-word;
+        &.yours {
+          text-align: right;
+          float: right;
+        }
+        p {
+          margin: 0
+        }
+      }
+    }
+  }
+
+  .composer-popup {
+    display: none !important;
+  }
+
+  .reply-to {
+    display: none;
+  }
+
+  .form-element {
+
+    width: 100%;
+    .title-input {
+      display: none;
+    }
+
+    .ac-wrap {
+      width: 260px !important;
+      margin: 0 auto;
+    }
+
+    .add-warning {
+      display: none;
+    }
+
+  }
+
+  .contents {
+    min-width: initial;
+    padding: 0;
+    height: 100%;
+
+    .submit-panel {
+      right: 8px;
+      bottom: 8px;
+      width: initial;
+      .cancel {
+        display: none;
+      }
+      button {
+        padding: 2px 5px;
+        float: right;
+        .fa {
+          margin-right: 2px;
+        }
+      }
+      .cancel {
+        float: right;
+        margin-right: 8px;
+        padding-top: 1px;
+      }
+    }
+  }
+
+  .wmd-controls {
+    height: 60px;
+    bottom: initial !important;
+    top: initial !important;
+    width: 300px;
+    left: 0;
+    right: 0;
+
+    .d-editor {
+      border: none;
+    }
+
+    .d-editor-textarea-wrapper {
+      padding: 0;
+      width: 100%;
+      .d-editor-input {
+        height: 100%;
+        border: 5px solid white;
+        padding: 0;
+      }
+    }
+
+    .composer-bottom-right {
+      display: none;
+    }
+  }
+
+  .d-editor-button-bar {
+    display: none;
+  }
+
+  .control-row.reply-area {
+    padding: 0;
+  }
+}

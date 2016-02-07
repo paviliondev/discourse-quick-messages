@@ -1,0 +1,10 @@
+{{#header-dropdown iconId="messages-button"
+                   icon="envelope"
+                   class="messages-button"
+                   toggleVisible=messagesVisible
+                   loginAction="showLogin"
+                   title="user.messages"}}
+  {{#if currentUser.unread_private_messages}}
+    <a href class='badge-notification unread-private-messages'>{{currentUser.unread_private_messages}}</a>
+  {{/if}}
+{{/header-dropdown}}

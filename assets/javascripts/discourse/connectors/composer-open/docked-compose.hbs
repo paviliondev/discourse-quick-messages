@@ -1,0 +1,4 @@
+{{#if docked}}
+  <a href {{action "cancel"}} class='cancel fa fa-times' tabindex="6"></a>
+  {{docked-post-stream topic=model.topic docked=docked messages=messages}}
+{{/if}}

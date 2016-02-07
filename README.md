@@ -2,7 +2,8 @@
 
 Adds a dropdown in the header that shows you your latest private messages and a 'chat' experience for private messages similar to Facebook Messages or Google Hangouts.
 
-![image](https://cloud.githubusercontent.com/assets/5931623/12876247/eaf126cc-cdcb-11e5-8921-1c463e380f98.png)
+![image1](https://cloud.githubusercontent.com/assets/5931623/12876256/30c43b8a-cdcc-11e5-897d-d796279c8029.png)
+![image2](https://cloud.githubusercontent.com/assets/5931623/12876255/30c34a0e-cdcc-11e5-9516-c636813c7f7e.png)
 
 ## User notes:
 

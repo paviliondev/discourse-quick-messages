@@ -179,21 +179,22 @@
     .docked-post {
       width: 100%;
       display: inline-block;
-      padding: 2px 0;
-      div {
-        float: left;
-        &.yours {
-          float: right;
-        }
+      padding: 5px 0;
+      .docked-post-user {
+        display: inline-block;
+        width: 11%;
       }
       .docked-post-content {
-        width: 220px;
-        margin: 0 10px;
-        padding-bottom: 2px;
+        display: inline-block;
         word-wrap: break-word;
+        vertical-align: middle;
+        width: 80%;
         &.yours {
-          text-align: right;
           float: right;
+          background-color: #E1E1E1;
+          padding: 3px 6px;
+          border-radius: 6px;
+          display: block;
         }
         p {
           margin: 0

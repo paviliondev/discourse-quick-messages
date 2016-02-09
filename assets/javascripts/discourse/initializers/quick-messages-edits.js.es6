@@ -239,7 +239,7 @@ export default {
         this.set('classNameBindings', classes)
       },
 
-      // this property overrides the existing composerState property.
+      // these methods override existing composer view methods
 
       @computed('composer.composeState', 'controller.skipStateChange')
       composeState(composeState) {
@@ -248,7 +248,32 @@ export default {
         } else {
           return composeState || Composer.CLOSED;
         }
+      },
+
+      keyDown(e) {
+        var enter = Boolean(e.which === 13),
+            escape = Boolean(e.which === 27),
+            ctrlCmd = Boolean(e.ctrlKey || e.metaKey),
+            controller = this.get('controller');
+        if (escape) {
+          controller.send('hitEsc')
+          return false;
+        }
+        if (controller.get('docked')){
+          if (enter && ctrlCmd) {
+            controller.get('model').appendText('\n')
+            return false;
+          } else if (enter) {
+            controller.send('save')
+            return false;
+          }
+        } else if (enter && ctrlCmd) {
+          controller.send('save')
+          return false;
+        }
       }
+
+      // end of methods that override existing composer view methods
 
     });
 

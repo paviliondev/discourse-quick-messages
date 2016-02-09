@@ -252,15 +252,17 @@ export default {
 
       keyDown(e) {
         var enter = Boolean(e.which === 13),
+            shift = Boolean(e.shiftKey),
             escape = Boolean(e.which === 27),
             ctrlCmd = Boolean(e.ctrlKey || e.metaKey),
             controller = this.get('controller');
+        console.log(enter, shift)
         if (escape) {
           controller.send('hitEsc')
           return false;
         }
         if (controller.get('docked')){
-          if (enter && ctrlCmd) {
+          if (enter && shift) {
             controller.get('model').appendText('\n')
             return false;
           } else if (enter) {

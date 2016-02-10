@@ -144,6 +144,12 @@
     }
   }
 
+  &.closed {
+    .submit-panel {
+      display: none;
+    }
+  }
+
   .grippie {
     height: 20px;
     display: block;

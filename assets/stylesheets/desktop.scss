@@ -188,7 +188,7 @@
         display: inline-block;
         word-wrap: break-word;
         vertical-align: middle;
-        width: 80%;
+        max-width: 80%;
         &.yours {
           float: right;
           background-color: #E1E1E1;

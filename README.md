@@ -26,10 +26,6 @@ I have tried to override as little of the existing discourse composer functional
 
 Please note that this modifies a relatively complex aspect of Discourse. There may be unknown issues outstanding. Please use with caution at this early stage.
 
-1. The post button stays visible for a moment after closing the docked chat compose.
-
-2. Various CSS issues, including the messages menu loading spinner.
-
 ## Installation
 
 To install using docker, add the following to your app.yml in the plugins section:

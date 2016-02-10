@@ -54,6 +54,10 @@ export default Ember.Component.extend({
           if (message.last_read_post_number === message.highest_post_number) {
             message.read = true
           }
+          if (message.excerpt) {
+            message.preview = Discourse.Emoji.unescape(message.excerpt)
+          }
+
         })
 
         this.set('loadingMessages', false)

@@ -288,7 +288,21 @@
   }
 
   .d-editor-button-bar {
-    display: none;
+    bottom: 3px;
+    top: initial;
+    right: 35px;
+    width: auto;
+    border: none;
+    button {
+      display: none;
+      margin-right: 2px;
+      &.upload, &.emoji {
+        display: block;
+      }
+    }
+    .d-editor-spacer {
+      display: none;
+    }
   }
 
   .control-row.reply-area {

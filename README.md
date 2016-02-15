@@ -7,7 +7,7 @@ Adds a dropdown in the header that shows you your latest private messages and a 
 
 ## User notes:
 
-1. You cannot yet have multiple chats open at once. If you open a new private message topic from the messages menu, it will override any existing private message compose and message stream you have open. Multiple chats open at once may be a future feature.
+1. If you open a new private message topic from the messages menu, it will override any existing private message compose and message stream you have open. Multiple chats open at once may be a future feature.
 
 2. New private messages composed from the "New Message" compose button in the messages dropdown behave like chat streams, i.e.:
 
@@ -22,9 +22,23 @@ Adds a dropdown in the header that shows you your latest private messages and a 
 
 I have tried to override as little of the existing discourse composer functionality as possible. Where I have overridden existing discourse methods I have made a note of it in the code. See in particular [here](https://github.com/angusmcleod/discourse-quick-messages/blob/master/assets/javascripts/discourse/initializers/quick-messages-edits.js.es6#L52) and [here](https://github.com/angusmcleod/discourse-quick-messages/blob/master/assets/javascripts/discourse/initializers/quick-messages-edits.js.es6#L242)
 
-## Known issues
+## To do
 
-Please note that this modifies a relatively complex aspect of Discourse. There may be unknown issues outstanding. Please use with caution at this early stage.
+1. Allow the user to have more than one quick message compose open at once.
+
+2. Improve message previews in the messages menu: ![image](https://cloud.githubusercontent.com/assets/5931623/13037533/a408d568-d350-11e5-92c2-6b5b240f78ec.png)
+
+3. Improve minimized quick message compose by adding username(s) of participant(s): ![image](https://cloud.githubusercontent.com/assets/5931623/13037588/8862ebbc-d352-11e5-97bd-78d8cab65552.png)
+
+4. Add a "Mark All Read" button to the messages menu that marks all your messages read.
+
+5. Improve the quick message compose experience so that:
+
+    1. Text never overlaps with the buttons
+    2. The compose window increases in size instead of being scrollable.
+    3. A user can send a 'Like' as a response (perhaps).
+
+6. Performance. Make the posting of messages even quicker.
 
 ## Installation
 

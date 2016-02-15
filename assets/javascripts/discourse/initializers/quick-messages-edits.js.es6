@@ -256,7 +256,6 @@ export default {
             escape = Boolean(e.which === 27),
             ctrlCmd = Boolean(e.ctrlKey || e.metaKey),
             controller = this.get('controller');
-        console.log(enter, shift)
         if (escape) {
           controller.send('hitEsc')
           return false;

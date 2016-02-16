@@ -128,6 +128,11 @@
     .grippie  {
       display: none;
     }
+    .docked-draft-text {
+      position: absolute;
+      top: 8px;
+      left: 10px;
+    }
   }
 
   &.saving {

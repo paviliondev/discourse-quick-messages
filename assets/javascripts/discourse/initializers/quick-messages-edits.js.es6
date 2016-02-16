@@ -48,6 +48,7 @@ export default {
       messages: null,
       existingDiscussion: null,
       skipStateChange: false,
+      dockedGaurdian: Em.computed.bool('docked', 'model'),
 
       // these methods override existing composer controller methods
 
@@ -134,42 +135,60 @@ export default {
         }
       },
 
-      setSaveText: function() {
-        var model = this.get('model'),
-            docked = this.get('docked')
-        if (!model || !docked) {return}
-        model.set('saveText', '')
+      dockedDraft: function() {
+        if (this.get('dockedGaurdian') && this.get('model.composeState') === Composer.DRAFT) {
+          var participants = this.get('model.topic').details.participants,
+              usernames = this.getUsernames(participants),
+              formattedUsernames = this.formatUsernames(usernames);
+          return formattedUsernames
+        } else {
+          return false
+        }
+      }.property('model.composeState'),
+
+      overrideVisibility: function() {
+        if (!this.get('dockedGaurdian')) {return}
+        this.set('visible', true)
+        this.set('model.viewOpen', true)
+      }.observes('model.composeState'),
+
+      overrideSaveText: function() {
+        if (!this.get('dockedGaurdian')){return}
+        this.set('model.saveText', '')
       }.observes('model.saveText', 'docked'),
 
-      setVisiblility: function() {
-        var model = this.get('model')
-        if (!model) {return}
-        var docked = this.get('docked')
-        if (docked) {
-          this.set('visible', true)
-          if (!model.get('viewOpen')) {model.set('viewOpen', true)}
-        } else {
-          var state = model.get('composeState')
-          this.set('visible', state && state !== 'closed');
-          model.set('viewOpen', state === Composer.OPEN)
-        }
-      }.observes('model.composeState', 'model.viewOpen'),
+      getUsernames: function(participants) {
+        var usernames = []
+        participants.forEach((participant, i) => {
+          var username = participant.user ? participant.user.username : participant.username
+          usernames.push(username)
+        })
+        return usernames
+      },
+
+      formatUsernames: function(usernames) {
+        var formatted = '',
+            length = usernames.length;
+        usernames.forEach((username, i) => {
+          formatted += username
+          if (i < length - 1) {
+            formatted += i === (length - 2) ? ' & ' : ', '
+          }
+        })
+        return formatted
+      },
 
       newDockedMessageUser: function() {
-        if (!this.get('docked')) {return}
-        var model = this.get('model')
-        if (!model) {return}
-        var topicId = model.get('createdPost.topic_id');
+        if (!this.get('dockedGaurdian')) {return}
+        var topicId = this.get('model.createdPost.topic_id');
         if (!topicId) {return}
         this.newDockedMessage(topicId)
         this.set('setDocked', false)
       }.observes('model.createdPost'),
 
       newDockedMessageOther: function() {
-        if (!this.get('docked')) {return}
-        var model = this.get('model')
-        if (!model) {return}
-        var topicId = model.get('topic.id')
+        if (!this.get('dockedGaurdian')) {return}
+        var topicId = this.get('model.topic.id')
         this.newDockedMessage(topicId)
       }.observes('currentUser.unread_private_messages'),
 
@@ -184,28 +203,22 @@ export default {
       },
 
       createOrContinueDiscussion: function() {
-        if (!this.get('docked')) {return}
-        var model = this.get('model')
-        if (!model) {return}
+        if (!this.get('dockedGaurdian')) {return}
         this.set('existingDiscussion', null)
         var existingId = null,
-            targetUsernames = model.get('targetUsernames');
+            targetUsernames = this.get('model.targetUsernames');
         if (!targetUsernames) {return}
         Ember.run.once(this, function() {
           var messages = this.get('messages'),
-              targetParticipants = targetUsernames.split(','),
-              currentUser = this.get('currentUser.username');
-          targetParticipants.push(currentUser)
+              currentUser = this.get('currentUser.username'),
+              targetUsernames = targetUsernames.split(',').push(currentUser);
           messages.forEach((message, i) => {
-            var participants = []
-            message.participants.forEach((participant, i) => {
-              participants.push(participant.user.username)
-            })
-            if (participants.indexOf(currentUser) === -1) {
-              participants.push(currentUser)
+            var usernames = this.getParticipants(message.participants)
+            if (usernames.indexOf(currentUser) === -1) {
+              usernames.push(currentUser)
             }
-            if ($(participants).not(targetParticipants).length === 0 &&
-               $(targetParticipants).not(participants).length === 0) {
+            if ($(usernames).not(targetUsernames).length === 0 &&
+               $(targetUsernames).not(usernames).length === 0) {
               existingId = message.id;
             }
           })
@@ -215,14 +228,7 @@ export default {
               this.set('existingDiscussion', existing)
             })
           } else {
-            var title = '',
-                length = targetParticipants.length;
-            targetParticipants.forEach((participant, i) => {
-              title += participant
-              if (i < length) {
-                title += i === (length - 1) ? ' & ' : ', '
-              }
-            })
+            var title = this.formatUsernames(targetUsernames)
             model.set('title', title)
           }
         })

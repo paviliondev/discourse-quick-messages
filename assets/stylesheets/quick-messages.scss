@@ -130,8 +130,12 @@
     }
     .docked-draft-text {
       position: absolute;
-      top: 8px;
+      top: 5px;
       left: 10px;
+      max-width: 80%;
+      line-height: 15px;
+      max-height: 32px;
+      overflow: hidden;
     }
   }
 

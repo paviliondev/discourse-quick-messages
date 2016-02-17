@@ -139,7 +139,7 @@ export default {
 
       dockedDraft: function() {
         if (this.get('dockedGaurdian') && this.get('model.composeState') === Composer.DRAFT) {
-          var participants = this.get('model.topic').details.participants,
+          var participants = this.get('model.topic').details.allowed_users,
               usernames = this.getUsernames(participants),
               formattedUsernames = this.formatUsernames(usernames);
           return formattedUsernames

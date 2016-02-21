@@ -289,7 +289,9 @@ export default {
     UserMenu.reopen({
 
       setup: function() {
-        this.addObserver('notifications', this.removeMessages)
+        if (!Discourse.Mobile.mobileView) {
+          this.addObserver('notifications', this.removeMessages)
+        }
       }.on('willInsertElement'),
 
       removeMessages: function() {

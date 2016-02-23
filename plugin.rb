@@ -3,7 +3,7 @@
 # version: 0.1
 # authors: Angus McLeod
 
-register_asset 'stylesheets/quick-messages.scss', :desktop
+register_asset 'stylesheets/quick.scss', :desktop
 
 after_initialize do
 

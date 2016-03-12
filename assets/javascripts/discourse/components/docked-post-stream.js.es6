@@ -2,15 +2,12 @@ export default Ember.Component.extend({
   tagName: "div",
   classNames: 'docked-post-stream',
 
-  didInsertElement: function() {
-    this.screenTrack()
-  },
-
   /*'discourse/lib/screen-track' is a singleton.
   Using it interferes with the tracking of topics.
   So I have made my own rudimentary tracker. */
 
-  screenTrack: function() {
+  dockedScreenTrack: function() {
+    console.log('dockedScreenTrack')
     var topic = this.get('topic')
     if (!topic) {return}
     var lastRead = topic.last_read_post_number,
@@ -33,6 +30,6 @@ export default Ember.Component.extend({
         'X-SILENCE-LOGGER': 'true'
       }
     })
-  }.observes('topic'),
+  }.observes('topic').on('didInsertElement')
 
 })

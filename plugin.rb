@@ -14,7 +14,7 @@ after_initialize do
     def excerpt
       if object.archetype == Archetype.private_message
         cooked = Post.where(topic_id: object.id, post_number: object.highest_post_number).pluck('cooked')
-        PrettyText.excerpt(cooked[0], 200, {})
+        PrettyText.excerpt(cooked[0], 200, keep_emoji_images: true)
       else
         object.excerpt
       end

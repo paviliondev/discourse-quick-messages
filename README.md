@@ -26,19 +26,15 @@ I have tried to override as little of the existing discourse composer functional
 
 1. Allow the user to have more than one quick message compose open at once.
 
-2. Improve message previews in the messages menu:   ![image](https://cloud.githubusercontent.com/assets/5931623/13037631/52106a52-d353-11e5-85a3-f5b09e453357.png)
+2. Add a "Mark All Read" button to the messages menu that marks all your messages read.
 
-3. Improve minimized quick message compose by adding username(s) of participant(s): ![image](https://cloud.githubusercontent.com/assets/5931623/13037637/6f71813a-d353-11e5-989d-61384e798078.png)
-
-4. Add a "Mark All Read" button to the messages menu that marks all your messages read.
-
-5. Improve the quick message compose experience so that:
+3. Improve the quick message compose experience so that:
 
     1. Text never overlaps with the buttons
     2. The compose window increases in size instead of being scrollable.
     3. A user can send a 'Like' as a response (perhaps).
 
-6. Performance. Make the posting of messages even quicker.
+4. Performance. Make the posting of messages even quicker.
 
 ## Installation
 

@@ -7,7 +7,6 @@ export default Ember.Component.extend({
   So I have made my own rudimentary tracker. */
 
   dockedScreenTrack: function() {
-    console.log('dockedScreenTrack')
     var topic = this.get('topic')
     if (!topic) {return}
     var lastRead = topic.last_read_post_number,

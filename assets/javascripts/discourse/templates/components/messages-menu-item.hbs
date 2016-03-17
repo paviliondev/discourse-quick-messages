@@ -1,5 +1,5 @@
 <a>
-  <div {{bind-attr class=":message-preview message.read::unread"}} data-topic-id="{{message.id}}" href='/t/{{message.slug}}'>
+  <div {{bind-attr class=":message-preview message.read::unread message.loading:loading"}} data-topic-id="{{message.id}}" href='/t/{{message.slug}}'>
     {{#each participant in message.participants}}
       <a class="message-avatar" data-user-card="{{participant.user.username}}">
         {{avatar participant.user avatarTemplatePath="avatar_template" usernamePath="username" imageSize="small"}}

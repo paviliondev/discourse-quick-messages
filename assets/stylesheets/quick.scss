@@ -1,3 +1,7 @@
+.plugin-menu-icons {
+  float: left;
+}
+
 .messages-button-wrapper {
   float: left;
   .messages-button {
@@ -57,10 +61,20 @@
       overflow: hidden;
       cursor: pointer;
       width: 100%;
-    }
 
-    .message-preview.unread {
-      color: #0088cc;
+      &.loading {
+        opacity: 0.4;
+        filter: alpha(opacity=40);
+        cursor: default;
+        a {
+          cursor: default;
+        }
+      }
+
+      &.unread {
+        color: #0088cc;
+      }
+
     }
 
     &:hover {
@@ -113,10 +127,11 @@
   float: right;
 }
 
-#reply-control.docked {
+.docked-composer {
+  position: fixed;
+  bottom: 0;
   width: 300px;
   background-color: #f1f4f4;
-  right: 10%;
   box-shadow: 0 0px 15px -2px rgba(0, 0, 0, 0.25);
   border: 1px solid #E4E4E4;
   height: 400px;
@@ -161,7 +176,6 @@
 
   .grippie {
     height: 20px;
-    display: block;
   }
 
   .toggler {
@@ -178,12 +192,8 @@
     color: black;
   }
 
-  .control, .control-row {
-    height: 100%;
-  }
-
   .composer-fields {
-    height: calc(100% - 80px);
+    height: calc(100% - 90px);
     width: 100%;
     overflow-x: hidden;
     overflow-y: scroll;
@@ -252,37 +262,17 @@
   .contents {
     min-width: initial;
     padding: 0;
+    margin: 0;
     height: 100%;
-
-    .submit-panel {
-      right: 8px;
-      bottom: 8px;
-      width: initial;
-      .cancel {
-        display: none;
-      }
-      button {
-        padding: 2px 5px;
-        float: right;
-        .fa {
-          margin-right: 2px;
-        }
-      }
-      .cancel {
-        float: right;
-        margin-right: 8px;
-        padding-top: 1px;
-      }
-    }
   }
 
   .wmd-controls {
-    height: 60px;
-    bottom: initial !important;
-    top: initial !important;
+    bottom: 0;
     width: 300px;
     left: 0;
     right: 0;
+    background-color: white;
+    position: absolute;
 
     .d-editor {
       border: none;
@@ -293,8 +283,12 @@
       width: 100%;
       .d-editor-input {
         height: 100%;
-        border: 5px solid white;
-        padding: 0;
+        border: none;
+        padding: 5px;
+        margin-bottom: 25px;
+        box-shadow: none;
+        width: 290px;
+        display: block;
       }
     }
 
@@ -303,10 +297,16 @@
     }
   }
 
+  .d-editor-container {
+    padding: 0;
+    position: relative;
+    height: 100%;
+  }
+
   .d-editor-button-bar {
+    position: absolute;
     bottom: 3px;
     top: initial;
-    right: 35px;
     width: auto;
     border: none;
     button {
@@ -321,7 +321,8 @@
     }
   }
 
-  .control-row.reply-area {
-    padding: 0;
+  .d-editor-preview-header,
+  .d-editor-preview-wrapper {
+    display: none;
   }
 }

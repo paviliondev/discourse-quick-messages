@@ -1,0 +1,29 @@
+<a href {{action "cancel"}} class='cancel fa fa-times' tabindex="6"></a>
+<div class='composer-fields'>
+  {{#if dockedDraft}}
+    <div class='docked-draft-text'>{{dockedDraft}}</div>
+  {{else}}
+    {{#unless topic}}
+      {{user-selector topicId=topic.id
+                      excludeCurrentUser="true"
+                      id="private-message-users"
+                      includeMentionableGroups="true"
+                      class="span8"
+                      placeholderKey="composer.users_placeholder"
+                      tabindex="1"
+                      usernames=targetUsernames
+                      }}
+    {{/unless}}
+    {{docked-post-stream topic=topic}}
+  {{/if}}
+</div>
+{{composer-editor topic=topic
+                  composer=this
+                  lastValidatedAt=lastValidatedAt
+                  draftStatus=draftStatus
+                  isUploading=isUploading
+                  groupsMentioned="groupsMentioned"
+                  importQuote="importQuote"
+                  showOptions="showOptions"
+                  showToolbar=showToolbar
+                  showUploadSelector="showUploadSelector"}}

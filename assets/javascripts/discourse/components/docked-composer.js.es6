@@ -2,7 +2,7 @@ import afterTransition from 'discourse/lib/after-transition';
 import { headerHeight } from 'discourse/views/header';
 import { default as computed, on, observes } from 'ember-addons/ember-computed-decorators';
 import Topic from 'discourse/models/topic';
-import autosize from 'admin/lib/autosize';
+import autosize from 'discourse/lib/autosize';
 
 const _create_serializer = {
         raw: 'reply',

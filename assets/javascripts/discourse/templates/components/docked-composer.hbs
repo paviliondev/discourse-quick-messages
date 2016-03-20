@@ -14,16 +14,15 @@
                       usernames=targetUsernames
                       }}
     {{/unless}}
-    {{docked-post-stream topic=topic}}
+    {{docked-post-stream posts=postStream.posts}}
   {{/if}}
 </div>
-{{composer-editor topic=topic
-                  composer=this
-                  lastValidatedAt=lastValidatedAt
-                  draftStatus=draftStatus
-                  isUploading=isUploading
-                  groupsMentioned="groupsMentioned"
-                  importQuote="importQuote"
-                  showOptions="showOptions"
-                  showToolbar=showToolbar
-                  showUploadSelector="showUploadSelector"}}
+{{docked-editor  tabindex="4"
+                 value=reply
+                 placeholder="composer.quick_placeholder"
+                 markdownOptions=markdownOptions
+                 extraButtons="extraButtons"
+                 showOptions="showOptions"
+                 showQuickUpload="showQuickUpload"
+                 validation=validation
+                 loading=loading}}

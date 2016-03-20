@@ -18,26 +18,10 @@ export default Ember.Component.extend({
       this.set('docked', current.push(empty))
     })
     this.$().on('click.messages-menu-preview', '.message-preview', e => {
-      e.preventDefault()
-      var $target = $(e.currentTarget)
-      if ($target.hasClass('loading')) {return}
-      var topicId = $target.data('topic-id'),
-          dockedTopics = this.get('dockedTopics'),
-          topics = this.get('topics'),
-          exists = false;
-      dockedTopics.forEach((docked, i) => {
-        if (docked.id === topicId) {
-          exists = true
-          return
-        }
-      })
-      if (exists) {return}
-      topics.forEach((topic) => {
-        if (topic.id === topicId) {
-          dockedTopics.pushObject(topic)
-          this.set('dockedTopics', dockedTopics)
-        }
-      })
+      var topicId = $(e.currentTarget).data('topic-id'),
+          dockedTopics = this.get('dockedTopics');
+      dockedTopics.pushObject(topicId)
+      this.set('dockedTopics', dockedTopics)
     })
   },
 
@@ -71,39 +55,17 @@ export default Ember.Component.extend({
           if (listItem.excerpt) {
             listItem.preview = Discourse.Emoji.unescape(listItem.excerpt)
           }
-          var getTopic = true
-          topics.forEach((topic) => {
-            if (topic.id === listItem.id) {
-              getTopic = false
-            }
-          })
-          if (getTopic) {
-            listItem.loading = true
-          }
           this.set('topicList', topicList)
-          if (listItem.loading) {
-            this.loadTopic(listItem.id)
-          }
         })
         this.set('loadingTopicList', false)
       })
     })
   }.observes('currentUser.unread_private_messages', 'currentUser.topic_count', 'currentUser.reply_count'),
 
-  loadTopic: function(topicId) {
-    Topic.find(topicId, {}).then((topic) => {
-      var topic = Topic.create(topic),
-          topics = this.get('topics'),
-          topicList = this.get('topicList');
-      topics.pushObject(topic)
-      this.set('topics', topics)
-      topicList.forEach((listItem) => {
-        if (listItem.id === topic.id) {
-          listItem.set('loading', false)
-        }
-      })
-      this.set('topicList', topicList)
-    })
+  actions: {
+    showQuickUpload(e) {
+      this.sendAction('showQuickUpload', e)
+    }
   }
 
 });

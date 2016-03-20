@@ -24,6 +24,9 @@
     </ul>
   </div>
 {{/menu-panel}}
-{{#each dockedTopics as |docked|}}
-  {{docked-composer topic=docked messages=allTopicList index=_view.contentIndex}}
+{{#each dockedTopics as |topicId|}}
+  {{docked-composer topicId=topicId
+                    messages=allTopicList
+                    index=_view.contentIndex
+                    showQuickUpload="showQuickUpload"}}
 {{/each}}

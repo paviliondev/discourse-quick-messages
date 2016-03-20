@@ -1,5 +1,9 @@
 {{#if currentUser}}
   {{#unless site.mobileView}}
-    {{messages-menu visible=messagesVisible dockedReply="dockedReply" dockedCompose="dockedCompose" appController=controllers.application}}
+    {{messages-menu visible=messagesVisible
+                    dockedReply="dockedReply"
+                    dockedCompose="dockedCompose"
+                    appController=controllers.application
+                    showQuickUpload="showUploadSelector"}}
   {{/unless}}
 {{/if}}

@@ -26,34 +26,92 @@ export default Ember.Component.extend({
   disableSubmit: Ember.computed.or("loading", "isUploading"),
   composeState: null,
   viewOpen: Ember.computed.equal('composeState', 'open'),
-  saveIcon: '<i class="fa fa-reply"></i>',
 
-  right: function() {
-    var index = this.get('index'),
-        right = 340 * index + 100;
-    this.$().css('right', right)
-  }.observes('index').on('didInsertElement'),
+  topic: function() {
+    const store = this.container.lookup('store:main')
+    console.log('topicId', this.get('topicId'))
+    return store.createRecord('topic', {id: this.get('topicId')})
+  }.property(),
 
-  didInsertElement: function(opts) {
+  postStream: function() {
+    var topic = this.get('topic'),
+        postStream = topic.get('postStream');
+    postStream.refresh({nearPost: topic.highest_post_number}).then(() => {
+      this.scrollBottom()
+    })
+    return postStream
+  }.property('topic'),
+
+  scrollBottom: function() {
+    Ember.run.schedule('afterRender', () => {
+      this.$('.composer-fields').scrollTop($('.docked-post-stream').height())
+    })
+  },
+
+  dockedScreenTrack: function() {
+    var topic = this.get('topic')
+    if (!topic) {return}
+    var lastRead = topic.last_read_post_number,
+        highest = topic.highest_post_number;
+    if (lastRead === highest) {return}
+    this.container.lookup('topic-tracking-state:main').updateSeen(topic.id, highest)
+    var newTimings = {};
+    for (var p = lastRead + 1; p <= highest; p++) {
+      newTimings[p] = 3000
+    }
+    Discourse.ajax('/topics/timings', {
+      data: {
+        timings: newTimings,
+        topic_time: 3000,
+        topic_id: topic.id
+      },
+      cache: false,
+      type: 'POST',
+      headers: {
+        'X-SILENCE-LOGGER': 'true'
+      }
+    })
+  }.observes('postStream.posts').on('didInsertElement'),
+
+  @on('didInsertElement')
+  _setup() {
+    this.set('composeState', 'open')
     Ember.run.scheduleOnce('afterRender', () => {
       autosize(this.$('.d-editor-input'));
     });
-    const $replyControl = this.$();
-    const resize = () => Ember.run.scheduleOnce('afterRender', () => {this.resize()});
+
+    const $replyControl = this.$(),
+          resize = () => Ember.run.scheduleOnce('afterRender', () => {this.resize()});
     $replyControl.DivResizer({
       resize,
       maxHeight: winHeight => winHeight - headerHeight(),
       onDrag: sizePx => this.movePanels(sizePx)
     });
-    this.set('composeState', 'open')
-    this.messageBus.subscribe("/topic/" + this.get('topic.id'), data => {
+
+    var topic = this.get('topic'),
+        postStream = topic.get('postStream'),
+        self = this;
+    this.messageBus.subscribe("/topic/" + topic.id, data => {
       if (data.type === "created") {
-        Topic.find(data.topic_id, {}).then((topic) => {
-          var topic = Topic.create(topic)
-          self.set('topic', topic)
-        })
+        postStream.triggerNewPostInStream(data.id).then(() => this.scrollBottom())
+        if (this.get('currentUser.id') !== data.user_id) {
+          Discourse.notifyBackgroundCountIncrement();
+        }
       }
     })
+  },
+
+  @on('willDestroyElement')
+  _disableAutosize() {
+    autosize.destroy(this.$('.d-editor-input'));
+  },
+
+  @on('didInsertElement')
+  @observes('index')
+  _right() {
+    var index = this.get('index'),
+        right = 340 * index + 100;
+    this.$().css('right', right)
   },
 
   @observes('reply')
@@ -61,19 +119,29 @@ export default Ember.Component.extend({
     const evt = document.createEvent('Event'),
           ele = this.$('.d-editor-input')[0];
     evt.initEvent('autosize:update', true, false);
-    console.log('dispatching event', this.get('reply'))
     ele.dispatchEvent(evt);
   },
 
   @observes('composeState')
-  resize() {
+  _resize() {
     const h = this.$().height() || 0;
     this.movePanels(h + "px");
   },
 
+  @computed('composeState')
+  dockedDraft() {
+    if (this.get('composeState') === 'minimized') {
+      var participants = this.get('topic').details.allowed_users,
+          usernames = this.getUsernames(participants);
+      usernames.splice(usernames.indexOf(this.get('currentUser.username')), 1)
+      return this.formatUsernames(usernames);
+    } else {
+      return false
+    }
+  },
+
   movePanels: function(sizePx) {
     $('#main-outlet').css('padding-bottom', sizePx);
-    this.appEvents.trigger("composer:resized");
   },
 
   closeAutocomplete: function() {
@@ -121,18 +189,6 @@ export default Ember.Component.extend({
     this.set('composeState', 'closed')
   },
 
-  actions: {
-    save() {
-      this.dockedSave()
-    },
-    cancel() {
-      this.dockedCancel()
-    },
-    toggle() {
-      this.dockedToggle()
-    },
-  },
-
   dockedSave: function() {
     if (this.get('cantSubmitPost')) {
       this.set('lastValidatedAt', Date.now());
@@ -149,17 +205,15 @@ export default Ember.Component.extend({
       }
     });
 
-    const topic = this.get('topic'),
-          user = this.get('currentUser'),
-          postStream = this.get('topic.postStream'),
-          store = this.container.lookup('store:main');
-
-    let addedToStream = false;
+    var topic = this.get('topic'),
+        user = this.get('currentUser'),
+        store = this.container.lookup('store:main'),
+        postStream = this.get('postStream');
 
     // Build the post object
-    const createdPost = store.createRecord('post', {
+    var createdPost = store.createRecord('post', {
       imageSizes: imageSizes,
-      cooked: this.getCookedHtml(),
+      cooked: this.get('reply'),
       reply_count: 0,
       name: user.get('name'),
       display_username: user.get('name'),
@@ -175,28 +229,24 @@ export default Ember.Component.extend({
       yours: true,
       read: true,
       wiki: false,
-      typingTime: this.get('typingTime'),
-      composerTime: this.get('composerTime')
     });
 
-    this.set('reply', '')
+    this.serialize(_create_serializer, createdPost)
+
     this.$('.d-editor-input').css('height', 'auto')
+    this.set('reply', '')
 
-    var dest = createdPost || {},
-        serializer = _create_serializer;
-    Object.keys(serializer).forEach(f => {
-      const val = this.get(serializer[f]);
-      if (typeof val !== 'undefined') {
-        Ember.set(dest, f, val);
-      }
-    });
+    if (postStream) {
+      var state = postStream.stagePost(createdPost, user);
+    }
+
+    if (state === 'staged') {this.scrollBottom()}
 
     const self = this;
-
     createdPost.save().then(function(result) {
-      var response = result.responseJson
       if (topic) {
         user.set('reply_count', user.get('reply_count') + 1);
+        postStream.commitPost(createdPost)
       } else {
         user.set('topic_count', user.get('topic_count') + 1);
         const category = self.site.get('categories').find(function(x) {
@@ -207,8 +257,19 @@ export default Ember.Component.extend({
       }
     }).catch(function(error) {
       console.log(error)
-      self.appEvents.one('composer:opened', () => bootbox.alert(error));
+      bootbox.alert(error)
     });
+  },
+
+  serialize: function(serializer, dest) {
+    dest = dest || {};
+    Object.keys(serializer).forEach(f => {
+      const val = this.get(serializer[f]);
+      if (typeof val !== 'undefined') {
+        Ember.set(dest, f, val);
+      }
+    });
+    return dest;
   },
 
   dockedCancel: function() {
@@ -236,18 +297,6 @@ export default Ember.Component.extend({
           this.close();
       }
       return false;
-    }
-  },
-
-  @computed('composeState')
-  dockedDraft() {
-    if (this.get('composeState') === 'minimized') {
-      var participants = this.get('topic').details.allowed_users,
-          usernames = this.getUsernames(participants);
-      usernames.splice(usernames.indexOf(this.get('currentUser.username')), 1)
-      return this.formatUsernames(usernames);
-    } else {
-      return false
     }
   },
 
@@ -327,8 +376,25 @@ export default Ember.Component.extend({
     return this.get('targetUsernames') && (this.get('targetUsernames').trim() + ',').indexOf(',') === 0;
   },
 
-  getCookedHtml: function() {
-    return this.$('.d-editor').html().replace(/<span class="marker"><\/span>/g, '');
+  @computed('composer.reply', 'composer.replyLength', 'composer.missingReplyCharacters', 'composer.minimumPostLength', 'lastValidatedAt')
+  validation(reply, replyLength, missingReplyCharacters, minimumPostLength, lastValidatedAt) {
+    const postType = this.get('composer.post.post_type');
+    if (postType === this.site.get('post_types.small_action')) { return; }
+
+    let reason;
+    if (replyLength < 1) {
+      reason = I18n.t('composer.error.post_missing');
+    } else if (missingReplyCharacters > 0) {
+      reason = I18n.t('composer.error.post_length', {min: minimumPostLength});
+      const tl = Discourse.User.currentProp("trust_level");
+      if (tl === 0 || tl === 1) {
+        reason += "<br/>" + I18n.t('composer.error.try_like');
+      }
+    }
+
+    if (reason) {
+      return Discourse.InputValidation.create({ failed: true, reason, lastShownAt: lastValidatedAt });
+    }
   },
 
   @computed('reply')
@@ -337,9 +403,19 @@ export default Ember.Component.extend({
     return reply.replace(/\s+/img, " ").trim().length;
   },
 
-  @on('willDestroyElement')
-  _disableAutosize() {
-    autosize.destroy(this.$('.d-editor-input'));
-  }
+  actions: {
+    save() {
+      this.dockedSave()
+    },
+    cancel() {
+      this.dockedCancel()
+    },
+    toggle() {
+      this.dockedToggle()
+    },
+    showQuickUpload(e) {
+      this.sendAction('showQuickUpload', e);
+    }
+  },
 
 })

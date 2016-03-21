@@ -20,6 +20,7 @@ export default Ember.Component.extend({
     this.$().on('click.messages-menu-preview', '.message-preview', e => {
       var topicId = $(e.currentTarget).data('topic-id'),
           dockedTopics = this.get('dockedTopics');
+      if (dockedTopics.contains(topicId)) {return}
       dockedTopics.pushObject(topicId)
       this.set('dockedTopics', dockedTopics)
     })
@@ -65,6 +66,11 @@ export default Ember.Component.extend({
   actions: {
     showQuickUpload(e) {
       this.sendAction('showQuickUpload', e)
+    },
+    removeComposer(index) {
+      var dockedTopics = this.get('dockedTopics');
+      dockedTopics.removeAt(index)
+      this.set('dockedTopics', dockedTopics)
     }
   }
 

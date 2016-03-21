@@ -1,7 +1,10 @@
-<a href {{action "cancel"}} class='cancel fa fa-times' tabindex="6"></a>
+<a href class='cancel fa fa-times' {{action "cancel"}} tabindex="6"></a>
+<a href class='toggler fa {{togglerIcon}}' {{action "toggle" bubbles=false}} title={{i18n 'composer.toggler'}}></a>
 <div class='composer-fields'>
-  {{#if dockedDraft}}
-    <div class='docked-draft-text'>{{dockedDraft}}</div>
+  {{#if composerMinimized}}
+    <div class='docked-draft-wrapper' {{action "open"}}>
+      <div class='docked-draft-text'>{{draft}}</div>
+    </div>
   {{else}}
     {{#unless topic}}
       {{user-selector topicId=topic.id
@@ -17,12 +20,14 @@
     {{docked-post-stream posts=postStream.posts}}
   {{/if}}
 </div>
-{{docked-editor  tabindex="4"
-                 value=reply
-                 placeholder="composer.quick_placeholder"
-                 markdownOptions=markdownOptions
-                 extraButtons="extraButtons"
-                 showOptions="showOptions"
-                 showQuickUpload="showQuickUpload"
-                 validation=validation
-                 loading=loading}}
+{{#if composerOpen}}
+  {{docked-editor  tabindex="4"
+                   value=reply
+                   placeholder="composer.quick_placeholder"
+                   markdownOptions=markdownOptions
+                   extraButtons="extraButtons"
+                   showOptions="showOptions"
+                   showQuickUpload="showQuickUpload"
+                   validation=validation
+                   loading=loading}}
+{{/if}}

@@ -3,6 +3,7 @@ import { headerHeight } from 'discourse/views/header';
 import { default as computed, on, observes } from 'ember-addons/ember-computed-decorators';
 import Topic from 'discourse/models/topic';
 import autosize from 'discourse/lib/autosize';
+import Composer from 'discourse/models/composer';
 
 const _create_serializer = {
         raw: 'reply',
@@ -22,31 +23,33 @@ export default Ember.Component.extend({
   classNameBindings: [':docked-composer', 'composeState', 'composer.loading', 'composer.createdPost:created-post'],
   existingDiscussion: null,
   isUploading: false,
-  lastValidatedAt: null,
-  disableSubmit: Ember.computed.or("loading", "isUploading"),
+  disableSubmit: Ember.computed.or("loadingStream", "isUploading"),
   composerOpen: Ember.computed.equal('composeState', 'open'),
   composerMinimized: Ember.computed.equal('composeState', 'minimized'),
+  loadingStream: false,
   composeState: null,
+  targetUsernames: null,
+  firstPost: false,
+  archetypeId: 'private_message',
+  offScreen: false,
+  reply: '',
 
   @on('didInsertElement')
   _setup() {
-    this.set('composeState', 'open')
     Ember.run.scheduleOnce('afterRender', () => {
       autosize(this.$('.d-editor-input'));
     });
-    ;
-    this.$().one("transitionend webkitTransitionEnd oTransitionEnd MSTransitionEnd", () => {
+    this.$().on("transitionend webkitTransitionEnd oTransitionEnd MSTransitionEnd", () => {
       switch (this.get('composeState')) {
         case 'closed':
           var index = this.get('index')
-          this.sendAction('removeComposer', index)
+          this.sendAction('removeDocked', index)
           break;
         case 'open':
           this.afterPostRender();
           break;
       }
     });
-
     const $replyControl = this.$(),
           resize = () => Ember.run.scheduleOnce('afterRender', () => {this._resize()});
     $replyControl.DivResizer({
@@ -54,9 +57,24 @@ export default Ember.Component.extend({
       maxHeight: winHeight => winHeight - headerHeight(),
       onDrag: sizePx => this.movePanels(sizePx)
     });
+    const composeController = this.container.lookup('controller:composer')
+    this.set('composeController', composeController)
+  },
 
-    var topic = this.get('topic'),
-        postStream = topic.get('postStream'),
+  @on('didInsertElement')
+  @observes('composeController.model.composeState')
+  _hideWhenMainComposerIsOpen(){
+    if (this.get('composeController.model.composeState') === Composer.OPEN) {
+      this.collapse()
+    }
+  },
+
+  @on('willInsertElement')
+  @observes('topic')
+  subscribeToTopic() {
+    var topic = this.get('topic')
+    if (!topic) {return}
+    var postStream = topic.get('postStream'),
         self = this;
     this.messageBus.subscribe("/topic/" + topic.id, data => {
       if (data.type === "created") {
@@ -69,11 +87,27 @@ export default Ember.Component.extend({
   },
 
   @on('didInsertElement')
-  @observes('index')
-  _right() {
+  @observes('index', 'maxIndex')
+  _position() {
     var index = this.get('index'),
-        right = 340 * index + 100;
-    this.$().css('right', right)
+        docked = this.get('docked'),
+        max = this.get('maxIndex');
+    if (index > max) {
+      this.set('offScreen', true)
+      this.collapse()
+      var extra = max + 1,
+          right = 340 * extra + 100,
+          stackIndex = index - extra,
+          bottom = stackIndex * 40 + 'px';
+    } else {
+      var right = 340 * index + 100,
+          bottom = 0;
+      this.set('composeState', 'open')
+    }
+    this.$().css({
+      'right': right,
+      'bottom': bottom,
+    })
   },
 
   @on('willDestroyElement')
@@ -100,23 +134,33 @@ export default Ember.Component.extend({
     $('#main-outlet').css('padding-bottom', sizePx);
   },
 
-  topic: function() {
+  @computed('id')
+  topic() {
+    var id = this.get('id');
+    if (id === 'new') {
+      this.set('firstPost', true)
+      return false
+    }
     const store = this.container.lookup('store:main')
-    return store.createRecord('topic', {id: this.get('topicId')})
-  }.property(),
+    return store.createRecord('topic', {id: id})
+  },
 
-  postStream: function() {
-    var topic = this.get('topic'),
-        postStream = topic.get('postStream');
+  @computed('topic')
+  postStream() {
+    this.set('loadingStream', true)
+    var topic = this.get('topic')
+    if (!topic) {return null}
+    var postStream = topic.get('postStream');
     postStream.refresh({nearPost: topic.highest_post_number}).then(() => {
+      this.set('loadingStream', false)
       this.afterPostRender()
     })
     return postStream
-  }.property('topic'),
+  },
 
   afterPostRender: function() {
-    Ember.run.schedule('afterRender', () => {
-      this.$('.composer-fields').scrollTop($('.docked-post-stream').height())
+    Ember.run.scheduleOnce('afterRender', () => {
+      this.$('.docked-composer-top').scrollTop($('.docked-post-stream').height())
       this.dockedScreenTrack()
     })
   },
@@ -147,7 +191,6 @@ export default Ember.Component.extend({
 
   save: function() {
     if (this.get('cantSubmitPost')) {
-      this.set('lastValidatedAt', Date.now());
       return;
     }
 
@@ -189,11 +232,14 @@ export default Ember.Component.extend({
 
     this.serialize(_create_serializer, createdPost)
 
-    this.$('.d-editor-input').css('height', 'auto')
     this.set('reply', '')
+    Ember.run.scheduleOnce('afterRender', () => {
+      this._updateAutosize()
+    })
 
     if (postStream) {
       var state = postStream.stagePost(createdPost, user);
+      this.set('firstPost', false)
     }
 
     if (state === 'staged') {this.afterPostRender()}
@@ -204,6 +250,10 @@ export default Ember.Component.extend({
         user.set('reply_count', user.get('reply_count') + 1);
         postStream.commitPost(createdPost)
       } else {
+        self.set('firstPost', false)
+        var id = result.responseJson.post.topic_id
+        self.set('id', id)
+        self.sendAction('udpatedId', id, self.get('index'))
         user.set('topic_count', user.get('topic_count') + 1);
         const category = self.site.get('categories').find(function(x) {
           return x.get('id') === (parseInt(createdPost.get('category'),10) || 1);
@@ -228,12 +278,14 @@ export default Ember.Component.extend({
     return dest;
   },
 
-  @computed('composeState')
+  @computed('composeState', 'topic.details.loaded')
   draft() {
     if (this.get('composerMinimized')) {
       var topic = this.get('topic')
-      var participants = topic.get('details').allowed_users,
-          usernames = this.getUsernames(participants);
+      if (!topic) {return}
+      var details = topic.get('details')
+      if (!details.loaded) {return}
+      var usernames = this.getUsernames(details.allowed_users);
       usernames.splice(usernames.indexOf(this.get('currentUser.username')), 1)
       return this.formatUsernames(usernames);
     } else {
@@ -251,11 +303,9 @@ export default Ember.Component.extend({
     toggle() {
       this.toggle()
     },
-    open() {
-      this.set('composeState', 'open')
-    },
-    showQuickUpload(e) {
-      this.sendAction('showQuickUpload', e);
+    showUploadSelector(toolbarEvent) {
+      console.log('docked-composer', toolbarEvent)
+      this.sendAction('showUploadSelector', toolbarEvent);
     }
   },
 
@@ -296,7 +346,6 @@ export default Ember.Component.extend({
   },
 
   close: function() {
-    this.set('lastValidatedAt', null)
     this.set('composeState', 'closed')
   },
 
@@ -319,25 +368,29 @@ export default Ember.Component.extend({
   },
 
   toggle: function() {
-    if (Ember.isEmpty(this.get('reply'))) {
-      this.cancel()
-    } else {
-      this.closeAutocomplete();
-      switch (this.get('composeState')) {
-        case 'open':
+    this.closeAutocomplete();
+    switch (this.get('composeState')) {
+      case 'open':
+        if (Ember.isEmpty(this.get('reply'))) {
+          this.cancel()
+        } else {
           this.shrink();
-          break;
-        case 'minimized':
-          this.set('composeState', 'open');
-          break;
-      }
-      return false;
+        }
+        break;
+      case 'minimized':
+        if (this.get('offScreen')) {
+          this.sendAction('onScreen', this.get('index'))
+        }
+        this.set('composeState', 'open');
+        break;
     }
+    return false;
   },
 
-  togglerIcon: function() {
+  @computed('composeState')
+  togglerIcon() {
     return this.get('composeState') === 'minimized' ? 'fa-angle-up' : 'fa-angle-down'
-  }.property('composeState'),
+  },
 
   getUsernames: function(participants) {
     var usernames = []
@@ -361,10 +414,9 @@ export default Ember.Component.extend({
   },
 
   @observes('targetUsernames')
-  createOrContinueDiscussion() {
-    var targetUsernames = this.get('targetUsernames')
-    if (!targetUsernames) {return}
-    var messages = this.get('messages'),
+  createOrContinue() {
+    var targetUsernames = this.get('targetUsernames'),
+        messages = this.get('messages'),
         currentUser = this.get('currentUser.username'),
         existingId = null,
         targetUsernames = targetUsernames.split(',');
@@ -376,16 +428,19 @@ export default Ember.Component.extend({
       }
       if ($(usernames).not(targetUsernames).length === 0 &&
          $(targetUsernames).not(usernames).length === 0) {
-        existingId = message.id;
+        existingId = this.get('docked').indexOf(message.id) > -1 ? 'docked' : message.id
+        return
       }
     })
     if (existingId) {
-      Topic.find(existingId, {}).then((topic) => {
-        var existing = Topic.create(topic)
-        this.set('topic', existing)
-      })
+      if (existingId === 'docked') {
+        this.set('id', 'new')
+        return
+      } else {
+        this.set('id', existingId)
+      }
     } else {
-      this.set('topic', null)
+      this.set('id', 'new')
       this.set('title', this.formatUsernames(targetUsernames))
     }
   },
@@ -395,27 +450,6 @@ export default Ember.Component.extend({
     if (this.get('loading')) return true;
     if (this.get('replyLength') < 1) return true;
     return this.get('targetUsernames') && (this.get('targetUsernames').trim() + ',').indexOf(',') === 0;
-  },
-
-  @computed('composer.reply', 'composer.replyLength', 'composer.missingReplyCharacters', 'composer.minimumPostLength', 'lastValidatedAt')
-  validation(reply, replyLength, missingReplyCharacters, minimumPostLength, lastValidatedAt) {
-    const postType = this.get('composer.post.post_type');
-    if (postType === this.site.get('post_types.small_action')) { return; }
-
-    let reason;
-    if (replyLength < 1) {
-      reason = I18n.t('composer.error.post_missing');
-    } else if (missingReplyCharacters > 0) {
-      reason = I18n.t('composer.error.post_length', {min: minimumPostLength});
-      const tl = Discourse.User.currentProp("trust_level");
-      if (tl === 0 || tl === 1) {
-        reason += "<br/>" + I18n.t('composer.error.try_like');
-      }
-    }
-
-    if (reason) {
-      return Discourse.InputValidation.create({ failed: true, reason, lastShownAt: lastValidatedAt });
-    }
   },
 
   @computed('reply')

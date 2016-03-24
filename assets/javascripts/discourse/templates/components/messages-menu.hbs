@@ -24,10 +24,14 @@
     </ul>
   </div>
 {{/menu-panel}}
-{{#each dockedTopics as |topicId|}}
-  {{docked-composer topicId=topicId
-                    messages=allTopicList
-                    index=_view.contentIndex
-                    showQuickUpload="showQuickUpload"
-                    removeComposer="removeComposer"}}
+{{#each docked as |id index|}}
+  {{docked-composer id=id
+                    messages=messages
+                    docked=docked
+                    maxIndex=maxIndex
+                    index=index
+                    showUploadSelector="showUploadSelector"
+                    removeDocked="removeDocked"
+                    updatedId="updateId"
+                    onScreen="onScreen"}}
 {{/each}}

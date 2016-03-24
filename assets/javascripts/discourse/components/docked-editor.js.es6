@@ -1,8 +1,8 @@
-/*global Mousetrap:true */
 import loadScript from 'discourse/lib/load-script';
 import { default as computed, on, observes } from 'ember-addons/ember-computed-decorators';
 import { showSelector } from "discourse/lib/emoji/emoji-toolbar";
-import Category from 'discourse/models/category';
+import userSearch from 'discourse/lib/user-search';
+import { linkSeenMentions, fetchUnseenMentions } from 'discourse/lib/link-mentions';
 import { SEPARATOR as categoryHashtagSeparator,
          categoryHashtagTriggerRule
        } from 'discourse/lib/category-hashtags';
@@ -35,13 +35,15 @@ class Toolbar {
       {group: 'quick', buttons: []}
     ];
 
+    /* - not working yet
     this.addButton({
       id: 'upload',
       group: 'quick',
       icon: 'upload',
       title: 'upload',
-      perform: e => e.showQuickUpload(e)
+      sendAction: 'showUploadSelector'
     });
+    */
 
     this.addButton({
       id: 'emoji',
@@ -107,15 +109,6 @@ class Toolbar {
   }
 }
 
-export function addToolbarCallback(func) {
-  _createCallbacks.push(func);
-}
-
-export function onToolbarCreate(func) {
-  console.warn('`onToolbarCreate` is deprecated, use the plugin api instead.');
-  addToolbarCallback(func);
-};
-
 export default Ember.Component.extend({
   classNames: ['d-editor'],
   ready: false,
@@ -123,12 +116,8 @@ export default Ember.Component.extend({
   link: '',
   lastSel: null,
   _mouseTrap: null,
-
-  @computed('placeholder')
-  placeholderTranslated(placeholder) {
-    if (placeholder) return I18n.t(placeholder);
-    return null;
-  },
+  uploadProgress: 0,
+  _xhr: null,
 
   @on('didInsertElement')
   _startUp() {
@@ -136,10 +125,7 @@ export default Ember.Component.extend({
           $editorInput = this.$('.d-editor-input');
 
     this._applyEmojiAutocomplete(container, $editorInput);
-    this._applyCategoryHashtagAutocomplete(container, $editorInput);
-
     loadScript('defer/html-sanitizer-bundle').then(() => this.set('ready', true));
-
     const mouseTrap = Mousetrap(this.$('.d-editor-input')[0]);
 
     const shortcuts = this.get('toolbar.shortcuts');
@@ -151,6 +137,17 @@ export default Ember.Component.extend({
       });
     });
 
+    const topicId = this.get('topic.id');
+    const template = this.container.lookup('template:user-selector-autocomplete.raw');
+    const $input = this.$('.d-editor-input');
+    $input.autocomplete({
+      template,
+      dataSource: term => userSearch({ term, topicId, includeGroups: true }),
+      key: "@",
+      transformComplete: v => v.username || v.name
+    });
+    this.$('.d-editor-input').putCursorAtEnd();
+
     this._mouseTrap = mouseTrap;
   },
 
@@ -161,28 +158,143 @@ export default Ember.Component.extend({
   },
 
   @computed
+  uploadPlaceholder() {
+    return `[${I18n.t('uploading')}]() `;
+  },
+
+  @computed('placeholder')
+  placeholderTranslated(placeholder) {
+    if (placeholder) return I18n.t(placeholder);
+    return null;
+  },
+
+  @computed
+  markdownOptions() {
+    return {
+      lookupAvatarByPostNumber: (postNumber, topicId) => {
+        const topic = this.get('topic');
+        if (!topic) { return; }
+
+        const posts = topic.get('postStream.posts');
+        if (posts && topicId === topic.get('id')) {
+          const quotedPost = posts.findProperty("post_number", postNumber);
+          if (quotedPost) {
+            return Discourse.Utilities.tinyAvatar(quotedPost.get('avatar_template'));
+          }
+        }
+      }
+    };
+  },
+
+  _renderUnseenMentions: function($preview, unseen) {
+    fetchUnseenMentions($preview, unseen).then(() => {
+      linkSeenMentions($preview, this.siteSettings);
+      this._warnMentionedGroups($preview);
+    });
+  },
+
+  /* - uploads not working yet
+  _resetUpload(removePlaceholder) {
+    this._validUploads--;
+    if (this._validUploads === 0) {
+      this.setProperties({ uploadProgress: 0, isUploading: false, isCancellable: false });
+    }
+    if (removePlaceholder) {
+      this.set('value', this.get('value').replace(this.get('placeholder'), ""));
+    }
+  },
+
+  _bindUploadTarget() {
+    this._unbindUploadTarget(); // in case it's still bound, let's clean it up first
+
+    const $element = this.$();
+    const csrf = this.session.get('csrfToken');
+    const uploadPlaceholder = this.get('uploadPlaceholder');
+
+    $element.fileupload({
+      url: Discourse.getURL(`/uploads.json?client_id=${this.messageBus.clientId}&authenticity_token=${encodeURIComponent(csrf)}`),
+      dataType: "json",
+      pasteZone: $element,
+    });
+
+    $element.on('fileuploadsubmit', (e, data) => {
+      const isUploading = Discourse.Utilities.validateUploadedFiles(data.files);
+      data.formData = { type: "composer" };
+      this.setProperties({ uploadProgress: 0, isUploading });
+      return isUploading;
+    });
+
+    $element.on("fileuploadprogressall", (e, data) => {
+      this.set("uploadProgress", parseInt(data.loaded / data.total * 100, 10));
+    });
+
+    $element.on("fileuploadsend", (e, data) => {
+      this._validUploads++;
+      // add upload placeholders (as much placeholders as valid files dropped)
+      const placeholder = _.times(this._validUploads, () => uploadPlaceholder).join("\n");
+      this.appEvents.trigger('composer:insert-text', placeholder);
+
+      if (data.xhr && data.originalFiles.length === 1) {
+        this.set("isCancellable", true);
+        this._xhr = data.xhr();
+      }
+    });
+
+    $element.on("fileuploadfail", (e, data) => {
+      this._resetUpload(true);
+
+      const userCancelled = this._xhr && this._xhr._userCancelled;
+      this._xhr = null;
+
+      if (!userCancelled) {
+        Discourse.Utilities.displayErrorForUpload(data);
+      }
+    });
+
+    this.messageBus.subscribe("/uploads/composer", upload => {
+      // replace upload placeholder
+      if (upload && upload.url) {
+        if (!this._xhr || !this._xhr._userCancelled) {
+          const markdown = Discourse.Utilities.getUploadMarkdown(upload);
+          console.log(this.get('value'))
+          this.set('value', this.get('value').replace(uploadPlaceholder, markdown));
+          this._resetUpload(false);
+        } else {
+          this._resetUpload(true);
+        }
+      } else {
+        this._resetUpload(true);
+        Discourse.Utilities.displayErrorForUpload(upload);
+      }
+    });
+
+    if (this.site.mobileView) {
+      this.$(".mobile-file-upload").on("click.uploader", function () {
+        // redirect the click on the hidden file input
+        $("#mobile-uploader").click();
+      });
+    }
+
+    this._firefoxPastingHack();
+  },
+
+  @on('willDestroyElement')
+  _unbindUploadTarget() {
+    this._validUploads = 0;
+    this.$(".mobile-file-upload").off("click.uploader");
+    this.messageBus.unsubscribe("/uploads/composer");
+    const $uploadTarget = this.$();
+    try { $uploadTarget.fileupload("destroy"); }
+    catch (e) { }
+    $uploadTarget.off();
+  },
+  */
+
+  @computed
   toolbar() {
     const toolbar = new Toolbar(this.site);
     _createCallbacks.forEach(cb => cb(toolbar));
     return toolbar;
-  },
-
-  _applyCategoryHashtagAutocomplete(container, $editorInput) {
-    const template = container.lookup('template:category-group-autocomplete.raw');
-
-    $editorInput.autocomplete({
-      template: template,
-      key: '#',
-      transformComplete(category) {
-        return Category.slugFor(category, categoryHashtagSeparator);
-      },
-      dataSource(term) {
-        return Category.search(term);
-      },
-      triggerRule(textarea, opts) {
-        return categoryHashtagTriggerRule(textarea, opts);
-      }
-    });
   },
 
   _applyEmojiAutocomplete(container, $editorInput) {
@@ -359,8 +471,87 @@ export default Ember.Component.extend({
     Ember.run.scheduleOnce("afterRender", () => this.$("textarea.d-editor-input").focus());
   },
 
-  _showQuickUpload(e) {
-    this.sendAction('showQuickUpload', e)
+  // Believe it or not pasting an image in Firefox doesn't work without this code
+  _firefoxPastingHack() {
+    const uaMatch = navigator.userAgent.match(/Firefox\/(\d+)\.\d/);
+    if (uaMatch && parseInt(uaMatch[1]) >= 24) {
+      this.$().append( Ember.$("<div id='contenteditable' contenteditable='true' style='height: 0; width: 0; overflow: hidden'></div>") );
+      this.$("textarea").off('keydown.contenteditable');
+      this.$("textarea").on('keydown.contenteditable', event => {
+        // Catch Ctrl+v / Cmd+v and hijack focus to a contenteditable div. We can't
+        // use the onpaste event because for some reason the paste isn't resumed
+        // after we switch focus, probably because it is being executed too late.
+        if ((event.ctrlKey || event.metaKey) && (event.keyCode === 86)) {
+          // Save the current textarea selection.
+          const textarea = this.$("textarea")[0];
+          const selectionStart = textarea.selectionStart;
+          const selectionEnd = textarea.selectionEnd;
+
+          // Focus the contenteditable div.
+          const contentEditableDiv = this.$('#contenteditable');
+          contentEditableDiv.focus();
+
+          // The paste doesn't finish immediately and we don't have any onpaste
+          // event, so wait for 100ms which _should_ be enough time.
+          setTimeout(() => {
+            const pastedImg  = contentEditableDiv.find('img');
+
+            if ( pastedImg.length === 1 ) {
+              pastedImg.remove();
+            }
+
+            // For restoring the selection.
+            textarea.focus();
+            const textareaContent = $(textarea).val(),
+                startContent = textareaContent.substring(0, selectionStart),
+                endContent = textareaContent.substring(selectionEnd);
+
+            const restoreSelection = function(pastedText) {
+              $(textarea).val( startContent + pastedText + endContent );
+              textarea.selectionStart = selectionStart + pastedText.length;
+              textarea.selectionEnd = textarea.selectionStart;
+            };
+
+            if (contentEditableDiv.html().length > 0) {
+              // If the image wasn't the only pasted content we just give up and
+              // fall back to the original pasted text.
+              contentEditableDiv.find("br").replaceWith("\n");
+              restoreSelection(contentEditableDiv.text());
+            } else {
+              // Depending on how the image is pasted in, we may get either a
+              // normal URL or a data URI. If we get a data URI we can convert it
+              // to a Blob and upload that, but if it is a regular URL that
+              // operation is prevented for security purposes. When we get a regular
+              // URL let's just create an <img> tag for the image.
+              const imageSrc = pastedImg.attr('src');
+
+              if (imageSrc.match(/^data:image/)) {
+                // Restore the cursor position, and remove any selected text.
+                restoreSelection("");
+
+                // Create a Blob to upload.
+                const image = new Image();
+                image.onload = () => {
+                  // Create a new canvas.
+                  const canvas = document.createElementNS('http://www.w3.org/1999/xhtml', 'canvas');
+                  canvas.height = image.height;
+                  canvas.width = image.width;
+                  const ctx = canvas.getContext('2d');
+                  ctx.drawImage(image, 0, 0);
+
+                  canvas.toBlob(blob => this.$().fileupload('add', {files: blob}));
+                };
+                image.src = imageSrc;
+              } else {
+                restoreSelection("<img src='" + imageSrc + "'>");
+              }
+            }
+
+            contentEditableDiv.html('');
+          }, 100);
+        }
+      });
+    }
   },
 
   actions: {
@@ -370,11 +561,12 @@ export default Ember.Component.extend({
         selected,
         applySurround: (head, tail, exampleKey) => this._applySurround(selected, head, tail, exampleKey),
         addText: text => this._addText(selected, text),
-        showQuickUpload: (e) => this._showQuickUpload(e)
       };
 
-      if (button.sendAction) {
-        return this.sendAction(button.sendAction, toolbarEvent);
+      console.log(button)
+
+      if (button.sendAction === 'showUploadSelector') {
+        return this.sendAction('showUploadSelector', toolbarEvent)
       } else {
         button.perform(toolbarEvent);
       }

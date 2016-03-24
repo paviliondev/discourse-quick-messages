@@ -3,8 +3,7 @@ export default Ember.Component.extend({
 
   markRead: function(){
     this.$('a').click(() => {
-      this.set('message.read', true);
-      return true;
+      this.set('message.unread', false);
     });
   }.on('didInsertElement')
 

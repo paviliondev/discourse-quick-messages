@@ -6,29 +6,41 @@ export default Ember.Component.extend({
   classNames: 'messages-menu',
   messagesPath: url('controller.currentUser.path', '%@/messages'),
   loadingTopicList: false,
-  dockedTopics: [],
-  topics: [],
+  docked: Ember.A(),
   topicList: [],
 
   didInsertElement: function () {
     this.getTopics()
     this.$().on('click.messages-menu-new', '.new-docked-message', e => {
-      var current = this.get('docked'),
-          empty = { id: null, topic: null };
-      this.set('docked', current.push(empty))
+      this.addToDocked('new')
     })
     this.$().on('click.messages-menu-preview', '.message-preview', e => {
-      var topicId = $(e.currentTarget).data('topic-id'),
-          dockedTopics = this.get('dockedTopics');
-      if (dockedTopics.contains(topicId)) {return}
-      dockedTopics.pushObject(topicId)
-      this.set('dockedTopics', dockedTopics)
+      this.addToDocked($(e.currentTarget).data('topic-id'))
     })
+    this.setMaxIndex()
+    $(window).on('resize', Ember.run.bind(this, this.setMaxIndex))
   },
 
   willDestroyElement: function() {
     this.$().off('click.messages-menu-new')
     this.$().off('click.messages-menu-preview')
+    $(window).off('resize', Ember.run.bind(this, this.setMaxIndex))
+  },
+
+  setMaxIndex: function() {
+    this.set('maxIndex', (Math.floor(($(window).width() - 390) / 340)) - 1)
+  },
+
+  addToDocked: function(id) {
+    var docked = this.get('docked');
+    if (docked.contains(id)) {return}
+    var max = this.get('maxIndex');
+    if (docked.length > max) {
+      docked.insertAt(max, id)
+    } else {
+      docked.pushObject(id)
+    }
+    this.set('docked', docked)
   },
 
   getTopics: function() {
@@ -46,15 +58,14 @@ export default Ember.Component.extend({
           b = new Date(b.last_posted_at);
           return a > b ? -1 : a < b ? 1 : 0;
         });
-        this.set('allTopicList', topicList)
+        this.set('messages', topicList)
         topicList = topicList.slice(0,7)
-        var topics = this.get('topics')
         topicList.forEach((listItem, i) => {
-          if (listItem.last_read_post_number === listItem.highest_post_number) {
-            listItem.read = true
+          if (listItem.last_read_post_number !== listItem.highest_post_number) {
+            listItem['unread'] = true
           }
           if (listItem.excerpt) {
-            listItem.preview = Discourse.Emoji.unescape(listItem.excerpt)
+            listItem['preview'] = Discourse.Emoji.unescape(listItem.excerpt)
           }
           this.set('topicList', topicList)
         })
@@ -64,13 +75,21 @@ export default Ember.Component.extend({
   }.observes('currentUser.unread_private_messages', 'currentUser.topic_count', 'currentUser.reply_count'),
 
   actions: {
-    showQuickUpload(e) {
-      this.sendAction('showQuickUpload', e)
+    showUploadSelector(toolbarEvent) {
+      this.sendAction('showUploadSelector', toolbarEvent)
     },
-    removeComposer(index) {
-      var dockedTopics = this.get('dockedTopics');
-      dockedTopics.removeAt(index)
-      this.set('dockedTopics', dockedTopics)
+    removeDocked(index) {
+      var docked = this.get('docked');
+      docked.removeAt(index)
+      this.set('docked', docked)
+    },
+    onScreen(index) {
+      var docked = this.get('docked');
+      var max = this.get('maxIndex'),
+          item = docked.slice(index, index + 1);
+      docked.removeAt(index)
+      docked.insertAt(max, item[0])
+      this.set('docked', docked)
     }
   }
 

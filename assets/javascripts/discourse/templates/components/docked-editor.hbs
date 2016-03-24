@@ -22,4 +22,13 @@
     {{textarea tabindex=tabindex value=value class="d-editor-input" placeholder=placeholderTranslated}}
     {{popup-input-tip validation=validation}}
   </div>
+  {{#if isUploading}}
+    <div id="file-uploading">
+      {{loading-spinner size="small"}} {{i18n 'upload_selector.uploading'}}
+      {{uploadProgress}}%
+      {{#if isCancellable}}
+        <a href id="cancel-file-upload" {{action "cancelUpload"}}>{{fa-icon "times"}}</a>
+      {{/if}}
+    </div>
+  {{/if}}
 </div>

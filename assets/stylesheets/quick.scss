@@ -135,17 +135,20 @@
   box-shadow: 0 0px 15px -2px rgba(0, 0, 0, 0.25);
   border: 1px solid #E4E4E4;
   height: 400px;
-  -webkit-transition: height 0.5s;
-  -moz-transition: height 0.5s;
-  -ms-transition: height 0.5s;
-  -o-transition: height 0.5s;
-  transition: height 0.5s;
+  -webkit-transition: all 0.5s;
+  -moz-transition: all 0.5s;
+  -ms-transition: all 0.5s;
+  -o-transition: all 0.5s;
+  transition: all 0.5s;
 
   &.minimized {
-    height: 50px;
+    height: 40px !important;
     .docked-post-stream,
     .grippie  {
       display: none;
+    }
+    .docked-composer-top {
+      height: 40px;
     }
     .docked-draft-wrapper {
       position: absolute;
@@ -191,15 +194,28 @@
     z-index: 20;
   }
 
-  .composer-fields {
+  .ac-wrap {
+    position: absolute;
+    width: 97% !important;
+    z-index: 2;
+    top: 21px;
+  }
+
+  .docked-composer-top {
     height: calc(100% - 90px);
     width: 100%;
     overflow-x: hidden;
     overflow-y: scroll;
+    position: relative;
   }
 
   .docked-post-stream {
     padding: 10px;
+    .spinner {
+      position: absolute;
+      top: 47%;
+      left: 141px;
+    }
     .docked-post {
       width: 100%;
       display: inline-block;

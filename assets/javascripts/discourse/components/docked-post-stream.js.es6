@@ -1,5 +1,4 @@
 export default Ember.Component.extend({
   tagName: "div",
-  classNames: 'docked-post-stream',
-
+  classNames: 'docked-post-stream'
 })

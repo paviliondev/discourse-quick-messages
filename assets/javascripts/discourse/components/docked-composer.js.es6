@@ -46,7 +46,7 @@ export default Ember.Component.extend({
           this.sendAction('removeDocked', index)
           break;
         case 'open':
-          this.afterPostRender();
+          this.afterStreamRender();
           break;
       }
     });
@@ -78,7 +78,7 @@ export default Ember.Component.extend({
         self = this;
     this.messageBus.subscribe("/topic/" + topic.id, data => {
       if (data.type === "created") {
-        postStream.triggerNewPostInStream(data.id).then(() => this.afterPostRender())
+        postStream.triggerNewPostInStream(data.id).then(() => this.afterStreamRender())
         if (this.get('currentUser.id') !== data.user_id) {
           Discourse.notifyBackgroundCountIncrement();
         }
@@ -153,16 +153,19 @@ export default Ember.Component.extend({
     var postStream = topic.get('postStream');
     postStream.refresh({nearPost: topic.highest_post_number}).then(() => {
       this.set('loadingStream', false)
-      this.afterPostRender()
     })
     return postStream
   },
 
-  afterPostRender: function() {
-    Ember.run.scheduleOnce('afterRender', () => {
-      this.$('.docked-composer-top').scrollTop($('.docked-post-stream').height())
-      this.dockedScreenTrack()
-    })
+  @on('didInsertElement')
+  @observes('loadingStream')
+  afterStreamRender: function() {
+    if (!this.get('loadingStream')) {
+      Ember.run.scheduleOnce('afterRender', () => {
+        this.$('.docked-composer-top').scrollTop($('.docked-post-stream').height())
+        this.dockedScreenTrack()
+      })
+    }
   },
 
   dockedScreenTrack: function() {
@@ -242,7 +245,7 @@ export default Ember.Component.extend({
       this.set('firstPost', false)
     }
 
-    if (state === 'staged') {this.afterPostRender()}
+    if (state === 'staged') {this.afterStreamRender()}
 
     const self = this;
     createdPost.save().then(function(result) {

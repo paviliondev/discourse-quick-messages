@@ -1,3 +1,7 @@
+.plugin-menu-icons {
+  float: left;
+}
+
 .messages-button-wrapper {
   float: left;
   .messages-button {
@@ -57,10 +61,20 @@
       overflow: hidden;
       cursor: pointer;
       width: 100%;
-    }
 
-    .message-preview.unread {
-      color: #0088cc;
+      &.loading {
+        opacity: 0.4;
+        filter: alpha(opacity=40);
+        cursor: default;
+        a {
+          cursor: default;
+        }
+      }
+
+      &.unread {
+        color: #0088cc;
+      }
+
     }
 
     &:hover {
@@ -113,20 +127,34 @@
   float: right;
 }
 
-#reply-control.docked {
+.docked-composer {
+  position: fixed;
+  bottom: 0;
   width: 300px;
   background-color: #f1f4f4;
-  right: 10%;
   box-shadow: 0 0px 15px -2px rgba(0, 0, 0, 0.25);
   border: 1px solid #E4E4E4;
   height: 400px;
+  -webkit-transition: all 0.5s;
+  -moz-transition: all 0.5s;
+  -ms-transition: all 0.5s;
+  -o-transition: all 0.5s;
+  transition: all 0.5s;
 
-  &.draft {
+  &.minimized {
+    height: 40px !important;
     .docked-post-stream,
-    .wmd-controls,
-    .submit-panel,
     .grippie  {
       display: none;
+    }
+    .docked-composer-top {
+      height: 40px;
+    }
+    .docked-draft-wrapper {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      cursor: pointer;
     }
     .docked-draft-text {
       position: absolute;
@@ -139,58 +167,55 @@
     }
   }
 
-  &.saving {
-    height: 400px !important;
-    border: 1px solid #E4E4E4 !important;
-    .saving-text {
-      display: none;
-    }
-    .toggler {
-      &:before {
-        font-family: "FontAwesome";
-        content: "\f00d";
-      }
-    }
-  }
-
   &.closed {
-    .submit-panel {
-      display: none;
-    }
+    height: 0;
   }
 
   .grippie {
     height: 20px;
-    display: block;
   }
 
   .toggler {
-    top: 1px;
-    right: 25px;
+    position: absolute;
+    top: 2px;
+    right: 23px;
     padding: 0;
+    font-size: 19px;
+    color: black;
+    font-weight: 900;
   }
 
   .cancel {
     position: absolute;
     right: 3px;
     top: 3px;
-    font-size: 16px;
+    font-size: 15px;
     color: black;
+    z-index: 20;
   }
 
-  .control, .control-row {
-    height: 100%;
+  .ac-wrap {
+    position: absolute;
+    width: 97% !important;
+    z-index: 2;
+    top: 21px;
   }
 
-  .composer-fields {
-    height: calc(100% - 80px);
+  .docked-composer-top {
+    height: calc(100% - 90px);
     width: 100%;
     overflow-x: hidden;
     overflow-y: scroll;
+    position: relative;
   }
 
   .docked-post-stream {
     padding: 10px;
+    .spinner {
+      position: absolute;
+      top: 47%;
+      left: 141px;
+    }
     .docked-post {
       width: 100%;
       display: inline-block;
@@ -223,90 +248,40 @@
     }
   }
 
-  .composer-popup {
-    display: none !important;
-  }
-
-  .reply-to {
-    display: none;
-  }
-
-  .form-element {
-
-    width: 100%;
-    .title-input {
-      display: none;
-    }
-
-    .ac-wrap {
-      width: 260px !important;
-      margin: 0 auto;
-    }
-
-    .add-warning {
-      display: none;
-    }
-
-  }
-
-  .contents {
-    min-width: initial;
-    padding: 0;
-    height: 100%;
-
-    .submit-panel {
-      right: 8px;
-      bottom: 8px;
-      width: initial;
-      .cancel {
-        display: none;
-      }
-      button {
-        padding: 2px 5px;
-        float: right;
-        .fa {
-          margin-right: 2px;
-        }
-      }
-      .cancel {
-        float: right;
-        margin-right: 8px;
-        padding-top: 1px;
-      }
-    }
-  }
-
-  .wmd-controls {
-    height: 60px;
-    bottom: initial !important;
-    top: initial !important;
+  .d-editor {
+    border: none;
+    bottom: 0;
     width: 300px;
     left: 0;
     right: 0;
+    background-color: white;
+    position: absolute;
+  }
 
-    .d-editor {
+  .d-editor-textarea-wrapper {
+    padding: 0;
+    width: 100%;
+    .d-editor-input {
+      height: 100%;
       border: none;
-    }
-
-    .d-editor-textarea-wrapper {
-      padding: 0;
-      width: 100%;
-      .d-editor-input {
-        height: 100%;
-        border: 5px solid white;
-        padding: 0;
-      }
-    }
-
-    .composer-bottom-right {
-      display: none;
+      padding: 5px;
+      margin-bottom: 25px;
+      box-shadow: none;
+      width: 290px;
+      display: block;
     }
   }
 
+  .d-editor-container {
+    padding: 0;
+    position: relative;
+    height: 100%;
+  }
+
   .d-editor-button-bar {
+    position: absolute;
     bottom: 3px;
     top: initial;
-    right: 35px;
     width: auto;
     border: none;
     button {
@@ -321,7 +296,8 @@
     }
   }
 
-  .control-row.reply-area {
-    padding: 0;
+  .d-editor-preview-header,
+  .d-editor-preview-wrapper {
+    display: none;
   }
 }

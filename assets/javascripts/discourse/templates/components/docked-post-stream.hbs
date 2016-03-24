@@ -1,3 +1,7 @@
-{{#each post in topic.post_stream.posts}}
-  {{docked-post post=post}}
-{{/each}}
+{{#if loadingStream}}
+  {{loading-spinner size="small"}}
+{{else}}
+  {{#each post in posts}}
+    {{docked-post post=post}}
+  {{/each}}
+{{/if}}

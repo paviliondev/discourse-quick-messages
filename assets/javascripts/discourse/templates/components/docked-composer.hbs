@@ -1,0 +1,31 @@
+<a href class='cancel fa fa-times' {{action "cancel"}} tabindex="6"></a>
+<a href class='toggler fa {{togglerIcon}}' {{action "toggle" bubbles=false}} title={{i18n 'composer.toggler'}}></a>
+{{#if firstPost}}
+  {{user-selector topicId=topic.id
+                  excludeCurrentUser="true"
+                  id="private-message-users"
+                  includeMentionableGroups="true"
+                  placeholderKey="composer.users_placeholder"
+                  tabindex="1"
+                  usernames=targetUsernames}}
+{{/if}}
+<div class='docked-composer-top'>
+  {{#if composerMinimized}}
+    <div class='docked-draft-wrapper' {{action "toggle"}}>
+      <div class='docked-draft-text'>{{draft}}</div>
+    </div>
+  {{else}}
+    {{docked-post-stream posts=postStream.posts loadingStream=loadingStream}}
+  {{/if}}
+</div>
+{{#if composerOpen}}
+  {{docked-editor  tabindex="4"
+                   value=reply
+                   composer=this
+                   placeholder="composer.quick_placeholder"
+                   markdownOptions=markdownOptions
+                   extraButtons="extraButtons"
+                   showOptions="showOptions"
+                   showUploadSelector="showUploadSelector"
+                   loading=loading}}
+{{/if}}

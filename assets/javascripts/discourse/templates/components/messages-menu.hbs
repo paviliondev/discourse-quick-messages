@@ -1,10 +1,10 @@
 {{#menu-panel visible=visible}}
   <div class="messages-menu-content">
-    {{#conditional-loading-spinner condition=loadingMessages}}
+    {{#conditional-loading-spinner condition=loadingTopicList}}
       <ul class="messages-menu-links">
-        {{#if messages}}
-          {{#each m in messages}}
-            {{messages-menu-item message=m}}
+        {{#if topicList}}
+          {{#each t in topicList}}
+            {{messages-menu-item message=t}}
           {{/each}}
         {{/if}}
       </ul>
@@ -24,3 +24,14 @@
     </ul>
   </div>
 {{/menu-panel}}
+{{#each docked as |id index|}}
+  {{docked-composer id=id
+                    messages=messages
+                    docked=docked
+                    maxIndex=maxIndex
+                    index=index
+                    showUploadSelector="showUploadSelector"
+                    removeDocked="removeDocked"
+                    updatedId="updateId"
+                    onScreen="onScreen"}}
+{{/each}}

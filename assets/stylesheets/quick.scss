@@ -1,5 +1,8 @@
 .plugin-menu-icons {
   float: left;
+  > li {
+    display: inline-block;
+  }
 }
 
 .messages-button-wrapper {

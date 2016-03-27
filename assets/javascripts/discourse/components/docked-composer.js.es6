@@ -199,7 +199,7 @@ export default Ember.Component.extend({
 
     var staged = false;
     const imageSizes = {};
-    this.$('.d-editor img').each((i, e) => {
+    this.$('.docked-editor img').each((i, e) => {
       const $img = $(e);
       const src = $img.prop('src');
       if (src && src.length) {
@@ -305,10 +305,6 @@ export default Ember.Component.extend({
     },
     toggle() {
       this.toggle()
-    },
-    showUploadSelector(toolbarEvent) {
-      console.log('docked-composer', toolbarEvent)
-      this.sendAction('showUploadSelector', toolbarEvent);
     }
   },
 

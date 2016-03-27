@@ -75,14 +75,13 @@ export default Ember.Component.extend({
   }.observes('currentUser.unread_private_messages', 'currentUser.topic_count', 'currentUser.reply_count'),
 
   actions: {
-    showUploadSelector(toolbarEvent) {
-      this.sendAction('showUploadSelector', toolbarEvent)
-    },
+
     removeDocked(index) {
       var docked = this.get('docked');
       docked.removeAt(index)
       this.set('docked', docked)
     },
+    
     onScreen(index) {
       var docked = this.get('docked');
       var max = this.get('maxIndex'),

@@ -35,15 +35,13 @@ class Toolbar {
       {group: 'quick', buttons: []}
     ];
 
-    /* - not working yet
     this.addButton({
       id: 'upload',
       group: 'quick',
-      icon: 'upload',
+      icon: 'picture-o',
       title: 'upload',
-      sendAction: 'showUploadSelector'
+      action: 'upload'
     });
-    */
 
     this.addButton({
       id: 'emoji',
@@ -110,9 +108,10 @@ class Toolbar {
 }
 
 export default Ember.Component.extend({
-  classNames: ['d-editor'],
+  classNames: ['docked-editor'],
   ready: false,
   insertLinkHidden: true,
+  dockedUpload: false,
   link: '',
   lastSel: null,
   _mouseTrap: null,
@@ -148,6 +147,7 @@ export default Ember.Component.extend({
     });
     this.$('.d-editor-input').putCursorAtEnd();
 
+    this._bindUploadTarget();
     this._mouseTrap = mouseTrap;
   },
 
@@ -193,7 +193,6 @@ export default Ember.Component.extend({
     });
   },
 
-  /* - uploads not working yet
   _resetUpload(removePlaceholder) {
     this._validUploads--;
     if (this._validUploads === 0) {
@@ -232,7 +231,7 @@ export default Ember.Component.extend({
       this._validUploads++;
       // add upload placeholders (as much placeholders as valid files dropped)
       const placeholder = _.times(this._validUploads, () => uploadPlaceholder).join("\n");
-      this.appEvents.trigger('composer:insert-text', placeholder);
+      this._addText(this._getSelected(), placeholder);
 
       if (data.xhr && data.originalFiles.length === 1) {
         this.set("isCancellable", true);
@@ -256,9 +255,9 @@ export default Ember.Component.extend({
       if (upload && upload.url) {
         if (!this._xhr || !this._xhr._userCancelled) {
           const markdown = Discourse.Utilities.getUploadMarkdown(upload);
-          console.log(this.get('value'))
           this.set('value', this.get('value').replace(uploadPlaceholder, markdown));
           this._resetUpload(false);
+          this.set('dockedUpload', false)
         } else {
           this._resetUpload(true);
         }
@@ -268,27 +267,18 @@ export default Ember.Component.extend({
       }
     });
 
-    if (this.site.mobileView) {
-      this.$(".mobile-file-upload").on("click.uploader", function () {
-        // redirect the click on the hidden file input
-        $("#mobile-uploader").click();
-      });
-    }
-
     this._firefoxPastingHack();
   },
 
   @on('willDestroyElement')
   _unbindUploadTarget() {
     this._validUploads = 0;
-    this.$(".mobile-file-upload").off("click.uploader");
     this.messageBus.unsubscribe("/uploads/composer");
     const $uploadTarget = this.$();
     try { $uploadTarget.fileupload("destroy"); }
     catch (e) { }
     $uploadTarget.off();
   },
-  */
 
   @computed
   toolbar() {
@@ -562,14 +552,23 @@ export default Ember.Component.extend({
         applySurround: (head, tail, exampleKey) => this._applySurround(selected, head, tail, exampleKey),
         addText: text => this._addText(selected, text),
       };
+      button.perform(toolbarEvent);
+    },
 
-      console.log(button)
+    addText(text) {
+      this._addText(this._getSelected(), text)
+    },
 
-      if (button.sendAction === 'showUploadSelector') {
-        return this.sendAction('showUploadSelector', toolbarEvent)
-      } else {
-        button.perform(toolbarEvent);
+    cancelUpload() {
+      if (this._xhr) {
+        this._xhr._userCancelled = true;
+        this._xhr.abort();
       }
+      this._resetUpload(true);
+    },
+
+    upload() {
+      this.set('dockedUpload', true)
     },
 
     emoji() {

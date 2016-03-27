@@ -252,16 +252,6 @@
     }
   }
 
-  .d-editor {
-    border: none;
-    bottom: 0;
-    width: 300px;
-    left: 0;
-    right: 0;
-    background-color: white;
-    position: absolute;
-  }
-
   .d-editor-textarea-wrapper {
     padding: 0;
     width: 100%;
@@ -276,15 +266,83 @@
     }
   }
 
+  .d-editor-modals {
+    position: absolute;
+    top: 20px;
+    height: calc(100% - 100px);
+  }
+
+  .docked-modal {
+    background-color: black;
+    opacity: 0.8;
+    z-index: 1000;
+    color: white;
+    .modal-body {
+      opacity: 1;
+    }
+    .radios {
+      height: 30px;
+      padding: 5px 0;
+      line-height: 30px;
+      > * {
+        display: inline-block;
+      }
+      #filename-input {
+        display: inline-block;
+        width: 85px;
+      }
+      .radio {
+        padding-left: 5px;
+      }
+      .inputs {
+        input[type="text"] {
+          width: 150px;
+        }
+      }
+    }
+    .hint {
+      font-size: 0.929em;
+    }
+    .modal-footer {
+      border: none;
+      padding: 10px 15px;
+    }
+  }
+
   .d-editor-container {
+    border: none;
+    bottom: 0;
+    width: 300px;
+    left: 0;
+    right: 0;
     padding: 0;
-    position: relative;
-    height: 100%;
+    background-color: white;
+    position: absolute;
+  }
+
+  #file-uploading {
+    position: absolute;
+    bottom: 8px;
+    right: 12px;
+    font-size: 12px;
+    .spinner {
+      width: 5px;
+      height: 5px;
+      vertical-align: middle;
+      border-width: 3px;
+    }
+  }
+
+  #cancel-file-upload {
+    font-size: 14px;
+    color: #919191;
   }
 
   .d-editor-button-bar {
     position: absolute;
-    bottom: 3px;
+    bottom: 10px;
+    left: 5px;
+    margin: 0;
     top: initial;
     width: auto;
     border: none;

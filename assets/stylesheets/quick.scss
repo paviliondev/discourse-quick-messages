@@ -352,6 +352,9 @@
       &.upload, &.emoji {
         display: block;
       }
+      i {
+        color: #333;
+      }
     }
     .d-editor-spacer {
       display: none;

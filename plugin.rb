@@ -9,19 +9,23 @@ after_initialize do
 
   ## Add the first 200 characters of the latest post as an 'excerpt' to all private messages
 
-  require 'listable_topic_serializer'
-  class ::ListableTopicSerializer
-    def excerpt
+  require 'topic_list_item_serializer'
+  class ::TopicListItemSerializer
+    attributes :message_excerpt
+
+    def message_excerpt
       if object.archetype == Archetype.private_message
         cooked = Post.where(topic_id: object.id, post_number: object.highest_post_number).pluck('cooked')
-        PrettyText.excerpt(cooked[0], 200, keep_emoji_images: true)
+        excerpt = PrettyText.excerpt(cooked[0], 200, keep_emoji_images: true)
+        excerpt.gsub!(/(\[image\])/, "<i class='fa fa-picture-o'></i>") if excerpt
+        excerpt
       else
-        object.excerpt
+        return false
       end
     end
-    def include_excerpt?
-      pinned || object.archetype == Archetype.private_message
+
+    def include_message_excerpt?
+      !!message_excerpt
     end
   end
-
 end

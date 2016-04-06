@@ -64,8 +64,8 @@ export default Ember.Component.extend({
           if (listItem.last_read_post_number !== listItem.highest_post_number) {
             listItem['unread'] = true
           }
-          if (listItem.excerpt) {
-            listItem['preview'] = Discourse.Emoji.unescape(listItem.excerpt)
+          if (listItem.message_excerpt) {
+            listItem['excerpt'] = Discourse.Emoji.unescape(listItem.message_excerpt)
           }
           this.set('topicList', topicList)
         })
@@ -81,7 +81,7 @@ export default Ember.Component.extend({
       docked.removeAt(index)
       this.set('docked', docked)
     },
-    
+
     onScreen(index) {
       var docked = this.get('docked');
       var max = this.get('maxIndex'),

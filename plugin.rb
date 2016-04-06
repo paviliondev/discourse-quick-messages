@@ -17,7 +17,7 @@ after_initialize do
       if object.archetype == Archetype.private_message
         cooked = Post.where(topic_id: object.id, post_number: object.highest_post_number).pluck('cooked')
         excerpt = PrettyText.excerpt(cooked[0], 200, keep_emoji_images: true)
-        excerpt.gsub!(/(\[image\])/, "<i class='fa fa-picture-o'></i>") if excerpt
+        excerpt.gsub!(/(\[#{I18n.t 'excerpt_image'}\])/, "<i class='fa fa-picture-o'></i>") if excerpt
         excerpt
       else
         return false

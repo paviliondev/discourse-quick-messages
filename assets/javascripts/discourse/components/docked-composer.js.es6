@@ -160,7 +160,7 @@ export default Ember.Component.extend({
   @on('didInsertElement')
   @observes('loadingStream')
   afterStreamRender: function() {
-    if (!this.get('loadingStream')) {
+    if (this.get('loadingStream') === false) {
       Ember.run.scheduleOnce('afterRender', () => {
         this.$('.docked-composer-top').scrollTop($('.docked-post-stream').height())
         this.dockedScreenTrack()

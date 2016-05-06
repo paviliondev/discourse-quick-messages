@@ -1,35 +1,17 @@
-.plugin-menu-icons {
-  float: left;
-  > li {
-    display: inline-block;
-  }
-}
-
-.messages-button-wrapper {
-  float: left;
-  .messages-button {
-    float: left;
-    position: relative;
-    .unread-private-messages {
-      top: 0px;
-      right: 0px;
-    }
-  }
-}
-
-.current-user {
+#toggle-messages-menu {
+  position: relative;
   .unread-private-messages {
-    display: none;
+    top: -2px;
+    right: -2px;
   }
+}
+
+.current-user .unread-private-messages {
+  display: none;
 }
 
 .messages-menu .panel-body-contents {
   overflow: hidden;
-}
-
-.messages-menu-content {
-  min-height: 35px;
-
   .spinner {
     position: absolute;
     left: 150px;
@@ -39,61 +21,34 @@
     border-width: 2px;
     margin: 0 auto;
   }
-
-  li {
-    width: 100%;
-  }
 }
 
-.messages-menu-links {
+.message-list {
+  text-align: left;
+  min-height: 35px;
+}
+
+.message-item {
   padding: 0 2px;
   font-size: 14px;
   list-style: none;
   margin: 0;
   line-height: 17px;
+  display: inline-block;
+  padding: 5px;
 
-  li {
+  .item-contents {
+    white-space: nowrap;
+    color: $primary;
+    word-break: break-all;
+    text-overflow: ellipsis;
+    overflow: hidden;
+    cursor: pointer;
+    width: 100%;
+  }
+
+  ul {
     display: inline-block;
-    padding: 5px;
-
-    .message-preview {
-      white-space: nowrap;
-      color: $primary;
-      word-break: break-all;
-      text-overflow: ellipsis;
-      overflow: hidden;
-      cursor: pointer;
-      width: 100%;
-
-      &.loading {
-        opacity: 0.4;
-        filter: alpha(opacity=40);
-        cursor: default;
-        a {
-          cursor: default;
-        }
-      }
-
-      &.unread {
-        color: #0088cc;
-      }
-
-    }
-
-    &:hover {
-      background-color: dark-light-diff($highlight, $secondary, 50%, -55%);
-    }
-
-    span {
-      color: $primary;
-    }
-
-    p {
-      margin: 0;
-      display: inline-block;
-      word-break: break-all;
-      text-overflow: ellipsis;
-    }
   }
 
   .message-avatar {
@@ -103,6 +58,15 @@
   .message-excerpt {
     display: inline-block;
     vertical-align: middle;
+    padding: 0 8px;
+  }
+
+  &:hover {
+    background-color: dark-light-diff($highlight, $secondary, 50%, -55%);
+  }
+
+  span {
+    color: $primary;
   }
 
   .fa {
@@ -128,6 +92,25 @@
 
   .none {
     padding-top: 5px;
+  }
+}
+
+.message-item.unread .item-contents {
+  color: #0088cc;
+}
+
+.menu-links {
+  .all-messages {
+    text-align: left;
+    a {
+      line-height: 32px;
+    }
+  }
+  .new-message {
+    text-align: right;
+    .widget-link i {
+      font-size: 17px;
+    }
   }
 }
 
@@ -204,9 +187,9 @@
 
   .ac-wrap {
     position: absolute;
+    top: 21px;
     width: 97% !important;
     z-index: 2;
-    top: 21px;
   }
 
   .docked-composer-top {

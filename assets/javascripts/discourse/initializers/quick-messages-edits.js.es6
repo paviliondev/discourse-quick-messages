@@ -1,12 +1,121 @@
-import UserMenu from 'discourse/components/user-menu';
+import { default as computed, on, observes } from 'ember-addons/ember-computed-decorators';
+import { withPluginApi } from 'discourse/lib/plugin-api';
+import SiteHeader from 'discourse/components/site-header';
+import AppController from 'discourse/controllers/application';
+import DiscourseURL from 'discourse/lib/url';
 
 export default {
   name: 'quick-messages-edits',
   initialize(){
 
+    withPluginApi('0.1', api => {
+      api.decorateWidget('header-icons:before', function(helper) {
+        var headerState = helper.widget.parentWidget.state,
+            contents = []
+        if (!helper.widget.site.mobileView) {
+          contents.push(helper.attach('header-dropdown', {
+            title: 'user.private_messages',
+            icon: 'envelope',
+            iconId: 'toggle-messages-menu',
+            active: headerState.messagesVisible,
+            action: 'toggleMessages',
+            contents() {
+              const unreadPMs = helper.widget.currentUser.get('unread_private_messages');
+              if (!!unreadPMs) {
+                return this.attach('link', {
+                  action: 'toggleMessages',
+                  className: 'badge-notification unread-private-messages',
+                  rawLabel: unreadPMs
+                });
+              }
+            }
+          }));
+        }
+        if (headerState.messagesVisible) {
+          contents.push(helper.attach('messages-menu'))
+        }
+        return contents
+      })
+
+      api.attachWidgetAction('header', 'toggleMessages', function() {
+        this.state.messagesVisible = !this.state.messagesVisible
+      })
+
+      api.attachWidgetAction('header', 'addToDocked', function(id) {
+        this.messagesClicked()
+        this.container.lookup('controller:application').send('addToDocked', id)
+      })
+
+      api.attachWidgetAction('header', 'messagesClicked', function() {
+        this.linkClickedEvent()
+        this.state.messagesVisible = false
+      })
+
+      api.attachWidgetAction('header', 'goToMessages', function() {
+        this.messagesClicked()
+        DiscourseURL.routeTo('/users/' + this.currentUser.get('username') + '/messages')
+      })
+    });
+
+    SiteHeader.reopen({
+      @observes('currentUser.unread_private_messages', 'currentUser.topic_count', 'currentUser.reply_count')
+      _messagesChanged() {
+        this.queueRerender();
+      }
+    })
+
+    AppController.reopen({
+      docked: Ember.A(),
+
+      @on('didInsertElement')
+      _setupQuickMessages() {
+        this.setMaxIndex()
+        $(window).on('resize', Ember.run.bind(this, this.setMaxIndex))
+      },
+
+      @on('willDestroyElement')
+      _teardownQuickMessages() {
+        $(window).off('resize', Ember.run.bind(this, this.setMaxIndex))
+      },
+
+      setMaxIndex: function() {
+        this.set('maxIndex', (Math.floor(($(window).width() - 390) / 340)) - 1)
+      },
+
+      actions: {
+        addToDocked(id) {
+          var id = id ? id : 'new',
+              docked = this.get('docked');
+          if (docked.contains(id)) {return}
+          var max = this.get('maxIndex');
+          if (docked.length > max) {
+            docked.insertAt(max, id)
+          } else {
+            docked.pushObject(id)
+          }
+          this.set('docked', docked)
+        },
+
+        removeDocked(index) {
+          var docked = this.get('docked');
+          docked.removeAt(index)
+          this.set('docked', docked)
+        },
+
+        onScreen(index) {
+          var docked = this.get('docked');
+          var max = this.get('maxIndex'),
+              item = docked.slice(index, index + 1);
+          docked.removeAt(index)
+          docked.insertAt(max, item[0])
+          this.set('docked', docked)
+        }
+      }
+    })
+
     // This removes messages from the notifications stream in the user menu.
 
-    UserMenu.reopen({
+    /*SiteHeaderComponent.reopen({
 
       setup: function() {
         if (!Discourse.Mobile.mobileView) {
@@ -25,7 +134,7 @@ export default {
         this.addObserver('notifications', this.removeMessages)
       }
 
-    })
+    })*/
 
   }
 }

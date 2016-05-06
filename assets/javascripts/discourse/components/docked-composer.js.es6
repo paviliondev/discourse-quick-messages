@@ -1,6 +1,6 @@
 import afterTransition from 'discourse/lib/after-transition';
-import { headerHeight } from 'discourse/views/header';
 import { default as computed, on, observes } from 'ember-addons/ember-computed-decorators';
+import { getCurrentUserMessages } from 'discourse/plugins/discourse-quick-messages/discourse/helpers/user-messages';
 import Topic from 'discourse/models/topic';
 import autosize from 'discourse/lib/autosize';
 import Composer from 'discourse/models/composer';
@@ -54,7 +54,7 @@ export default Ember.Component.extend({
           resize = () => Ember.run.scheduleOnce('afterRender', () => {this._resize()});
     $replyControl.DivResizer({
       resize,
-      maxHeight: winHeight => winHeight - headerHeight(),
+      maxHeight: $(window).height(),
       onDrag: sizePx => this.movePanels(sizePx)
     });
     const composeController = this.container.lookup('controller:composer')
@@ -147,9 +147,9 @@ export default Ember.Component.extend({
 
   @computed('topic')
   postStream() {
-    this.set('loadingStream', true)
     var topic = this.get('topic')
     if (!topic) {return null}
+    this.set('loadingStream', true)
     var postStream = topic.get('postStream');
     postStream.refresh({nearPost: topic.highest_post_number}).then(() => {
       this.set('loadingStream', false)
@@ -415,33 +415,34 @@ export default Ember.Component.extend({
   @observes('targetUsernames')
   createOrContinue() {
     var targetUsernames = this.get('targetUsernames'),
-        messages = this.get('messages'),
         currentUser = this.get('currentUser.username'),
         existingId = null,
         targetUsernames = targetUsernames.split(',');
     targetUsernames.push(currentUser)
-    messages.forEach((message, i) => {
-      var usernames = this.getUsernames(message.participants)
-      if (usernames.indexOf(currentUser) === -1) {
-        usernames.push(currentUser)
-      }
-      if ($(usernames).not(targetUsernames).length === 0 &&
-         $(targetUsernames).not(usernames).length === 0) {
-        existingId = this.get('docked').indexOf(message.id) > -1 ? 'docked' : message.id
-        return
+    getCurrentUserMessages(this).then((result) => {
+      result.forEach((message, i) => {
+        var usernames = this.getUsernames(message.participants)
+        if (usernames.indexOf(currentUser) === -1) {
+          usernames.push(currentUser)
+        }
+        if ($(usernames).not(targetUsernames).length === 0 &&
+           $(targetUsernames).not(usernames).length === 0) {
+          existingId = this.get('docked').indexOf(message.id) > -1 ? 'docked' : message.id
+          return
+        }
+      })
+      if (existingId) {
+        if (existingId === 'docked') {
+          this.set('id', 'new')
+          return
+        } else {
+          this.set('id', existingId)
+        }
+      } else {
+        this.set('id', 'new')
+        this.set('title', this.formatUsernames(targetUsernames))
       }
     })
-    if (existingId) {
-      if (existingId === 'docked') {
-        this.set('id', 'new')
-        return
-      } else {
-        this.set('id', existingId)
-      }
-    } else {
-      this.set('id', 'new')
-      this.set('title', this.formatUsernames(targetUsernames))
-    }
   },
 
   @computed('loading', 'targetUsernames', 'missingReplyCharacters')

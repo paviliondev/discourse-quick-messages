@@ -36,19 +36,15 @@
   line-height: 17px;
   display: inline-block;
   padding: 5px;
+  width: 100%;
 
   .item-contents {
-    white-space: nowrap;
     color: $primary;
-    word-break: break-all;
-    text-overflow: ellipsis;
-    overflow: hidden;
     cursor: pointer;
-    width: 100%;
   }
 
   ul {
-    display: inline-block;
+    float: left;
   }
 
   .message-avatar {
@@ -56,9 +52,12 @@
   }
 
   .message-excerpt {
-    display: inline-block;
-    vertical-align: middle;
     padding: 0 8px;
+    line-height: 25px;
+    white-space: nowrap;
+    word-break: break-all;
+    text-overflow: ellipsis;
+    overflow: hidden;
   }
 
   &:hover {

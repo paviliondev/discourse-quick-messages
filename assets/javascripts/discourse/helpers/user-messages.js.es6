@@ -13,6 +13,12 @@ export function getCurrentUserMessages(context) {
         return a > b ? -1 : a < b ? 1 : 0;
       });
       return messages
+    }).catch(() => {
+      console.log('getting sent messages failed')
+      return [];
     })
+  }).catch(() => {
+    console.log('getting inbox failed')
+    return [];
   })
 }

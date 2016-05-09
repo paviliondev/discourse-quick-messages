@@ -10,9 +10,11 @@ export default {
 
     withPluginApi('0.1', api => {
       api.decorateWidget('header-icons:before', function(helper) {
-        var headerState = helper.widget.parentWidget.state,
-            contents = []
-        if (!helper.widget.site.mobileView) {
+        const currentUser = api.getCurrentUser(),
+              headerState = helper.widget.parentWidget.state;
+        var contents = [];
+        if (!helper.widget.site.mobileView && currentUser) {
+          const unread = currentUser.get('unread_private_messages')
           contents.push(helper.attach('header-dropdown', {
             title: 'user.private_messages',
             icon: 'envelope',
@@ -20,12 +22,11 @@ export default {
             active: headerState.messagesVisible,
             action: 'toggleMessages',
             contents() {
-              const unreadPMs = helper.widget.currentUser.get('unread_private_messages');
-              if (!!unreadPMs) {
+              if (unread) {
                 return this.attach('link', {
                   action: 'toggleMessages',
                   className: 'badge-notification unread-private-messages',
-                  rawLabel: unreadPMs
+                  rawLabel: unread
                 });
               }
             }

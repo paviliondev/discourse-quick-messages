@@ -126,6 +126,11 @@
   float: right;
 }
 
+.messages-container {
+  z-index: 2;
+  position: fixed;
+}
+
 .docked-composer {
   position: fixed;
   bottom: 0;

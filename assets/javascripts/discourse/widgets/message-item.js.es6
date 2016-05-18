@@ -19,7 +19,7 @@ createWidget('message-item', {
     });
     return h('a', h('div.item-contents', [
       h('ul', h('li', participants)),
-      h('div.message-excerpt', attrs.excerpt)
+      h('div', attrs.excerpt)
     ]))
   },
 

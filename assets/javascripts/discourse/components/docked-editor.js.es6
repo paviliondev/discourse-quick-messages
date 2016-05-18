@@ -573,7 +573,7 @@ export default Ember.Component.extend({
 
     emoji() {
       showSelector({
-        appendTo: this.$().parents('.messages-menu'),
+        appendTo: this.$().parents('.messages-container'),
         container: this.container,
         onSelect: title => this._addText(this._getSelected(), `:${title}:`)
       });

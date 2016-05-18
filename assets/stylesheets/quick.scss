@@ -51,13 +51,21 @@
     margin-right: 3px;
   }
 
-  .message-excerpt {
+  div.message-excerpt {
     padding: 0 8px;
     line-height: 25px;
     white-space: nowrap;
     word-break: break-all;
     text-overflow: ellipsis;
     overflow: hidden;
+    i.fa {
+      font-size: 18px;
+      width: 18px;
+      height: 18px;
+      line-height: 18px;
+      padding: 0;
+      vertical-align: middle;
+    }
   }
 
   &:hover {
@@ -70,6 +78,7 @@
 
   .fa {
     padding-right: 6px;
+
   }
 
   .icon {

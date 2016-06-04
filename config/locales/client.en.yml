@@ -2,3 +2,5 @@ en:
   js:
     composer:
       quick_placeholder: "Type a message."
+    user:
+      no_quick_messages: "No messages yet."

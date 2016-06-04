@@ -19,17 +19,21 @@ export default createWidget('message-list', {
     if (this.loading) { return; }
     state.loading = true
     getCurrentUserMessages(this).then((result) => {
-      var messages = result.slice(0,7)
-      messages.forEach((m, i) => {
-        if (m.last_read_post_number !== m.highest_post_number) {
-          m.set('unread', true)
-        }
-        if (m.message_excerpt) {
-          var excerpt = new RawHtml({ html: `<div class="message-excerpt">${Discourse.Emoji.unescape(m.message_excerpt)}</div>` })
-          m.set('excerpt', excerpt)
-        }
-        state.messages = messages
-      })
+      if (result.length) {
+        var messages = result.slice(0,7)
+        messages.forEach((m, i) => {
+          if (m.last_read_post_number !== m.highest_post_number) {
+            m.set('unread', true)
+          }
+          if (m.message_excerpt) {
+            var excerpt = new RawHtml({ html: `<div class="message-excerpt">${Discourse.Emoji.unescape(m.message_excerpt)}</div>` })
+            m.set('excerpt', excerpt)
+          }
+          state.messages = messages
+        })
+      } else {
+        state.messages = 'empty'
+      }
       state.loading = false
       this.scheduleRerender()
     })
@@ -42,9 +46,11 @@ export default createWidget('message-list', {
     const result = [];
     if (state.loading) {
       result.push(h('div.spinner-container', h('div.spinner')));
-    } else if (state.messages) {
+    } else if (state.messages !== 'empty') {
       const messageItems = state.messages.map(m => this.attach('message-item', m));
       result.push(h('ul', [messageItems]));
+    } else {
+      result.push(h('div.no-messages', I18n.t(`user.no_quick_messages`)))
     }
     return result;
   }

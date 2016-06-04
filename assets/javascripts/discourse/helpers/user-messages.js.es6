@@ -12,6 +12,9 @@ export function getCurrentUserMessages(context) {
         b = new Date(b.last_posted_at);
         return a > b ? -1 : a < b ? 1 : 0;
       });
+      messages = messages.filter(function(m) {
+        return m.participants[0].user.username !== 'system'
+      })
       return messages
     }).catch(() => {
       console.log('getting sent messages failed')

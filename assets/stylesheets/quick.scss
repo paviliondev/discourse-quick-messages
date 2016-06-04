@@ -28,6 +28,11 @@
   min-height: 35px;
 }
 
+.no-messages {
+  text-align: center;
+  padding: 10px 0;
+}
+
 .message-item {
   padding: 0 2px;
   font-size: 14px;
@@ -366,4 +371,8 @@
   .d-editor-preview-wrapper {
     display: none;
   }
+}
+
+.user-menu .notifications .user-message {
+  display: none;
 }

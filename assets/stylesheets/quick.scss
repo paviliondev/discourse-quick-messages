@@ -121,8 +121,13 @@
   }
   .new-message {
     text-align: right;
-    .widget-link i {
-      font-size: 17px;
+    .widget-link {
+      white-space: nowrap;
+      i {
+        font-size: 17px;
+        display: initial;
+        padding: 5px;
+      }
     }
   }
 }

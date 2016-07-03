@@ -1,7 +1,7 @@
 plugins:
-  rate_limit_create_quick_message:
+  quick_message_rate_limit_create:
     default: 1
     client: true
-  min_private_message_post_length:
+  quick_message_min_post_length:
     default: 1
     client: true

@@ -11,7 +11,7 @@ after_initialize do
 
   SiteSetting.class_eval do
     def self.quick_message_post_length
-      min_private_message_post_length..max_post_length
+      quick_message_min_post_length..max_post_length
     end
   end
 
@@ -20,7 +20,7 @@ after_initialize do
       return @rate_limiter if @rate_limiter.present?
       if custom_fields["quick_message"] || archetype == Archetype.private_message
         limit_key = "create_quick_message"
-        max_setting = SiteSetting.send("rate_limit_create_quick_message")
+        max_setting = SiteSetting.send("quick_message_rate_limit_create")
       else
         limit_key = "create_#{self.class.name.underscore}"
         max_setting = if user && user.new_user? and SiteSetting.has_setting?("rate_limit_new_user_#{limit_key}")

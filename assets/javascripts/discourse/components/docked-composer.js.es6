@@ -8,14 +8,9 @@ import Composer from 'discourse/models/composer';
 const _create_serializer = {
         raw: 'reply',
         title: 'title',
-        category: 'categoryId',
         topic_id: 'topic.id',
-        is_warning: 'isWarning',
-        whisper: 'whisper',
         archetype: 'archetypeId',
         target_usernames: 'targetUsernames',
-        typing_duration_msecs: 'typingTime',
-        composer_open_duration_msecs: 'composerTime'
       }
 
 export default Ember.Component.extend({
@@ -210,35 +205,17 @@ export default Ember.Component.extend({
     var topic = this.get('topic'),
         user = this.get('currentUser'),
         store = this.container.lookup('store:main'),
-        postStream = this.get('postStream');
+        postStream = this.get('postStream'),
+        createdPost = store.createRecord('post', {
+          cooked: Discourse.Emoji.unescape(this.get('reply')),
+          yours: true
+         }),
+        postOpts = { custom_fields: { 'quick_message': true } };
 
-    // Build the post object
-    var createdPost = store.createRecord('post', {
-      imageSizes: imageSizes,
-      cooked: this.get('reply'),
-      reply_count: 0,
-      name: user.get('name'),
-      display_username: user.get('name'),
-      username: user.get('username'),
-      user_id: user.get('id'),
-      user_title: user.get('title'),
-      avatar_template: user.get('avatar_template'),
-      user_custom_fields: user.get('custom_fields'),
-      post_type: this.site.get('post_types').regular,
-      actions_summary: [],
-      moderator: user.get('moderator'),
-      admin: user.get('admin'),
-      yours: true,
-      read: true,
-      wiki: false,
-    });
-
-    this.serialize(_create_serializer, createdPost)
-
+    this.serialize(_create_serializer, postOpts)
     this.set('reply', '')
-    Ember.run.scheduleOnce('afterRender', () => {
-      this._updateAutosize()
-    })
+
+    Ember.run.scheduleOnce('afterRender', () => { this._updateAutosize() })
 
     if (postStream) {
       var state = postStream.stagePost(createdPost, user);
@@ -248,7 +225,7 @@ export default Ember.Component.extend({
     if (state === 'staged') {this.afterStreamRender()}
 
     const self = this;
-    createdPost.save().then(function(result) {
+    createdPost.save(postOpts).then(function(result) {
       if (topic) {
         user.set('reply_count', user.get('reply_count') + 1);
         postStream.commitPost(createdPost)

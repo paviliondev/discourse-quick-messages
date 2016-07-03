@@ -213,6 +213,7 @@
     top: 21px;
     width: 97% !important;
     z-index: 2;
+    overflow: visible;
   }
 
   .docked-composer-top {
@@ -221,6 +222,10 @@
     overflow-x: hidden;
     overflow-y: scroll;
     position: relative;
+    &::-webkit-scrollbar {
+      background-color: transparent;
+      border: none;
+    }
   }
 
   .docked-post-stream {

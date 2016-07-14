@@ -4,6 +4,7 @@ import { getCurrentUserMessages } from 'discourse/plugins/discourse-quick-messag
 import Topic from 'discourse/models/topic';
 import autosize from 'discourse/lib/autosize';
 import Composer from 'discourse/models/composer';
+import { emojiUnescape } from 'discourse/lib/text';
 
 const _create_serializer = {
         raw: 'reply',
@@ -207,7 +208,7 @@ export default Ember.Component.extend({
         store = this.container.lookup('store:main'),
         postStream = this.get('postStream'),
         createdPost = store.createRecord('post', {
-          cooked: Discourse.Emoji.unescape(this.get('reply')),
+          cooked: emojiUnescape(this.get('reply')),
           yours: true
          }),
         postOpts = { custom_fields: { 'quick_message': true } };

@@ -2,6 +2,7 @@ import { createWidget } from 'discourse/widgets/widget';
 import { getCurrentUserMessages } from 'discourse/plugins/discourse-quick-messages/discourse/helpers/user-messages';
 import { h } from 'virtual-dom';
 import RawHtml from 'discourse/widgets/raw-html';
+import { emojiUnescape } from 'discourse/lib/text';
 
 export default createWidget('message-list', {
   tagName: 'div.message-list',
@@ -26,7 +27,7 @@ export default createWidget('message-list', {
             m.set('unread', true)
           }
           if (m.message_excerpt) {
-            var excerpt = new RawHtml({ html: `<div class="message-excerpt">${Discourse.Emoji.unescape(m.message_excerpt)}</div>` })
+            var excerpt = new RawHtml({ html: `<div class="message-excerpt">${emojiUnescape(m.message_excerpt)}</div>` })
             m.set('excerpt', excerpt)
           }
           state.messages = messages

@@ -1,11 +1,12 @@
 import loadScript from 'discourse/lib/load-script';
 import { default as computed, on, observes } from 'ember-addons/ember-computed-decorators';
-import { showSelector } from "discourse/lib/emoji/emoji-toolbar";
+import { showSelector } from "discourse/lib/emoji/toolbar";
 import userSearch from 'discourse/lib/user-search';
 import { linkSeenMentions, fetchUnseenMentions } from 'discourse/lib/link-mentions';
-import { SEPARATOR as categoryHashtagSeparator,
-         categoryHashtagTriggerRule
-       } from 'discourse/lib/category-hashtags';
+import { SEPARATOR as categoryHashtagSeparator, categoryHashtagTriggerRule} from 'discourse/lib/category-hashtags';
+import { translations } from 'pretty-text/emoji/data';
+import { emojiSearch } from 'pretty-text/emoji';
+import { emojiUrlFor } from 'discourse/lib/text';
 
 // Our head can be a static string or a function that returns a string
 // based on input (like for numbered lists).
@@ -331,15 +332,15 @@ export default Ember.Component.extend({
             return resolve(["slight_smile", "smile", "wink", "sunny", "blush"]);
           }
 
-          if (Discourse.Emoji.translations[full]) {
-            return resolve([Discourse.Emoji.translations[full]]);
+          if (translations[full]) {
+            return resolve([translations[full]]);
           }
 
-          const options = Discourse.Emoji.search(term, {maxResults: 5});
+          const options = emojiSearch(term, {maxResults: 5});
 
           return resolve(options);
         }).then(list => list.map(code => {
-          return {code, src: Discourse.Emoji.urlFor(code)};
+          return {code, src: emojiUrlFor(code)};
         })).then(list => {
           if (list.length) {
             list.push({ label: I18n.t("composer.more_emoji") });

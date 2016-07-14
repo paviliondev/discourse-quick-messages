@@ -244,7 +244,7 @@ export default Ember.Component.extend({
       }
     }).catch(function(error) {
       console.log(error)
-      bootbox.alert(error)
+      bootbox.alert(error.jqXHR.responseJSON.errors[0])
     });
   },
 

@@ -1,5 +1,6 @@
 import { default as computed, on, observes } from 'ember-addons/ember-computed-decorators';
 import { uploadTranslate } from 'discourse/controllers/upload-selector';
+import { allowsAttachments } from 'discourse/lib/utilities';
 
 export default Ember.Component.extend({
   tagName: "div",
@@ -34,7 +35,7 @@ export default Ember.Component.extend({
 
   @computed
   uploadIcon() {
-    return Discourse.Utilities.allowsAttachments() ? "upload" : "picture-o";
+    return allowsAttachments() ? "upload" : "picture-o";
   },
 
   close: function() {

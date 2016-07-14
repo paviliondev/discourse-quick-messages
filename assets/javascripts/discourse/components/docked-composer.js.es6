@@ -5,6 +5,7 @@ import Topic from 'discourse/models/topic';
 import autosize from 'discourse/lib/autosize';
 import Composer from 'discourse/models/composer';
 import { emojiUnescape } from 'discourse/lib/text';
+import { ajax } from 'discourse/lib/ajax';
 
 const _create_serializer = {
         raw: 'reply',
@@ -174,7 +175,7 @@ export default Ember.Component.extend({
     for (var p = lastRead + 1; p <= highest; p++) {
       newTimings[p] = 3000
     }
-    Discourse.ajax('/topics/timings', {
+    ajax('/topics/timings', {
       data: {
         timings: newTimings,
         topic_time: 3000,

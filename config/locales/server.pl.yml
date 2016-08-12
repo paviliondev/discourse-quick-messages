@@ -1,0 +1,4 @@
+pl:
+  site_settings:
+    quick_message_rate_limit_create: "Po wysłaniu, użytkownicy muszą czekać (n) sekund zanim utworzą kolejną szybką wiadomość."
+    quick_message_min_post_length: "Minimalna dopuszczalna długość znaków szybkiej wiadomości."

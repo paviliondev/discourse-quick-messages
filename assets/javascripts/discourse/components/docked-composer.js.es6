@@ -1,5 +1,6 @@
 import afterTransition from 'discourse/lib/after-transition';
 import { default as computed, on, observes } from 'ember-addons/ember-computed-decorators';
+import { headerHeight } from 'discourse/components/site-header';
 import { getCurrentUserMessages } from 'discourse/plugins/discourse-quick-messages/discourse/helpers/user-messages';
 import Topic from 'discourse/models/topic';
 import autosize from 'discourse/lib/autosize';
@@ -51,7 +52,7 @@ export default Ember.Component.extend({
           resize = () => Ember.run.scheduleOnce('afterRender', () => {this._resize()});
     $replyControl.DivResizer({
       resize,
-      maxHeight: $(window).height(),
+      maxHeight: winHeight => winHeight - headerHeight(),
       onDrag: sizePx => this.movePanels(sizePx)
     });
     const composeController = this.container.lookup('controller:composer')

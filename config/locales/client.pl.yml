@@ -1,0 +1,6 @@
+pl:
+  js:
+    composer:
+      quick_placeholder: "Wpisz wiadomość."
+    user:
+      no_quick_messages: "Brak wiadomości."

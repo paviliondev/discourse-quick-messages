@@ -217,15 +217,11 @@
   }
 
   .docked-composer-top {
-    height: calc(100% - 90px);
+    height: calc(100% - 100px);
     width: 100%;
     overflow-x: hidden;
     overflow-y: scroll;
     position: relative;
-    &::-webkit-scrollbar {
-      background-color: transparent;
-      border: none;
-    }
   }
 
   .docked-post-stream {

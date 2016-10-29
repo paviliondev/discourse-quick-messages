@@ -11,7 +11,7 @@ after_initialize do
 
   SiteSetting.class_eval do
     def self.quick_message_post_length
-      quick_message_min_post_length.max_post_length
+      quick_message_min_post_length..max_post_length
     end
   end
 

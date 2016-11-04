@@ -1,8 +1,9 @@
 import { default as computed, on, observes } from 'ember-addons/ember-computed-decorators';
 import { withPluginApi } from 'discourse/lib/plugin-api';
 import SiteHeader from 'discourse/components/site-header';
-import AppController from 'discourse/controllers/application';
+import { getCurrentUserMessageCount } from 'discourse/plugins/discourse-quick-messages/discourse/helpers/user-messages';
 import DiscourseURL from 'discourse/lib/url';
+import AppController from 'discourse/controllers/application';
 
 export default {
   name: 'quick-messages-edits',
@@ -12,9 +13,10 @@ export default {
       api.decorateWidget('header-icons:before', function(helper) {
         const currentUser = api.getCurrentUser(),
               headerState = helper.widget.parentWidget.state;
-        var contents = [];
+
+        let contents = [];
         if (!helper.widget.site.mobileView && currentUser) {
-          const unread = currentUser.get('unread_private_messages')
+          const unread = currentUser.get('unread_private_user_messages')
           contents.push(helper.attach('header-dropdown', {
             title: 'user.private_messages',
             icon: 'envelope',
@@ -60,9 +62,13 @@ export default {
 
     SiteHeader.reopen({
       @observes('currentUser.unread_private_messages', 'currentUser.topic_count', 'currentUser.reply_count')
+      @on('init')
       _messagesChanged() {
-        this.queueRerender();
-      }
+        getCurrentUserMessageCount(this).then((count) => {
+          this.currentUser.set('unread_private_user_messages', count)
+          this.queueRerender();
+        })
+      },
     })
 
     AppController.reopen({

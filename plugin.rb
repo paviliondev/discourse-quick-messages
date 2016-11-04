@@ -74,7 +74,8 @@ after_initialize do
 
   require 'topic_list_item_serializer'
   class ::TopicListItemSerializer
-    attributes :message_excerpt
+    attributes :message_excerpt,
+               :subtype
 
     def message_excerpt
       if object.custom_fields["quick_message"] || object.archetype == Archetype.private_message
@@ -90,52 +91,11 @@ after_initialize do
     def include_message_excerpt?
       !!message_excerpt
     end
+
+    def subtype
+      object.subtype
+    end
   end
 
   TopicList.preloaded_custom_fields << "quick_message" if TopicList.respond_to? :preloaded_custom_fields
-
-  User.class_eval do
-
-    def unread_private_messages
-      @unread_pms ||=
-        begin
-          # perf critical, much more efficient than AR
-          sql = "
-             SELECT COUNT(*) FROM notifications n
-             LEFT JOIN topics t ON n.topic_id = t.id
-             WHERE
-              t.deleted_at IS NULL AND
-              n.notification_type = :type AND
-              n.user_id = :user_id AND
-              t.user_id <> #{Discourse.system_user.id} AND
-              NOT read"
-
-          User.exec_sql(sql, user_id: id,
-                             type:  Notification.types[:private_message]
-                             )
-              .getvalue(0,0).to_i
-        end
-    end
-
-    def unread_notifications
-      @unread_notifications ||=
-        begin
-          # perf critical, much more efficient than AR
-          sql = "
-             SELECT COUNT(*) FROM notifications n
-             LEFT JOIN topics t ON n.topic_id = t.id
-             WHERE
-              t.deleted_at IS NULL AND
-              (CASE WHEN t.user_id <> #{Discourse.system_user.id} THEN n.notification_type <> :pm ELSE TRUE END) AND
-              n.user_id = :user_id AND
-              NOT read AND
-              n.id > :seen_notification_id"
-
-          User.exec_sql(sql, user_id: id,
-                             seen_notification_id: seen_notification_id,
-                             pm:  Notification.types[:private_message])
-              .getvalue(0,0).to_i
-        end
-    end
-  end
 end

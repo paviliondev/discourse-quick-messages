@@ -21,13 +21,16 @@ export default createWidget('message-list', {
     state.loading = true
     getCurrentUserMessages(this).then((result) => {
       if (result.length) {
-        var messages = result.slice(0,7)
+        let messages = result.slice(0,7)
+
         messages.forEach((m, i) => {
           if (m.last_read_post_number !== m.highest_post_number) {
             m.set('unread', true)
           }
           if (m.message_excerpt) {
-            var excerpt = new RawHtml({ html: `<div class="message-excerpt">${emojiUnescape(m.message_excerpt)}</div>` })
+            let excerpt = new RawHtml({
+              html: `<div class="message-excerpt">${emojiUnescape(m.message_excerpt)}</div>`
+            })
             m.set('excerpt', excerpt)
           }
           state.messages = messages

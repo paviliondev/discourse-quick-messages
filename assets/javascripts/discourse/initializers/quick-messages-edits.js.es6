@@ -64,10 +64,12 @@ export default {
       @observes('currentUser.unread_private_messages', 'currentUser.topic_count', 'currentUser.reply_count')
       @on('init')
       _messagesChanged() {
-        getCurrentUserMessageCount(this).then((count) => {
-          this.currentUser.set('unread_private_user_messages', count)
-          this.queueRerender();
-        })
+        if (this.get('currentUser')) {
+          getCurrentUserMessageCount(this).then((count) => {
+            this.currentUser.set('unread_private_user_messages', count)
+            this.queueRerender();
+          })
+        }
       },
     })
 

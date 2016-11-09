@@ -24,7 +24,7 @@ export default createWidget('message-list', {
         let messages = result.slice(0,7)
 
         messages.forEach((m, i) => {
-          if (m.last_read_post_number !== m.highest_post_number) {
+          if (m.last_read_post_number < m.highest_post_number) {
             m.set('unread', true)
           }
           if (m.message_excerpt) {

@@ -65,8 +65,9 @@ export default {
       @on('init')
       _messagesChanged() {
         if (this.get('currentUser')) {
-          getCurrentUserMessageCount(this).then((count) => {
-            this.currentUser.set('unread_private_user_messages', count)
+          const docked = this.container.lookup('controller:application').get('docked');
+          getCurrentUserMessageCount(this, docked).then((count) => {
+            this.currentUser.set('unread_private_user_messages', count);
             this.queueRerender();
           })
         }

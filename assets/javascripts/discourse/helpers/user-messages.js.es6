@@ -31,13 +31,13 @@ export function getCurrentUserMessages(context) {
   })
 }
 
-export function getCurrentUserMessageCount(context) {
+export function getCurrentUserMessageCount(context, docked) {
   const store = context.container.lookup('store:main'),
         username = context.currentUser.get('username');
 
   return store.findFiltered("topicList", {filter: "topics/private-messages/" + username}).then((result) => {
     let unread = result.topics.filter((m) => {
-      return m.subtype == 'user_to_user' && m.last_read_post_number != m.highest_post_number
+      return m.subtype === 'user_to_user' && m.last_read_post_number < m.highest_post_number && docked.indexOf(m.id) === -1
     })
     return unread.length
   })

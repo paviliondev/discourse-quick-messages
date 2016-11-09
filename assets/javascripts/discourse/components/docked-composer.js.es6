@@ -70,10 +70,25 @@ export default Ember.Component.extend({
   @on('willInsertElement')
   @observes('topic')
   subscribeToTopic() {
-    var topic = this.get('topic')
+    const topic = this.get('topic')
     if (!topic) {return}
-    var postStream = topic.get('postStream'),
-        self = this;
+
+    let postStream = topic.get('postStream'),
+        self = this,
+        row = {
+          topic_id: topic.id,
+          highest_post_number: topic.highest_post_number,
+          last_read_post_number: Math.min(topic.highest_post_number, topic.last_read_post_number),
+          created_at: topic.created_at,
+          category_id: topic.category_id,
+          notification_level: topic.notification_level
+        },
+        states = {
+          't#{topic.id}': row
+        };
+
+    this.container.lookup('topic-tracking-state:main').loadStates(states);
+
     this.messageBus.subscribe("/topic/" + topic.id, data => {
       if (data.type === "created") {
         postStream.triggerNewPostInStream(data.id).then(() => this.afterStreamRender())
@@ -87,9 +102,10 @@ export default Ember.Component.extend({
   @on('didInsertElement')
   @observes('index', 'maxIndex')
   _position() {
-    var index = this.get('index'),
-        docked = this.get('docked'),
-        max = this.get('maxIndex');
+    const index = this.get('index'),
+          docked = this.get('docked'),
+          max = this.get('maxIndex');
+
     if (index > max) {
       this.set('offScreen', true)
       this.collapse()
@@ -158,24 +174,32 @@ export default Ember.Component.extend({
   @on('didInsertElement')
   @observes('loadingStream')
   afterStreamRender: function() {
-    if (this.get('loadingStream') === false) {
+    if (this.get('loadingStream') != true) {
       Ember.run.scheduleOnce('afterRender', () => {
-        this.$('.docked-composer-top').scrollTop($('.docked-post-stream').height())
-        this.dockedScreenTrack()
+        if (this.$('.docked-composer')) {
+          this.$('.docked-composer-top').scrollTop($('.docked-post-stream').height())
+          this.dockedScreenTrack()
+        }
       })
     }
   },
 
   dockedScreenTrack: function() {
-    var topic = this.get('topic'),
-        lastRead = topic.last_read_post_number,
-        highest = topic.highest_post_number;
-    if (lastRead === highest) {return}
+    let topic = this.get('topic'),
+        highest = topic.highest_post_number,
+        lastRead = Math.min(highest, topic.last_read_post_number);
+
     this.container.lookup('topic-tracking-state:main').updateSeen(topic.id, highest)
-    var newTimings = {};
-    for (var p = lastRead + 1; p <= highest; p++) {
-      newTimings[p] = 3000
+
+    let newTimings = {};
+    if (lastRead === highest) {
+      newTimings[highest] = 3000
+    } else {
+      for (let p = lastRead + 1; p <= highest; p++) {
+        newTimings[p] = 3000
+      }
     }
+
     ajax('/topics/timings', {
       data: {
         timings: newTimings,

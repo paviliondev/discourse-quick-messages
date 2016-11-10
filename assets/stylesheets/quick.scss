@@ -6,7 +6,7 @@
   }
 }
 
-.current-user .unread-private-messages {
+.current-user .unread-private-messages, .current-user .ring {
   display: none;
 }
 
@@ -41,22 +41,29 @@
   line-height: 17px;
   display: inline-block;
   padding: 5px;
-  width: 100%;
+  width: 97%;
 
   .item-contents {
     color: $primary;
     cursor: pointer;
-  }
-
-  ul {
-    float: left;
+    display: flex;
+    
+    div.badge-notification {
+      position: relative;
+      top: 4px;
+      display: initial;
+      background-color: $success;
+      height: 12px;
+      width: 8px;
+    }
   }
 
   .message-avatar {
     margin-right: 3px;
   }
 
-  div.message-excerpt {
+  .message-excerpt {
+    flex: 1;
     padding: 0 8px;
     line-height: 25px;
     white-space: nowrap;

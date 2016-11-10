@@ -36,9 +36,16 @@ export function getCurrentUserMessageCount(context, docked) {
         username = context.currentUser.get('username');
 
   return store.findFiltered("topicList", {filter: "topics/private-messages/" + username}).then((result) => {
-    let unread = result.topics.filter((m) => {
+    console.log(result.topics)
+    let unreadMessages = result.topics.filter((m) => {
       return m.subtype === 'user_to_user' && m.last_read_post_number < m.highest_post_number && docked.indexOf(m.id) === -1
     })
-    return unread.length
+
+    let unreadCount = 0
+    unreadMessages.forEach((m) => {
+      unreadCount += m.highest_post_number - m.last_read_post_number
+    })
+
+    return unreadCount
   })
 }

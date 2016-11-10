@@ -17,10 +17,18 @@ createWidget('message-item', {
       return avatarImg('small', { template: p.user.avatar_template,
                                   username: p.user.username })
     });
-    return h('a', h('div.item-contents', [
-      h('ul', h('li', participants)),
-      h('div', attrs.excerpt)
-    ]))
+
+    let contents = [
+          h('ul', h('li', participants)),
+          h('div', { className: 'message-excerpt'}, attrs.get('excerpt'))
+        ]
+
+    console.log(attrs.get('unreadCount'))
+    if (attrs.get('unread')) {
+      contents.push(h('div', { className: 'badge-notification' }, attrs.get('unreadCount')))
+    }
+
+    return h('a', h('div.item-contents', contents))
   },
 
   click(e) {

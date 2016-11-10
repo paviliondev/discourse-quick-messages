@@ -26,10 +26,11 @@ export default createWidget('message-list', {
         messages.forEach((m, i) => {
           if (m.last_read_post_number < m.highest_post_number) {
             m.set('unread', true)
+            m.set('unreadCount', m.highest_post_number - m.last_read_post_number)
           }
           if (m.message_excerpt) {
             let excerpt = new RawHtml({
-              html: `<div class="message-excerpt">${emojiUnescape(m.message_excerpt)}</div>`
+              html: `<div>${emojiUnescape(m.message_excerpt)}</div>`
             })
             m.set('excerpt', excerpt)
           }

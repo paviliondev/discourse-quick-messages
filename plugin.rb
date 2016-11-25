@@ -8,10 +8,21 @@ register_asset 'stylesheets/quick.scss', :desktop
 after_initialize do
 
   Post.register_custom_field_type('quick_message', :boolean)
+  PostRevisor.track_topic_field(:custom_fields)
 
   SiteSetting.class_eval do
-    def self.quick_message_post_length
+    def self.min_private_message_post_length
+      quick_message_min_post_length
+    end
+
+    def self.private_message_post_length
       quick_message_min_post_length..max_post_length
+    end
+  end
+
+  Validators::PostValidator.class_eval do
+    def private_message?(post)
+      post.topic.try(:private_message?) || post.custom_fields['quick_message']
     end
   end
 
@@ -37,37 +48,6 @@ after_initialize do
         if user && user.new_user_posting_on_first_day? && post_number && post_number > 1
           RateLimiter.new(user, "first-day-replies-per-day", SiteSetting.max_replies_in_first_day, 1.day.to_i)
         end
-      end
-    end
-  end
-
-  Validators::PostValidator.class_eval do
-    def stripped_length(post)
-      range = if post.custom_fields['quick_message'] || private_message?(post)
-        # private message
-        SiteSetting.quick_message_post_length
-      elsif post.is_first_post? || (post.topic.present? && post.topic.posts_count == 0)
-        # creating/editing first post
-        SiteSetting.first_post_length
-      else
-        # regular post
-        SiteSetting.post_length
-      end
-
-      Validators::StrippedLengthValidator.validate(post, :raw, post.raw, range)
-    end
-
-    def unique_post_validator(post)
-      return if SiteSetting.unique_posts_mins == 0
-      return if post.skip_unique_check
-      return if post.acting_user.staff?
-      return if post.custom_fields['quick_message'] || private_message?(post)
-
-      # If the post is empty, default to the validates_presence_of
-      return if post.raw.blank?
-
-      if post.matches_recent_post?
-        post.errors.add(:raw, I18n.t(:just_posted_that))
       end
     end
   end

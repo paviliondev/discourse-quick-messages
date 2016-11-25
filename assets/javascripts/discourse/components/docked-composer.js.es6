@@ -185,8 +185,10 @@ export default Ember.Component.extend({
   },
 
   dockedScreenTrack: function() {
-    let topic = this.get('topic'),
-        highest = topic.highest_post_number,
+    const topic = this.get('topic');
+    if (!topic) {return}
+
+    const highest = topic.highest_post_number,
         lastRead = Math.min(highest, topic.last_read_post_number);
 
     this.container.lookup('topic-tracking-state:main').updateSeen(topic.id, highest)

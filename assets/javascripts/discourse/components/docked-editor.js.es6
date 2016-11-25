@@ -8,6 +8,7 @@ import { translations } from 'pretty-text/emoji/data';
 import { emojiSearch } from 'pretty-text/emoji';
 import { emojiUrlFor } from 'discourse/lib/text';
 import { getOwner } from 'discourse-common/lib/get-owner';
+import { getRegister } from 'discourse-common/lib/get-owner';
 
 import { tinyAvatar,
          displayErrorForUpload,
@@ -125,12 +126,16 @@ export default Ember.Component.extend({
   uploadProgress: 0,
   _xhr: null,
 
+  init() {
+    this._super()
+    this.register = getRegister(this);
+  },
+
   @on('didInsertElement')
   _startUp() {
-    const register = this.get('register'),
-          $editorInput = this.$('.d-editor-input');
+    const $editorInput = this.$('.d-editor-input');
 
-    this._applyEmojiAutocomplete(register, $editorInput);
+    this._applyEmojiAutocomplete($editorInput);
     loadScript('defer/html-sanitizer-bundle').then(() => this.set('ready', true));
     const mouseTrap = Mousetrap(this.$('.d-editor-input')[0]);
 
@@ -294,10 +299,10 @@ export default Ember.Component.extend({
     return toolbar;
   },
 
-  _applyEmojiAutocomplete(register, $editorInput) {
+  _applyEmojiAutocomplete($editorInput) {
     if (!this.siteSettings.enable_emoji) { return; }
 
-    const template = register.lookup('template:emoji-selector-autocomplete.raw');
+    const template = this.register.lookup('template:emoji-selector-autocomplete.raw');
     const self = this;
 
     $editorInput.autocomplete({
@@ -313,7 +318,7 @@ export default Ember.Component.extend({
         } else {
           showSelector({
             appendTo: self.$(),
-            register,
+            register: this.register,
             onSelect: title => {
               // Remove the previously type characters when a new emoji is selected from the selector.
               let selected = self._getSelected();

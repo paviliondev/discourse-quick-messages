@@ -7,6 +7,7 @@ import { SEPARATOR as categoryHashtagSeparator, categoryHashtagTriggerRule} from
 import { translations } from 'pretty-text/emoji/data';
 import { emojiSearch } from 'pretty-text/emoji';
 import { emojiUrlFor } from 'discourse/lib/text';
+import { getOwner } from 'discourse-common/lib/get-owner';
 
 import { tinyAvatar,
          displayErrorForUpload,
@@ -126,10 +127,10 @@ export default Ember.Component.extend({
 
   @on('didInsertElement')
   _startUp() {
-    const container = this.get('container'),
+    const register = this.get('register'),
           $editorInput = this.$('.d-editor-input');
 
-    this._applyEmojiAutocomplete(container, $editorInput);
+    this._applyEmojiAutocomplete(register, $editorInput);
     loadScript('defer/html-sanitizer-bundle').then(() => this.set('ready', true));
     const mouseTrap = Mousetrap(this.$('.d-editor-input')[0]);
 
@@ -143,7 +144,7 @@ export default Ember.Component.extend({
     });
 
     const topicId = this.get('topic.id');
-    const template = this.container.lookup('template:user-selector-autocomplete.raw');
+    const template = getOwner(this).lookup('template:user-selector-autocomplete.raw');
     const $input = this.$('.d-editor-input');
     $input.autocomplete({
       template,
@@ -293,10 +294,10 @@ export default Ember.Component.extend({
     return toolbar;
   },
 
-  _applyEmojiAutocomplete(container, $editorInput) {
+  _applyEmojiAutocomplete(register, $editorInput) {
     if (!this.siteSettings.enable_emoji) { return; }
 
-    const template = container.lookup('template:emoji-selector-autocomplete.raw');
+    const template = register.lookup('template:emoji-selector-autocomplete.raw');
     const self = this;
 
     $editorInput.autocomplete({
@@ -312,7 +313,7 @@ export default Ember.Component.extend({
         } else {
           showSelector({
             appendTo: self.$(),
-            container,
+            register,
             onSelect: title => {
               // Remove the previously type characters when a new emoji is selected from the selector.
               let selected = self._getSelected();
@@ -580,7 +581,7 @@ export default Ember.Component.extend({
     emoji() {
       showSelector({
         appendTo: this.$().parents('.messages-container'),
-        container: this.container,
+        register: this.register,
         onSelect: title => this._addText(this._getSelected(), `:${title}:`)
       });
     }

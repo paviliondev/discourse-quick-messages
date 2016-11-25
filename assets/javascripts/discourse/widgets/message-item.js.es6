@@ -23,7 +23,6 @@ createWidget('message-item', {
           h('div', { className: 'message-excerpt'}, attrs.get('excerpt'))
         ]
 
-    console.log(attrs.get('unreadCount'))
     if (attrs.get('unread')) {
       contents.push(h('div', { className: 'badge-notification' }, attrs.get('unreadCount')))
     }

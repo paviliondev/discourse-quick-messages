@@ -47,7 +47,7 @@
     color: $primary;
     cursor: pointer;
     display: flex;
-    
+
     div.badge-notification {
       position: relative;
       top: 4px;
@@ -78,6 +78,10 @@
       padding: 0;
       vertical-align: middle;
     }
+  }
+
+  .new-count {
+    line-height: 25px;
   }
 
   &:hover {

@@ -1,6 +1,5 @@
 import { default as computed, on, observes } from 'ember-addons/ember-computed-decorators';
 import { withPluginApi } from 'discourse/lib/plugin-api';
-import SiteHeader from 'discourse/components/site-header';
 import { getCurrentUserMessageCount } from 'discourse/plugins/discourse-quick-messages/discourse/helpers/user-messages';
 import DiscourseURL from 'discourse/lib/url';
 import AppController from 'discourse/controllers/application';
@@ -16,7 +15,7 @@ export default {
 
         let contents = [];
         if (!helper.widget.site.mobileView && currentUser) {
-          const unread = currentUser.get('unread_private_user_messages')
+          const unread = currentUser.get('unread_private_messages')
           contents.push(helper.attach('header-dropdown', {
             title: 'user.private_messages',
             icon: 'envelope',
@@ -59,20 +58,6 @@ export default {
         DiscourseURL.routeTo('/users/' + this.currentUser.get('username') + '/messages')
       })
     });
-
-    SiteHeader.reopen({
-      @observes('currentUser.unread_private_messages', 'currentUser.topic_count', 'currentUser.reply_count')
-      @on('init')
-      _messagesChanged() {
-        if (this.get('currentUser')) {
-          const docked = this.container.lookup('controller:application').get('docked');
-          getCurrentUserMessageCount(this, docked).then((count) => {
-            this.currentUser.set('unread_private_user_messages', count);
-            this.queueRerender();
-          })
-        }
-      },
-    })
 
     AppController.reopen({
       docked: Ember.A(),

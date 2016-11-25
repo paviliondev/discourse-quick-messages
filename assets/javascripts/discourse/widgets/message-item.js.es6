@@ -20,11 +20,11 @@ createWidget('message-item', {
 
     let contents = [
           h('ul', h('li', participants)),
-          h('div', { className: 'message-excerpt'}, attrs.get('excerpt'))
+          attrs.get('excerpt')
         ]
 
     if (attrs.get('unread')) {
-      contents.push(h('div', { className: 'badge-notification' }, attrs.get('unreadCount')))
+      contents.push(h('div', {className: 'new-count'}, `${attrs.get('newCount')} ${I18n.t(`new_item`)}` ))
     }
 
     return h('a', h('div.item-contents', contents))

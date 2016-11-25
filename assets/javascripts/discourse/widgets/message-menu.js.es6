@@ -8,7 +8,7 @@ export default createWidget('messages-menu', {
       this.attach('message-list'),
       h('div.menu-footer', [
         h('hr'),
-        h('ul.menu-links.columned', [
+        h('ul.menu-links', [
           h('li.all-messages', this.attach('link',
             {label: 'show_more',
              action: 'goToMessages'})),

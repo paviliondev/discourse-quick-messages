@@ -125,15 +125,20 @@
 
 .menu-links {
   .all-messages {
+    float: left;
     text-align: left;
     a {
       line-height: 32px;
     }
   }
   .new-message {
+    float: right;
     text-align: right;
     .widget-link {
       white-space: nowrap;
+      word-break: break-all;
+      text-overflow: ellipsis;
+      overflow: hidden;
       i {
         font-size: 17px;
         display: initial;

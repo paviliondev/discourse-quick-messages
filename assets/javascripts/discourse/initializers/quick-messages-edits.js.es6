@@ -3,6 +3,7 @@ import { withPluginApi } from 'discourse/lib/plugin-api';
 import { getCurrentUserMessageCount } from 'discourse/plugins/discourse-quick-messages/discourse/helpers/user-messages';
 import DiscourseURL from 'discourse/lib/url';
 import AppController from 'discourse/controllers/application';
+import { getOwner } from 'discourse-common/lib/get-owner';
 
 export default {
   name: 'quick-messages-edits',
@@ -45,7 +46,7 @@ export default {
 
       api.attachWidgetAction('header', 'addToDocked', function(id) {
         this.messagesClicked()
-        this.container.lookup('controller:application').send('addToDocked', id)
+        getOwner(this).lookup('controller:application').send('addToDocked', id)
       })
 
       api.attachWidgetAction('header', 'messagesClicked', function() {
@@ -64,17 +65,17 @@ export default {
 
       @on('didInsertElement')
       _setupQuickMessages() {
-        this.setMaxIndex()
-        $(window).on('resize', Ember.run.bind(this, this.setMaxIndex))
+        $(window).on('resize', Ember.run.bind(this, this.maxIndex))
       },
 
       @on('willDestroyElement')
       _teardownQuickMessages() {
-        $(window).off('resize', Ember.run.bind(this, this.setMaxIndex))
+        $(window).off('resize', Ember.run.bind(this, this.maxIndex))
       },
 
-      setMaxIndex: function() {
-        this.set('maxIndex', (Math.floor(($(window).width() - 390) / 340)) - 1)
+      @computed()
+      maxIndex: function() {
+        return Math.floor(($(window).width() - 390) / 340) - 1
       },
 
       actions: {
@@ -97,7 +98,7 @@ export default {
           this.set('docked', docked)
         },
 
-        onScreen(index) {
+        moveOnScreen(index) {
           var docked = this.get('docked');
           var max = this.get('maxIndex'),
               item = docked.slice(index, index + 1);

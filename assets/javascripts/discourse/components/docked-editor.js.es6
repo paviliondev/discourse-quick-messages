@@ -36,7 +36,6 @@ const _createCallbacks = [];
 class Toolbar {
 
   constructor(site) {
-    const self = this
     this.shortcuts = {};
 
     this.groups = [
@@ -62,7 +61,7 @@ class Toolbar {
   }
 
   addButton(button) {
-    const g = this.groups.findProperty('group', button.group);
+    const g = this.groups.findBy('group', button.group);
     if (!g) {
       throw `Couldn't find toolbar group ${button.group}`;
     }
@@ -140,7 +139,7 @@ export default Ember.Component.extend({
     const mouseTrap = Mousetrap(this.$('.d-editor-input')[0]);
 
     const shortcuts = this.get('toolbar.shortcuts');
-    Ember.keys(shortcuts).forEach(sc => {
+    Object.keys(shortcuts).forEach(sc => {
       const button = shortcuts[sc];
       mouseTrap.bind(sc, () => {
         this.send(button.action, button);

@@ -7,6 +7,7 @@ import autosize from 'discourse/lib/autosize';
 import Composer from 'discourse/models/composer';
 import { emojiUnescape } from 'discourse/lib/text';
 import { ajax } from 'discourse/lib/ajax';
+import { getOwner } from 'discourse-common/lib/get-owner';
 
 const _create_serializer = {
         raw: 'reply',
@@ -24,13 +25,83 @@ export default Ember.Component.extend({
   disableSubmit: Ember.computed.or("loadingStream", "isUploading"),
   composerOpen: Ember.computed.equal('composeState', 'open'),
   composerMinimized: Ember.computed.equal('composeState', 'minimized'),
+  postStream: Ember.computed.alias('topic.postStream'),
   loadingStream: false,
   composeState: null,
   targetUsernames: null,
   firstPost: false,
   archetypeId: 'private_message',
-  offScreen: false,
   reply: '',
+
+  @on('init')
+  @observes('topic')
+  subscribeToTopic() {
+    const topic = this.get('topic')
+    if (!topic) {return}
+
+    const postStream = topic.get('postStream'),
+          self = this;
+
+    let row = {
+          topic_id: topic.id,
+          highest_post_number: topic.highest_post_number,
+          last_read_post_number: Math.min(topic.highest_post_number, topic.last_read_post_number),
+          created_at: topic.created_at,
+          category_id: topic.category_id,
+          notification_level: topic.notification_level
+        },
+        states = {
+          't#{topic.id}': row
+        };
+
+    getOwner(this).lookup('topic-tracking-state:main').loadStates(states);
+
+    this.messageBus.subscribe("/topic/" + topic.id, data => {
+      if (data.type === "created") {
+        postStream.triggerNewPostInStream(data.id).then(() => this.afterStreamRender())
+        if (this.get('currentUser.id') !== data.user_id) {
+          Discourse.notifyBackgroundCountIncrement();
+        }
+      }
+    })
+  },
+
+  @computed('id')
+  topic() {
+    const id = this.get('id');
+    if (id === 'new') {
+      this.set('firstPost', true)
+      return false
+    }
+    const store = getOwner(this).lookup('store:main')
+    return store.createRecord('topic', {id: id})
+  },
+
+  @observes('postStream')
+  @on('init')
+  refreshStream() {
+    const postStream = this.get('postStream');
+    if (postStream) {
+      this.set('loadingStream', true)
+      const topic = this.get('topic');
+      postStream.refresh({ nearPost: topic.highest_post_number }).then(() => {
+        this.set('loadingStream', false)
+      })
+    }
+  },
+
+  @on('init')
+  @observes('loadingStream')
+  afterStreamRender: function() {
+    if (this.get('loadingStream') != true) {
+      Ember.run.scheduleOnce('afterRender', () => {
+        if (this.$('.docked-composer')) {
+          this.$('.docked-composer-top').scrollTop($('.docked-post-stream').height())
+          this.dockedScreenTrack()
+        }
+      })
+    }
+  },
 
   @on('didInsertElement')
   _setup() {
@@ -55,79 +126,41 @@ export default Ember.Component.extend({
       maxHeight: winHeight => winHeight - headerHeight(),
       onDrag: sizePx => this.movePanels(sizePx)
     });
-    const composeController = this.container.lookup('controller:composer')
-    this.set('composeController', composeController)
-  },
-
-  @on('didInsertElement')
-  @observes('composeController.model.composeState')
-  _hideWhenMainComposerIsOpen(){
-    if (this.get('composeController.model.composeState') === Composer.OPEN) {
-      this.collapse()
-    }
-  },
-
-  @on('willInsertElement')
-  @observes('topic')
-  subscribeToTopic() {
-    const topic = this.get('topic')
-    if (!topic) {return}
-
-    let postStream = topic.get('postStream'),
-        self = this,
-        row = {
-          topic_id: topic.id,
-          highest_post_number: topic.highest_post_number,
-          last_read_post_number: Math.min(topic.highest_post_number, topic.last_read_post_number),
-          created_at: topic.created_at,
-          category_id: topic.category_id,
-          notification_level: topic.notification_level
-        },
-        states = {
-          't#{topic.id}': row
-        };
-
-    this.container.lookup('topic-tracking-state:main').loadStates(states);
-
-    this.messageBus.subscribe("/topic/" + topic.id, data => {
-      if (data.type === "created") {
-        postStream.triggerNewPostInStream(data.id).then(() => this.afterStreamRender())
-        if (this.get('currentUser.id') !== data.user_id) {
-          Discourse.notifyBackgroundCountIncrement();
-        }
-      }
-    })
-  },
-
-  @on('didInsertElement')
-  @observes('index', 'maxIndex')
-  _position() {
-    const index = this.get('index'),
-          docked = this.get('docked'),
-          max = this.get('maxIndex');
-
-    if (index > max) {
-      this.set('offScreen', true)
-      this.collapse()
-      var extra = max + 1,
-          right = 340 * extra + 100,
-          stackIndex = index - extra,
-          bottom = stackIndex * 40 + 'px';
-    } else {
-      var right = 340 * index + 100,
-          bottom = 0;
-      this.set('composeState', 'open')
-    }
-    this.$().css({
-      'right': right,
-      'bottom': bottom,
-    })
+    this.appEvents.on('composer:opened', this, this.collapse);
   },
 
   @on('willDestroyElement')
   _tearDown() {
     autosize.destroy(this.$('.d-editor-input'));
     this.$().unbind("transitionend webkitTransitionEnd oTransitionEnd MSTransitionEnd")
+  },
+
+  @computed('index', 'maxIndex')
+  onScreen() {
+    return this.get('index') <= this.get('maxIndex')
+  },
+
+  @observes('onScreen')
+  @on('didInsertElement')
+  _arrangeComposers() {
+    Ember.run.scheduleOnce('afterRender', () => {
+      const index = this.get('index');
+      if (this.get('onScreen')) {
+        var right = 340 * index + 100,
+            bottom = 0;
+        this.set('composeState', 'open')
+      } else {
+        this.collapse()
+        var extra = max + 1,
+            right = 340 * extra + 100,
+            stackIndex = index - extra,
+            bottom = stackIndex * 40 + 'px';
+      }
+      this.$().css({
+        'right': right,
+        'bottom': bottom,
+      })
+    })
   },
 
   @observes('reply')
@@ -140,48 +173,12 @@ export default Ember.Component.extend({
 
   @observes('composeState')
   _resize() {
-    const h = this.$().height() || 0;
+    const h = this.$() ? this.$().height() : 0;
     this.movePanels(h + "px");
   },
 
   movePanels: function(sizePx) {
     $('#main-outlet').css('padding-bottom', sizePx);
-  },
-
-  @computed('id')
-  topic() {
-    var id = this.get('id');
-    if (id === 'new') {
-      this.set('firstPost', true)
-      return false
-    }
-    const store = this.container.lookup('store:main')
-    return store.createRecord('topic', {id: id})
-  },
-
-  @computed('topic')
-  postStream() {
-    var topic = this.get('topic')
-    if (!topic) {return null}
-    this.set('loadingStream', true)
-    var postStream = topic.get('postStream');
-    postStream.refresh({nearPost: topic.highest_post_number}).then(() => {
-      this.set('loadingStream', false)
-    })
-    return postStream
-  },
-
-  @on('didInsertElement')
-  @observes('loadingStream')
-  afterStreamRender: function() {
-    if (this.get('loadingStream') != true) {
-      Ember.run.scheduleOnce('afterRender', () => {
-        if (this.$('.docked-composer')) {
-          this.$('.docked-composer-top').scrollTop($('.docked-post-stream').height())
-          this.dockedScreenTrack()
-        }
-      })
-    }
   },
 
   dockedScreenTrack: function() {
@@ -191,7 +188,7 @@ export default Ember.Component.extend({
     const highest = topic.highest_post_number,
         lastRead = Math.min(highest, topic.last_read_post_number);
 
-    this.container.lookup('topic-tracking-state:main').updateSeen(topic.id, highest)
+    getOwner(this).lookup('topic-tracking-state:main').updateSeen(topic.id, highest)
 
     let newTimings = {};
     if (lastRead === highest) {
@@ -233,7 +230,7 @@ export default Ember.Component.extend({
 
     var topic = this.get('topic'),
         user = this.get('currentUser'),
-        store = this.container.lookup('store:main'),
+        store = getOwner(this).lookup('store:main'),
         postStream = this.get('postStream'),
         createdPost = store.createRecord('post', {
           cooked: emojiUnescape(this.get('reply')),
@@ -383,8 +380,8 @@ export default Ember.Component.extend({
         }
         break;
       case 'minimized':
-        if (this.get('offScreen')) {
-          this.sendAction('onScreen', this.get('index'))
+        if (!this.get('onScreen')) {
+          this.sendAction('moveOnScreen', this.get('index'))
         }
         this.set('composeState', 'open');
         break;

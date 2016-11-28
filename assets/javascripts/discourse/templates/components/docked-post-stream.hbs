@@ -1,7 +1,7 @@
 {{#if loadingStream}}
   {{loading-spinner size="small"}}
 {{else}}
-  {{#each post in posts}}
+  {{#each posts as |post|}}
     {{docked-post post=post}}
   {{/each}}
 {{/if}}

@@ -1,5 +1,7 @@
+import { getOwner } from 'discourse-common/lib/get-owner';
+
 export function getCurrentUserMessages(context) {
-  const store = context.container.lookup('store:main'),
+  const store = getOwner(context).lookup('store:main'),
         username = context.currentUser.get('username');
 
   return store.findFiltered("topicList", {filter: "topics/private-messages/" + username}).then((result) => {

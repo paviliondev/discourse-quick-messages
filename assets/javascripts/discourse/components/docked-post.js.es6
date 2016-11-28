@@ -2,6 +2,10 @@ export default Ember.Component.extend({
   tagName: "div",
   classNames: 'docked-post',
 
+  yours: function() {
+    return this.get('post.yours') ? 'yours' : '';
+  }.property(),
+
   test: function() {
     var imgs = this.$('img')
     if (imgs.length) {

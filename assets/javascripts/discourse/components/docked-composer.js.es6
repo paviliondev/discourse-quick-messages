@@ -145,6 +145,7 @@ export default Ember.Component.extend({
   _arrangeComposers() {
     Ember.run.scheduleOnce('afterRender', () => {
       const index = this.get('index');
+      const max = this.get('maxIndex');
       if (this.get('onScreen')) {
         var right = 340 * index + 100,
             bottom = 0;

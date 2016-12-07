@@ -165,7 +165,7 @@ export default Ember.Component.extend({
   @on('willDestroyElement')
   _shutDown() {
     const mouseTrap = this._mouseTrap;
-    Ember.keys(this.get('toolbar.shortcuts')).forEach(sc => mouseTrap.unbind(sc));
+    Object.keys(this.get('toolbar.shortcuts')).forEach(sc => mouseTrap.unbind(sc));
   },
 
   @computed

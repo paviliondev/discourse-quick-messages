@@ -1,4 +1,5 @@
 en:
   site_settings:
+    quick_message_enabled: "Enable Quick Messages."
     quick_message_rate_limit_create: "After posting, users must wait (n) seconds before creating another quick message."
     quick_message_min_post_length: "Minimum allowed quick message length in characters."

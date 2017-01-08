@@ -1,4 +1,7 @@
 plugins:
+  quick_message_enabled:
+    default: true
+    client: true
   quick_message_rate_limit_create:
     default: 1
     client: true

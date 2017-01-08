@@ -82,7 +82,7 @@ export default {
         addToDocked(id) {
           var id = id ? id : 'new',
               docked = this.get('docked');
-          if (docked.contains(id)) {return}
+          if (docked.includes(id)) {return}
           var max = this.get('maxIndex');
           if (docked.length > max) {
             docked.insertAt(max, id)

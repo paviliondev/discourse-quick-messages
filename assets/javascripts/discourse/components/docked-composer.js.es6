@@ -336,14 +336,6 @@ export default Ember.Component.extend({
     }
   },
 
-  shrink: function() {
-    if (this.get('reply')) {
-      this.collapse();
-    } else {
-      this.close();
-    }
-  },
-
   collapse: function() {
     this.set('composeState', 'minimized')
   },
@@ -374,11 +366,7 @@ export default Ember.Component.extend({
     this.closeAutocomplete();
     switch (this.get('composeState')) {
       case 'open':
-        if (Ember.isEmpty(this.get('reply'))) {
-          this.cancel()
-        } else {
-          this.shrink();
-        }
+        this.collapse();
         break;
       case 'minimized':
         if (!this.get('onScreen')) {

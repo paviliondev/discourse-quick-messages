@@ -1,0 +1,6 @@
+fi:
+  js:
+    composer:
+      quick_placeholder: "Kirjoita viesti."
+    user:
+      no_quick_messages: "Ei viestejä toistaiseksi."

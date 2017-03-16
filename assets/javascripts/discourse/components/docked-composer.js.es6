@@ -77,28 +77,20 @@ export default Ember.Component.extend({
     return store.createRecord('topic', {id: id})
   },
 
-  @observes('postStream')
   @on('init')
-  refreshStream() {
+  @observes('postStream')
+  afterStreamRender() {
     const postStream = this.get('postStream');
     if (postStream) {
       this.set('loadingStream', true)
-      const topic = this.get('topic');
-      postStream.refresh({ nearPost: topic.highest_post_number }).then(() => {
+      postStream.refresh({ nearPost: this.get("topic.highest_post_number") }).then(() => {
         this.set('loadingStream', false)
-      })
-    }
-  },
-
-  @on('init')
-  @observes('loadingStream')
-  afterStreamRender: function() {
-    if (this.get('loadingStream') != true) {
-      Ember.run.scheduleOnce('afterRender', () => {
-        if (this.$('.docked-composer')) {
-          this.$('.docked-composer-top').scrollTop($('.docked-post-stream').height())
-          this.dockedScreenTrack()
-        }
+        Ember.run.scheduleOnce('afterRender', () => {
+          if (this.$('.docked-composer')) {
+            this.$('.docked-composer-top').scrollTop($('.docked-post-stream').height())
+            this.dockedScreenTrack()
+          }
+        })
       })
     }
   },
@@ -187,7 +179,7 @@ export default Ember.Component.extend({
     if (!topic) {return}
 
     const highest = topic.highest_post_number,
-        lastRead = Math.min(highest, topic.last_read_post_number);
+          lastRead = Math.min(highest, topic.last_read_post_number);
 
     getOwner(this).lookup('topic-tracking-state:main').updateSeen(topic.id, highest)
 

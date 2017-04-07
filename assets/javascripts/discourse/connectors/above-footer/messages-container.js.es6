@@ -1,6 +1,8 @@
+import { getOwner } from 'discourse-common/lib/get-owner';
+
 export default {
   setupComponent(args, component) {
-    const appController = this.container.lookup('controller:application');
+    const appController = getOwner(this).lookup('controller:application');
     const docked = appController.get('docked');
     const maxIndex = appController.get('maxIndex');
     component.setProperties({
@@ -11,7 +13,7 @@ export default {
 
   actions: {
     removeDocked(index) {
-      const appController = this.container.lookup('controller:application');
+      const appController = getOwner(this).lookup('controller:application');
       appController.send('removeDocked', index);
     }
   }

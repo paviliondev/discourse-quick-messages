@@ -74,14 +74,14 @@ export default Ember.Component.extend({
       return false
     }
     const store = getOwner(this).lookup('store:main')
-    return store.createRecord('topic', {id: id})
+    return store.createRecord('topic', { id })
   },
 
   @on('init')
   @observes('postStream')
   afterStreamRender() {
     const postStream = this.get('postStream');
-    if (postStream) {
+    if (postStream && this._state !== 'destroying') {
       this.set('loadingStream', true)
       postStream.refresh({ nearPost: this.get("topic.highest_post_number") }).then(() => {
         this.set('loadingStream', false)

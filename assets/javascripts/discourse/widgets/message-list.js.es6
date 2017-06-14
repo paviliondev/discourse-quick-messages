@@ -9,7 +9,10 @@ export default createWidget('message-list', {
   buildKey: () => 'message-list',
 
   defaultState() {
-    return { notifications: [], loading: false };
+    return {
+      messages: null,
+      loading: false
+    };
   },
 
   messagesChanged() {
@@ -18,29 +21,29 @@ export default createWidget('message-list', {
 
   refreshMessages(state) {
     if (this.loading) { return; }
-    state.loading = true
+    state.loading = true;
     getCurrentUserMessages(this).then((result) => {
       if (result.length) {
-        let messages = result.slice(0,7)
+        let messages = result.slice(0,7);
 
         messages.forEach((m, i) => {
           if (m.last_read_post_number < m.highest_post_number) {
-            m.set('unread', true)
-            m.set('newCount', m.highest_post_number - m.last_read_post_number)
+            m.set('unread', true);
+            m.set('newCount', m.highest_post_number - m.last_read_post_number);
           }
           if (m.message_excerpt) {
             let excerpt = new RawHtml({
-              html: `<div class='message-excerpt'>${emojiUnescape(m.message_excerpt)}</div>`
+              html: `<div class='message-excerpt'>${emojiUnescape(m.message_excerpt)}</div>`;
             })
-            m.set('excerpt', excerpt)
+            m.set('excerpt', excerpt);
           }
-          state.messages = messages
+          state.messages = messages;
         })
       } else {
-        state.messages = 'empty'
+        state.messages = 'empty';
       }
-      state.loading = false
-      this.scheduleRerender()
+      state.loading = false;
+      this.scheduleRerender();
     })
   },
 
@@ -55,7 +58,7 @@ export default createWidget('message-list', {
       const messageItems = state.messages.map(m => this.attach('message-item', m));
       result.push(h('ul', [messageItems]));
     } else {
-      result.push(h('div.no-messages', I18n.t(`user.no_quick_messages`)))
+      result.push(h('div.no-messages', I18n.t(`user.no_quick_messages`)));
     }
     return result;
   }

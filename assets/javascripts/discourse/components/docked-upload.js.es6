@@ -33,13 +33,13 @@ export default Ember.Component.extend({
     }
   },
 
-  @computed
+  @computed()
   uploadIcon() {
     return allowsAttachments() ? "upload" : "picture-o";
   },
 
-  close: function() {
-    this.set('visible', false)
+  close() {
+    this.set('visible', false);
   },
 
   actions: {
@@ -48,14 +48,14 @@ export default Ember.Component.extend({
         this.$().parents('.docked-editor').fileupload('add', { fileInput: $('#filename-input') });
       } else {
         const imageUrl = this.get('imageUrl') || '';
-        const imageLink = imageUrl.substr(imageUrl.lastIndexOf('/') + 1)
-        this.sendAction('addText', `![${imageLink}](${imageUrl})`)
+        const imageLink = imageUrl.substr(imageUrl.lastIndexOf('/') + 1);
+        this.sendAction('addText', `![${imageLink}](${imageUrl})`);
       }
-      this.close()
+      this.close();
     },
 
     closeModal() {
-      this.close()
+      this.close();
     },
 
     useLocal() {

@@ -1,5 +1,6 @@
 #toggle-messages-menu {
   position: relative;
+
   .unread-private-messages {
     top: -2px;
     right: -2px;
@@ -12,12 +13,13 @@
 
 .messages-menu .panel-body-contents {
   overflow: hidden;
+
   .spinner {
     position: absolute;
     left: 150px;
-    top: 5px;
-    width: 20px;
-    height: 20px;
+    top: 8px;
+    width: 15px;
+    height: 15px;
     border-width: 2px;
     margin: 0 auto;
   }
@@ -70,6 +72,7 @@
     word-break: break-all;
     text-overflow: ellipsis;
     overflow: hidden;
+
     i.fa {
       font-size: 18px;
       width: 18px;
@@ -106,6 +109,7 @@
       &:before {
         content: "\f0e0";
       }
+
       color: $danger;
     }
   }
@@ -127,18 +131,22 @@
   .all-messages {
     float: left;
     text-align: left;
+
     a {
       line-height: 32px;
     }
   }
+
   .new-message {
     float: right;
     text-align: right;
+
     .widget-link {
       white-space: nowrap;
       word-break: break-all;
       text-overflow: ellipsis;
       overflow: hidden;
+
       i {
         font-size: 17px;
         display: initial;
@@ -168,13 +176,16 @@
 
   &.minimized {
     height: auto;
+
     .docked-post-stream,
     .grippie  {
       display: none;
     }
+
     .docked-composer-top {
       height: 40px;
     }
+
     .docked-draft-wrapper {
       position: absolute;
       width: 100%;
@@ -280,26 +291,31 @@
 
   .docked-post-stream {
     padding: 10px;
+
     .spinner {
       position: absolute;
       top: 47%;
       left: 141px;
     }
+
     .docked-post {
       width: 100%;
       display: inline-block;
       padding: 5px 0;
       color: #333;
+
       .docked-post-user {
         display: inline-block;
         vertical-align: top;
         width: 11%;
       }
+
       .docked-post-content {
         display: inline-block;
         word-wrap: break-word;
         vertical-align: middle;
         max-width: 80%;
+
         &.yours {
           float: right;
           background-color: dark-light-diff($primary, $secondary, 88%, -55%);
@@ -307,9 +323,11 @@
           border-radius: 6px;
           display: block;
         }
+
         p {
           margin: 0;
         }
+
         img {
           max-width: 100%;
           height: auto;
@@ -321,6 +339,7 @@
   .d-editor-textarea-wrapper {
     padding: 0;
     width: 100%;
+
     .d-editor-input {
       height: 100%;
       border: none;
@@ -343,32 +362,40 @@
     opacity: 0.9;
     z-index: 1000;
     color: white;
+
     .modal-body {
       opacity: 1;
     }
+
     .radios {
       height: 30px;
       padding: 5px 0;
       line-height: 30px;
+
       > * {
         display: inline-block;
       }
+
       #filename-input {
         display: inline-block;
         width: 85px;
       }
+
       .radio {
         padding-left: 5px;
       }
+
       .inputs {
         input[type="text"] {
           width: 150px;
         }
       }
     }
+
     .hint {
       font-size: 0.929em;
     }
+
     .modal-footer {
       border: none;
       padding: 10px 15px;
@@ -391,6 +418,7 @@
     bottom: 8px;
     right: 12px;
     font-size: 12px;
+
     .spinner {
       width: 5px;
       height: 5px;
@@ -412,16 +440,20 @@
     top: initial;
     width: auto;
     border: none;
+
     button {
       display: none;
       margin-right: 2px;
+
       &.upload, &.emoji {
         display: block;
       }
+      
       i {
         color: #333;
       }
     }
+
     .d-editor-spacer {
       display: none;
     }

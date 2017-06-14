@@ -12,12 +12,12 @@ export default {
     if (Discourse.SiteSettings.quick_message_enabled) {
       withPluginApi('0.1', api => {
         api.decorateWidget('header-icons:before', function(helper) {
-          const currentUser = api.getCurrentUser(),
-                headerState = helper.widget.parentWidget.state;
+          const currentUser = api.getCurrentUser();
+          const headerState = helper.widget.parentWidget.state;
 
           let contents = [];
           if (!helper.widget.site.mobileView && currentUser) {
-            const unread = currentUser.get('unread_private_messages')
+            const unread = currentUser.get('unread_private_messages');
             contents.push(helper.attach('header-dropdown', {
               title: 'user.private_messages',
               icon: 'envelope',

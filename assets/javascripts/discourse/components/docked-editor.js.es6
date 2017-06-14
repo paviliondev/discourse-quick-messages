@@ -4,10 +4,10 @@ import { showSelector } from "discourse/lib/emoji/toolbar";
 import userSearch from 'discourse/lib/user-search';
 import { linkSeenMentions, fetchUnseenMentions } from 'discourse/lib/link-mentions';
 import { SEPARATOR as categoryHashtagSeparator, categoryHashtagTriggerRule} from 'discourse/lib/category-hashtags';
+import { findRawTemplate } from 'discourse/lib/raw-templates';
 import { translations } from 'pretty-text/emoji/data';
 import { emojiSearch } from 'pretty-text/emoji';
 import { emojiUrlFor } from 'discourse/lib/text';
-import { getOwner } from 'discourse-common/lib/get-owner';
 import { getRegister } from 'discourse-common/lib/get-owner';
 
 import { tinyAvatar,
@@ -133,33 +133,12 @@ export default Ember.Component.extend({
   @on('didInsertElement')
   _startUp() {
     const $editorInput = this.$('.d-editor-input');
-
     this._applyEmojiAutocomplete($editorInput);
-    loadScript('defer/html-sanitizer-bundle').then(() => this.set('ready', true));
-    //const mouseTrap = Mousetrap(this.$('.d-editor-input')[0]);
-
-    /*const shortcuts = this.get('toolbar.shortcuts');
-    Object.keys(shortcuts).forEach(sc => {
-      const button = shortcuts[sc];
-      mouseTrap.bind(sc, () => {
-        this.send(button.action, button);
-        return false;
-      });
-    });*/
-
-    const topicId = this.get('topic.id');
-    const template = getOwner(this).lookup('template:user-selector-autocomplete.raw');
-    const $input = this.$('.d-editor-input');
-    $input.autocomplete({
-      template,
-      dataSource: term => userSearch({ term, topicId, includeGroups: true }),
-      key: "@",
-      transformComplete: v => v.username || v.name
-    });
-    this.$('.d-editor-input').putCursorAtEnd();
-
+    this._applyMentionAutocomplete($editorInput);
+    this._setupMousetrap($editorInput);
     this._bindUploadTarget();
-    //this._mouseTrap = mouseTrap;
+    loadScript('defer/html-sanitizer-bundle').then(() => this.set('ready', true));
+    $editorInput.putCursorAtEnd();
   },
 
   @on('willDestroyElement')
@@ -168,51 +147,88 @@ export default Ember.Component.extend({
     Object.keys(this.get('toolbar.shortcuts')).forEach(sc => mouseTrap.unbind(sc));
   },
 
-  @computed
-  uploadPlaceholder() {
-    return `[${I18n.t('uploading')}]() `;
-  },
-
-  @computed('placeholder')
-  placeholderTranslated(placeholder) {
-    if (placeholder) return I18n.t(placeholder);
-    return null;
-  },
-
-  @computed()
-  markdownOptions() {
-    return {
-      lookupAvatarByPostNumber: (postNumber, topicId) => {
-        const topic = this.get('topic');
-        if (!topic) { return; }
-
-        const posts = topic.get('postStream.posts');
-        if (posts && topicId === topic.get('id')) {
-          const quotedPost = posts.findProperty("post_number", postNumber);
-          if (quotedPost) {
-            return tinyAvatar(quotedPost.get('avatar_template'));
-          }
-        }
-      }
-    };
-  },
-
-  _renderUnseenMentions: function($preview, unseen) {
-    fetchUnseenMentions($preview, unseen).then(() => {
-      linkSeenMentions($preview, this.siteSettings);
-      this._warnMentionedGroups($preview);
+  _applyMentionAutocomplete($editorInput) {
+    const topicId = this.get('topic.id');
+    $input.autocomplete({
+      template: findRawTemplate('user-selector-autocomplete'),
+      dataSource: term => userSearch({ term, topicId, includeGroups: true }),
+      key: "@",
+      transformComplete: v => v.username || v.name
     });
   },
 
-  _resetUpload(removePlaceholder) {
-    this._validUploads--;
-    if (this._validUploads === 0) {
-      this.setProperties({ uploadProgress: 0, isUploading: false, isCancellable: false });
-    }
-    if (removePlaceholder) {
-      this.set('value', this.get('value').replace(this.get('placeholder'), ""));
-    }
+  _applyEmojiAutocomplete($editorInput) {
+    if (!this.siteSettings.enable_emoji) { return; }
+
+    const self = this;
+    $editorInput.autocomplete({
+      template: findRawTemplate('emoji-selector-autocomplete'),
+      key: ":",
+      afterComplete(text) {
+        self.set('value', text);
+      },
+      transformComplete(v) {
+        if (v.code) {
+          return `${v.code}:`;
+        } else {
+          showSelector({
+            appendTo: self.$(),
+            register: this.register,
+            onSelect: title => {
+              // Remove the previously type characters when a new emoji is selected from the selector.
+              let selected = self._getSelected();
+              let newPre = selected.pre.replace(/:[^:]+$/, ":");
+              let numOfRemovedChars = selected.pre.length - newPre.length;
+              selected.pre = newPre;
+              selected.start -= numOfRemovedChars;
+              selected.end -= numOfRemovedChars;
+              self._addText(selected, `${title}:`);
+            }
+          });
+          return "";
+        }
+      },
+
+      dataSource(term) {
+        return new Ember.RSVP.Promise(resolve => {
+          const full = `:${term}`;
+          term = term.toLowerCase();
+
+          if (term === "") {
+            return resolve(["slight_smile", "smile", "wink", "sunny", "blush"]);
+          }
+
+          if (translations[full]) {
+            return resolve([translations[full]]);
+          }
+
+          const options = emojiSearch(term, {maxResults: 5});
+
+          return resolve(options);
+        }).then(list => list.map(code => {
+          return {code, src: emojiUrlFor(code)};
+        })).then(list => {
+          if (list.length) {
+            list.push({ label: I18n.t("composer.more_emoji") });
+          }
+          return list;
+        });
+      }
+    });
   },
+
+  _setupMousetrap($editorInput) {
+    const mouseTrap = Mousetrap($editorInput[0]);
+    const shortcuts = this.get('toolbar.shortcuts');
+    Object.keys(shortcuts).forEach(sc => {
+      const button = shortcuts[sc];
+      mouseTrap.bind(sc, () => {
+        this.send(button.action, button);
+        return false;
+      });
+    });
+    this._mouseTrap = mouseTrap;
+  }
 
   _bindUploadTarget() {
     this._unbindUploadTarget(); // in case it's still bound, let's clean it up first
@@ -291,74 +307,32 @@ export default Ember.Component.extend({
     $uploadTarget.off();
   },
 
-  @computed
+  _resetUpload(removePlaceholder) {
+    this._validUploads--;
+    if (this._validUploads === 0) {
+      this.setProperties({ uploadProgress: 0, isUploading: false, isCancellable: false });
+    }
+    if (removePlaceholder) {
+      this.set('value', this.get('value').replace(this.get('placeholder'), ""));
+    }
+  },
+
+  @computed()
+  uploadPlaceholder() {
+    return `[${I18n.t('uploading')}]() `;
+  },
+
+  @computed('placeholder')
+  placeholderTranslated(placeholder) {
+    if (placeholder) return I18n.t(placeholder);
+    return null;
+  },
+
+  @computed()
   toolbar() {
     const toolbar = new Toolbar(this.site);
     _createCallbacks.forEach(cb => cb(toolbar));
     return toolbar;
-  },
-
-  _applyEmojiAutocomplete($editorInput) {
-    if (!this.siteSettings.enable_emoji) { return; }
-
-    const template = this.register.lookup('template:emoji-selector-autocomplete.raw');
-    const self = this;
-
-    $editorInput.autocomplete({
-      template: template,
-      key: ":",
-      afterComplete(text) {
-        self.set('value', text);
-      },
-
-      transformComplete(v) {
-        if (v.code) {
-          return `${v.code}:`;
-        } else {
-          showSelector({
-            appendTo: self.$(),
-            register: this.register,
-            onSelect: title => {
-              // Remove the previously type characters when a new emoji is selected from the selector.
-              let selected = self._getSelected();
-              let newPre = selected.pre.replace(/:[^:]+$/, ":");
-              let numOfRemovedChars = selected.pre.length - newPre.length;
-              selected.pre = newPre;
-              selected.start -= numOfRemovedChars;
-              selected.end -= numOfRemovedChars;
-              self._addText(selected, `${title}:`);
-            }
-          });
-          return "";
-        }
-      },
-
-      dataSource(term) {
-        return new Ember.RSVP.Promise(resolve => {
-          const full = `:${term}`;
-          term = term.toLowerCase();
-
-          if (term === "") {
-            return resolve(["slight_smile", "smile", "wink", "sunny", "blush"]);
-          }
-
-          if (translations[full]) {
-            return resolve([translations[full]]);
-          }
-
-          const options = emojiSearch(term, {maxResults: 5});
-
-          return resolve(options);
-        }).then(list => list.map(code => {
-          return {code, src: emojiUrlFor(code)};
-        })).then(list => {
-          if (list.length) {
-            list.push({ label: I18n.t("composer.more_emoji") });
-          }
-          return list;
-        });
-      }
-    });
   },
 
   _getSelected(trimLeading) {

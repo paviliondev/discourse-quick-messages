@@ -2,7 +2,7 @@ import { ajax } from 'discourse/lib/ajax';
 import { getOwner } from 'discourse-common/lib/get-owner';
 
 let dockedScreenTrack = function(context, topic) {
-  if (!topic) {return}
+  if (!topic) { return; }
 
   const highest = topic.highest_post_number;
   const lastRead = Math.min(highest, topic.last_read_post_number);

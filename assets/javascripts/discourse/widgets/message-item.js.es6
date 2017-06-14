@@ -11,7 +11,6 @@ createWidget('message-item', {
     return classNames;
   },
 
-
   html(attrs) {
     const participants = attrs.participants.map(p => {
       return avatarImg('small', { template: p.user.avatar_template,
@@ -24,15 +23,15 @@ createWidget('message-item', {
         ]
 
     if (attrs.get('unread')) {
-      contents.push(h('div', {className: 'new-count'}, `${attrs.get('newCount')} ${I18n.t(`new_item`)}` ))
+      contents.push(h('div', {className: 'new-count'}, `${attrs.get('newCount')} ${I18n.t(`new_item`)}` ));
     }
 
-    return h('a', h('div.item-contents', contents))
+    return h('a', h('div.item-contents', contents));
   },
 
   click(e) {
     this.attrs.set('unread', false);
     const id = this.attrs.id;
-    this.sendWidgetAction('addToDocked', id)
+    this.sendWidgetAction('addToDocked', id);
   }
 });

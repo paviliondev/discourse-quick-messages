@@ -1,6 +1,6 @@
 import { getOwner } from 'discourse-common/lib/get-owner';
 
-export function getCurrentUserMessages(context) {
+let getCurrentUserMessages = function(context) {
   const store = getOwner(context).lookup('store:main'),
         username = context.currentUser.get('username');
 
@@ -33,7 +33,7 @@ export function getCurrentUserMessages(context) {
   })
 }
 
-export function getCurrentUserMessageCount(context, docked) {
+let getCurrentUserMessageCount = function(context, docked) {
   const store = context.container.lookup('store:main'),
         username = context.currentUser.get('username'),
         topicController = context.container.lookup('controller:topic'),
@@ -54,3 +54,5 @@ export function getCurrentUserMessageCount(context, docked) {
     return unreadCount
   })
 }
+
+export { getCurrentUserMessages, getCurrentUserMessageCount }

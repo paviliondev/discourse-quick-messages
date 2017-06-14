@@ -6,7 +6,7 @@
   <div class='d-editor-button-bar'>
     {{#each toolbar.groups as |group|}}
       {{#each group.buttons as |b|}}
-        {{d-button action=b.action actionParam=b translatedTitle=b.title icon=b.icon class=b.className}}
+        {{d-button action=b.action actionParam=b translatedTitle=b.title icon=b.icon class=b.className disabled=disabled}}
       {{/each}}
       {{#unless group.lastGroup}}
         <div class='d-editor-spacer'></div>
@@ -23,8 +23,11 @@
     </div>
   {{/if}}
   <div class="d-editor-textarea-wrapper">
-    {{conditional-loading-spinner condition=loading}}
-    {{docked-expanding-textarea tabindex=tabindex value=value class="d-editor-input" placeholder=placeholderTranslated}}
+    {{docked-expanding-textarea tabindex=tabindex
+                                value=value
+                                class="d-editor-input"
+                                placeholder=placeholderTranslated
+                                disabled=disabled}}
     {{popup-input-tip validation=validation}}
   </div>
 </div>

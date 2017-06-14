@@ -136,16 +136,16 @@ export default Ember.Component.extend({
 
     this._applyEmojiAutocomplete($editorInput);
     loadScript('defer/html-sanitizer-bundle').then(() => this.set('ready', true));
-    const mouseTrap = Mousetrap(this.$('.d-editor-input')[0]);
+    //const mouseTrap = Mousetrap(this.$('.d-editor-input')[0]);
 
-    const shortcuts = this.get('toolbar.shortcuts');
+    /*const shortcuts = this.get('toolbar.shortcuts');
     Object.keys(shortcuts).forEach(sc => {
       const button = shortcuts[sc];
       mouseTrap.bind(sc, () => {
         this.send(button.action, button);
         return false;
       });
-    });
+    });*/
 
     const topicId = this.get('topic.id');
     const template = getOwner(this).lookup('template:user-selector-autocomplete.raw');
@@ -159,7 +159,7 @@ export default Ember.Component.extend({
     this.$('.d-editor-input').putCursorAtEnd();
 
     this._bindUploadTarget();
-    this._mouseTrap = mouseTrap;
+    //this._mouseTrap = mouseTrap;
   },
 
   @on('willDestroyElement')
@@ -179,7 +179,7 @@ export default Ember.Component.extend({
     return null;
   },
 
-  @computed
+  @computed()
   markdownOptions() {
     return {
       lookupAvatarByPostNumber: (postNumber, topicId) => {

@@ -165,14 +165,9 @@
   box-shadow: 0 0px 15px -2px rgba(0, 0, 0, 0.25);
   border: 1px solid #E4E4E4;
   height: 400px;
-  -webkit-transition: all 0.5s;
-  -moz-transition: all 0.5s;
-  -ms-transition: all 0.5s;
-  -o-transition: all 0.5s;
-  transition: all 0.5s;
 
   &.minimized {
-    height: 40px !important;
+    height: auto;
     .docked-post-stream,
     .grippie  {
       display: none;
@@ -185,24 +180,18 @@
       width: 100%;
       height: 100%;
       cursor: pointer;
-    }
-    .docked-draft-text {
-      position: absolute;
-      top: 5px;
-      left: 10px;
-      max-width: 80%;
-      line-height: 15px;
-      max-height: 32px;
-      overflow: hidden;
+      background-color: dark-light-diff($primary, $secondary, 88%, -55%);
     }
   }
 
   &.closed {
-    height: 0 !important;
+    height: auto;
   }
 
   .grippie {
-    height: 20px;
+    height: 30px;
+    margin-bottom: 5px;
+    background-color: dark-light-diff($primary, $secondary, 88%, -55%);
   }
 
   .toggler {
@@ -232,12 +221,61 @@
     overflow: visible;
   }
 
+  .docked-usernames-wrapper {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    max-width: 200px;
+    z-index: 1;
+    overflow: hidden;
+
+    .docked-usernames {
+      white-space: nowrap;
+      display: inline-block;
+    }
+  }
+
+  .docked-usernames-toggle {
+    position: absolute;
+    top: 10px;
+    left: 210px;
+    padding: 0 5px;
+  }
+
+  .extra-usernames {
+    position: absolute;
+    top: -30px;
+    right: -40px;
+    width: 80px;
+    z-index: 100;
+    padding: 10px;
+    box-shadow: 0 2px 4px -1px rgba(0, 0, 0, 0.25);
+    background-color: dark-light-diff($primary, $secondary, 88%, -55%);
+
+    .cancel {
+      float: right;
+    }
+  }
+
   .docked-composer-top {
-    height: calc(100% - 105px);
+    height: calc(100% - 120px);
     width: 100%;
     overflow-x: hidden;
     overflow-y: scroll;
     position: relative;
+  }
+
+  .docked-composer-tip {
+    line-height: 295px;
+    text-align: center;
+    padding: 0 20px;
+
+    span {
+      vertical-align: middle;
+      display: inline-block;
+      line-height: 18px;
+      color: dark-light-diff($primary, $secondary, 50%, -55%);
+    }
   }
 
   .docked-post-stream {
@@ -264,7 +302,7 @@
         max-width: 80%;
         &.yours {
           float: right;
-          background-color: #E1E1E1;
+          background-color: dark-light-diff($primary, $secondary, 88%, -55%);
           padding: 3px 6px;
           border-radius: 6px;
           display: block;

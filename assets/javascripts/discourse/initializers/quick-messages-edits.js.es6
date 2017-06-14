@@ -1,6 +1,6 @@
 import { default as computed, on, observes } from 'ember-addons/ember-computed-decorators';
 import { withPluginApi } from 'discourse/lib/plugin-api';
-import { getCurrentUserMessageCount } from 'discourse/plugins/discourse-quick-messages/discourse/helpers/user-messages';
+import { getCurrentUserMessageCount } from '../lib/user-messages';
 import DiscourseURL from 'discourse/lib/url';
 import AppController from 'discourse/controllers/application';
 import { getOwner } from 'discourse-common/lib/get-owner';
@@ -46,8 +46,8 @@ export default {
         })
 
         api.attachWidgetAction('header', 'addToDocked', function(id) {
-          this.messagesClicked()
-          getOwner(this).lookup('controller:application').send('addToDocked', id)
+          this.messagesClicked();
+          getOwner(this).lookup('controller:application').send('addToDocked', id);
         })
 
         api.attachWidgetAction('header', 'messagesClicked', function() {
@@ -76,36 +76,31 @@ export default {
 
         @computed()
         maxIndex: function() {
-          return Math.floor(($(window).width() - 390) / 340) - 1
+          return Math.floor(($(window).width() - 390) / 340);
         },
 
         actions: {
           addToDocked(id) {
-            var id = id ? id : 'new',
-                docked = this.get('docked');
-            if (docked.includes(id)) {return}
-            var max = this.get('maxIndex');
+            id = id ? id : 'new';
+            let docked = this.get('docked');
+
+            if (docked.includes(id)) return;
+
+            let max = this.get('maxIndex');
             if (docked.length > max) {
-              docked.insertAt(max, id)
+              docked.replace(0, 1, id);
             } else {
-              docked.pushObject(id)
+              docked.pushObject(id);
             }
-            this.set('docked', docked)
           },
 
           removeDocked(index) {
-            var docked = this.get('docked');
-            docked.removeAt(index)
-            this.set('docked', docked)
+            this.get('docked').removeAt(index)
           },
 
-          moveOnScreen(index) {
-            var docked = this.get('docked');
-            var max = this.get('maxIndex'),
-                item = docked.slice(index, index + 1);
-            docked.removeAt(index)
-            docked.insertAt(max, item[0])
-            this.set('docked', docked)
+          updateId(index, id) {
+            const docked = this.get('docked');
+            docked.replace(index, 1, id);
           }
         }
       })

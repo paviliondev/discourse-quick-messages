@@ -15,6 +15,11 @@ export default {
     removeDocked(index) {
       const appController = getOwner(this).lookup('controller:application');
       appController.send('removeDocked', index);
+    },
+
+    updateId(index, id) {
+      const appController = getOwner(this).lookup('controller:application');
+      appController.send('updateId', index, id);
     }
   }
 }

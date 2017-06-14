@@ -1,5 +1,5 @@
 import { createWidget } from 'discourse/widgets/widget';
-import { getCurrentUserMessages } from 'discourse/plugins/discourse-quick-messages/discourse/helpers/user-messages';
+import { getCurrentUserMessages } from '../lib/user-messages';
 import { h } from 'virtual-dom';
 import RawHtml from 'discourse/widgets/raw-html';
 import { emojiUnescape } from 'discourse/lib/text';

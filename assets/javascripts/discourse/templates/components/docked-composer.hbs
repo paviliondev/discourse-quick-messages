@@ -8,23 +8,37 @@
                   placeholderKey="composer.users_placeholder"
                   tabindex="1"
                   usernames=targetUsernames}}
+{{else}}
+  <div class="docked-usernames-wrapper">
+    <div class="docked-usernames">{{otherUsernames}}</div>
+  </div>
+  {{#if hiddenUsernames}}
+    {{d-button class="docked-usernames-toggle" icon='ellipsis-h' action="showUsernames"}}
+    {{#if showUsernames}}
+      <div class="extra-usernames">
+        {{otherUsernames}}
+        <a href class='cancel fa fa-times' {{action "showUsernames"}}></a>
+      </div>
+    {{/if}}
+  {{/if}}
 {{/if}}
 <div class='docked-composer-top'>
   {{#if composerMinimized}}
-    <div class='docked-draft-wrapper' {{action "toggle"}}>
-      <div class='docked-draft-text'>{{draft}}</div>
-    </div>
+    <div class='docked-draft-wrapper' {{action "toggle"}}></div>
   {{else}}
-    {{docked-post-stream posts=postStream.posts loadingStream=loadingStream}}
+    {{#if disableEditor}}
+      <div class=docked-composer-tip>
+        <span>{{i18n 'composer.quick_duplicate'}}</span>
+      </div>
+    {{else}}
+      {{docked-post-stream posts=postStream.posts loadingStream=loadingStream}}
+    {{/if}}
   {{/if}}
 </div>
-{{#if composerOpen}}
+{{#if composerReady}}
   {{docked-editor  tabindex="4"
                    value=reply
                    composer=this
                    placeholder="composer.quick_placeholder"
-                   markdownOptions=markdownOptions
-                   extraButtons="extraButtons"
-                   showOptions="showOptions"
-                   loading=loading}}
+                   disabled=disableEditor}}
 {{/if}}

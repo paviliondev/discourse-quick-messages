@@ -2,6 +2,8 @@ import { on, observes } from 'ember-addons/ember-computed-decorators';
 import autosize from 'discourse/lib/autosize';
 
 export default Ember.TextArea.extend({
+  attributeBindings: ['disabled'],
+  
   @on('didInsertElement')
   _startWatching() {
     Ember.run.scheduleOnce('afterRender', () => {
@@ -12,9 +14,11 @@ export default Ember.TextArea.extend({
 
   @observes('value')
   _updateAutosize() {
-    const evt = document.createEvent('Event');
-    evt.initEvent('autosize:update', true, false);
-    this.element.dispatchEvent(evt);
+    Ember.run.scheduleOnce('afterRender', () => {
+      const evt = document.createEvent('Event');
+      evt.initEvent('autosize:update', true, false);
+      this.element.dispatchEvent(evt);
+    })
   },
 
   @on('willDestroyElement')

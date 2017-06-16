@@ -149,7 +149,7 @@ export default Ember.Component.extend({
 
   _applyMentionAutocomplete($editorInput) {
     const topicId = this.get('topic.id');
-    $input.autocomplete({
+    $editorInput.autocomplete({
       template: findRawTemplate('user-selector-autocomplete'),
       dataSource: term => userSearch({ term, topicId, includeGroups: true }),
       key: "@",
@@ -228,7 +228,7 @@ export default Ember.Component.extend({
       });
     });
     this._mouseTrap = mouseTrap;
-  }
+  },
 
   _bindUploadTarget() {
     this._unbindUploadTarget(); // in case it's still bound, let's clean it up first

@@ -33,7 +33,7 @@ export default createWidget('message-list', {
           }
           if (m.message_excerpt) {
             let excerpt = new RawHtml({
-              html: `<div class='message-excerpt'>${emojiUnescape(m.message_excerpt)}</div>`;
+              html: `<div class='message-excerpt'>${emojiUnescape(m.message_excerpt)}</div>`
             })
             m.set('excerpt', excerpt);
           }

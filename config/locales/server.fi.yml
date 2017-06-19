@@ -1,0 +1,5 @@
+fi:
+  site_settings:
+    quick_message_enabled: "Ota käyttöön pikaviestit."
+    quick_message_rate_limit_create: "Lähettämisen jälkeen käyttäjän täytyy odottaa (n) sekuntia ennen uuden lähettämistä."
+    quick_message_min_post_length: "Vähimmäismerkkimäärä pikaviestissä."

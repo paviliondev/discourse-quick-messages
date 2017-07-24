@@ -1,6 +1,5 @@
 import loadScript from 'discourse/lib/load-script';
 import { default as computed, on, observes } from 'ember-addons/ember-computed-decorators';
-import { showSelector } from "discourse/lib/emoji/toolbar";
 import userSearch from 'discourse/lib/user-search';
 import { linkSeenMentions, fetchUnseenMentions } from 'discourse/lib/link-mentions';
 import { SEPARATOR as categoryHashtagSeparator, categoryHashtagTriggerRule} from 'discourse/lib/category-hashtags';
@@ -124,6 +123,7 @@ export default Ember.Component.extend({
   _mouseTrap: null,
   uploadProgress: 0,
   _xhr: null,
+  emojiPickerIsActive: false,
 
   init() {
     this._super()
@@ -171,20 +171,8 @@ export default Ember.Component.extend({
         if (v.code) {
           return `${v.code}:`;
         } else {
-          showSelector({
-            appendTo: self.$(),
-            register: this.register,
-            onSelect: title => {
-              // Remove the previously type characters when a new emoji is selected from the selector.
-              let selected = self._getSelected();
-              let newPre = selected.pre.replace(/:[^:]+$/, ":");
-              let numOfRemovedChars = selected.pre.length - newPre.length;
-              selected.pre = newPre;
-              selected.start -= numOfRemovedChars;
-              selected.end -= numOfRemovedChars;
-              self._addText(selected, `${title}:`);
-            }
-          });
+          $editorInput.autocomplete({cancel: true});
+ +        self.set('emojiPickerIsActive', true);
           return "";
         }
       },
@@ -556,12 +544,23 @@ export default Ember.Component.extend({
       this.set('dockedUpload', true)
     },
 
+    emojiSelected(code) {
+      let selected = this._getSelected();
+      const captures = selected.pre.match(/\B:(\w*)$/);
+
+      if(_.isEmpty(captures)) {
+        this._addText(selected, `:${code}:`);
+      } else {
+        let numOfRemovedChars = selected.pre.length - captures[1].length;
+        selected.pre = selected.pre.slice(0, selected.pre.length - captures[1].length);
+        selected.start -= numOfRemovedChars;
+        selected.end -= numOfRemovedChars;
+        this._addText(selected, `${code}:`);
+      }
+    },
+
     emoji() {
-      showSelector({
-        appendTo: this.$().parents('.messages-container'),
-        register: this.register,
-        onSelect: title => this._addText(this._getSelected(), `:${title}:`)
-      });
+      this.set('emojiPickerIsActive', !this.get('emojiPickerIsActive'));
     }
   }
 

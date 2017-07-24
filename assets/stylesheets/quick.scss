@@ -448,7 +448,7 @@
       &.upload, &.emoji {
         display: block;
       }
-      
+
       i {
         color: #333;
       }
@@ -467,4 +467,15 @@
 
 .user-menu .notifications .user-message {
   display: none;
+}
+
+.docked-editor .d-editor-container {
+  position: relative;
+  height: 100%;
+
+  .emoji-picker {
+    position: absolute;
+    left: -410px !important;
+    bottom: 40px !important;
+  }
 }

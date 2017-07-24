@@ -474,8 +474,9 @@
   height: 100%;
 
   .emoji-picker {
-    position: absolute;
-    left: -410px !important;
-    bottom: 40px !important;
+    top: 50% !important;
+    left: 50% !important;
+    margin-top: -150px;
+    margin-left: -200px;
   }
 }

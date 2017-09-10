@@ -29,7 +29,7 @@ export default {
                   return this.attach('link', {
                     action: 'toggleMessages',
                     className: 'badge-notification unread-private-messages',
-                    rawLabel: unread
+                    rawLabel: `${unread}`
                   });
                 }
               }

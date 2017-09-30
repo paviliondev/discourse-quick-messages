@@ -224,6 +224,15 @@
     z-index: 20;
   }
 
+  .topic-link {
+    position: absolute;
+    top: 5px;
+    right: 45px;
+    padding: 0;
+    color: dark-light-choose(scale-color($primary, $lightness: 50%), scale-color($secondary, $lightness: 50%));
+    font-weight: 900;
+  }
+
   .ac-wrap {
     position: absolute;
     top: 21px;

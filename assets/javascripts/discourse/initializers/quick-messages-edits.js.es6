@@ -1,6 +1,5 @@
-import { default as computed, on, observes } from 'ember-addons/ember-computed-decorators';
+import { default as computed, on } from 'ember-addons/ember-computed-decorators';
 import { withPluginApi } from 'discourse/lib/plugin-api';
-import { getCurrentUserMessageCount } from '../lib/user-messages';
 import DiscourseURL from 'discourse/lib/url';
 import AppController from 'discourse/controllers/application';
 import { getOwner } from 'discourse-common/lib/get-owner';

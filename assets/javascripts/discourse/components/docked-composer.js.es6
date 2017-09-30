@@ -4,6 +4,7 @@ import { getCurrentUserMessages } from '../lib/user-messages';
 import { emojiUnescape } from 'discourse/lib/text';
 import { dockedScreenTrack } from '../lib/docked-screen-track';
 import { getOwner } from 'discourse-common/lib/get-owner';
+import DiscourseURL from 'discourse/lib/url';
 
 const _create_serializer = {
         raw: 'reply',
@@ -11,7 +12,7 @@ const _create_serializer = {
         topic_id: 'topic.id',
         archetype: 'archetypeId',
         target_usernames: 'targetUsernames',
-      }
+      };
 
 export default Ember.Component.extend({
   tagName: "div",
@@ -69,7 +70,7 @@ export default Ember.Component.extend({
           Discourse.notifyBackgroundCountIncrement();
         }
       }
-    })
+    });
   },
 
   @observes('topic.postStream.hasLoadedData')
@@ -82,8 +83,8 @@ export default Ember.Component.extend({
             this.$('.docked-composer-top').scrollTop(this.$('.docked-post-stream').height());
             dockedScreenTrack(this, this.get('topic'));
           }
-        })
-      })
+        });
+      });
     }
   },
 
@@ -106,7 +107,7 @@ export default Ember.Component.extend({
       const index = this.get('index');
       let right = 340 * index + 100;
       this.$().css('right', right);
-    })
+    });
   },
 
   @observes('composeState')
@@ -183,8 +184,7 @@ export default Ember.Component.extend({
         }
       }
     }).catch(function(error) {
-      console.log(error)
-      bootbox.alert(error.jqXHR.responseJSON.errors[0])
+      bootbox.alert(error.jqXHR.responseJSON.errors[0]);
     });
   },
 
@@ -203,14 +203,23 @@ export default Ember.Component.extend({
     save() {
       this.save();
     },
+
     cancel() {
       this.cancel();
     },
+
     toggle() {
       this.toggle();
     },
+
+    openTopic() {
+      const topicUrl = this.get('topic.url');
+      this.cancel();
+      DiscourseURL.routeTo(topicUrl);
+    },
+
     showUsernames() {
-      this.toggleProperty('showUsernames')
+      this.toggleProperty('showUsernames');
     }
   },
 
@@ -296,10 +305,10 @@ export default Ember.Component.extend({
 
   getUsernames(participants) {
     let usernames = [];
-    participants.forEach((participant, i) => {
+    participants.forEach((participant) => {
       let username = participant.user ? participant.user.username : participant.username;
       usernames.push(username);
-    })
+    });
     return usernames;
   },
 
@@ -311,7 +320,7 @@ export default Ember.Component.extend({
       if (i < length - 1) {
         formatted += i === (length - 2) ? ' & ' : ', ';
       }
-    })
+    });
     return formatted;
   },
 
@@ -333,7 +342,7 @@ export default Ember.Component.extend({
         if (this.$(".docked-usernames").width() > 200) {
           this.set("hiddenUsernames", true);
         }
-      })
+      });
     }
   },
 
@@ -345,7 +354,7 @@ export default Ember.Component.extend({
     targetUsernames.push(currentUsername);
 
     getCurrentUserMessages(this).then((result) => {
-      result.forEach((message, i) => {
+      result.forEach((message) => {
         let usernames = this.getUsernames(message.participants);
         if (usernames.indexOf(currentUsername) === -1) {
           usernames.push(currentUsername);
@@ -354,7 +363,7 @@ export default Ember.Component.extend({
         if (_.isEqual(_.sortBy(usernames), _.sortBy(targetUsernames))) {
           existingId = message.id;
         }
-      })
+      });
 
       if (existingId) {
         const docked = this.get('docked');
@@ -376,6 +385,6 @@ export default Ember.Component.extend({
           'disableEditor': false
         });
       }
-    })
+    });
   }
-})
+});

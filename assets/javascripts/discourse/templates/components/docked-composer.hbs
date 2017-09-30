@@ -1,5 +1,6 @@
 <a href class='cancel fa fa-times' {{action "cancel"}} tabindex="6"></a>
 <a href class='toggler fa {{togglerIcon}}' {{action "toggle" bubbles=false}} title={{i18n 'composer.toggler'}}></a>
+<a href class='topic-link fa fa-external-link' {{action "openTopic"}} title={{i18n 'composer.open_message_topic'}}></a>
 {{#if firstPost}}
   {{user-selector topicId=topic.id
                   excludeCurrentUser="true"

@@ -3,7 +3,7 @@ import autosize from 'discourse/lib/autosize';
 
 export default Ember.TextArea.extend({
   attributeBindings: ['disabled'],
-  
+
   @on('didInsertElement')
   _startWatching() {
     Ember.run.scheduleOnce('afterRender', () => {
@@ -18,7 +18,7 @@ export default Ember.TextArea.extend({
       const evt = document.createEvent('Event');
       evt.initEvent('autosize:update', true, false);
       this.element.dispatchEvent(evt);
-    })
+    });
   },
 
   @on('willDestroyElement')

@@ -39,6 +39,8 @@ export default Ember.Component.extend({
     }
     this.set('topic', this.getTopic(id));
     this.subscribeToTopic();
+
+    this.appEvents.on('composer:opened', () => this.collapse());
   },
 
   getTopic(id) {

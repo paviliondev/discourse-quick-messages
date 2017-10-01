@@ -1,16 +1,13 @@
 import loadScript from 'discourse/lib/load-script';
-import { default as computed, on, observes } from 'ember-addons/ember-computed-decorators';
+import { default as computed, on } from 'ember-addons/ember-computed-decorators';
 import userSearch from 'discourse/lib/user-search';
-import { linkSeenMentions, fetchUnseenMentions } from 'discourse/lib/link-mentions';
-import { SEPARATOR as categoryHashtagSeparator, categoryHashtagTriggerRule} from 'discourse/lib/category-hashtags';
 import { findRawTemplate } from 'discourse/lib/raw-templates';
 import { translations } from 'pretty-text/emoji/data';
 import { emojiSearch } from 'pretty-text/emoji';
 import { emojiUrlFor } from 'discourse/lib/text';
 import { getRegister } from 'discourse-common/lib/get-owner';
 
-import { tinyAvatar,
-         displayErrorForUpload,
+import { displayErrorForUpload,
          getUploadMarkdown,
          validateUploadedFiles } from 'discourse/lib/utilities';
 
@@ -34,7 +31,7 @@ const _createCallbacks = [];
 
 class Toolbar {
 
-  constructor(site) {
+  constructor() {
     this.shortcuts = {};
 
     this.groups = [
@@ -126,7 +123,7 @@ export default Ember.Component.extend({
   emojiPickerIsActive: false,
 
   init() {
-    this._super()
+    this._super();
     this.register = getRegister(this);
   },
 
@@ -135,7 +132,6 @@ export default Ember.Component.extend({
     const $editorInput = this.$('.d-editor-input');
     this._applyEmojiAutocomplete($editorInput);
     this._applyMentionAutocomplete($editorInput);
-    this._setupMousetrap($editorInput);
     this._bindUploadTarget();
     loadScript('defer/html-sanitizer-bundle').then(() => this.set('ready', true));
     $editorInput.putCursorAtEnd();
@@ -172,7 +168,7 @@ export default Ember.Component.extend({
           return `${v.code}:`;
         } else {
           $editorInput.autocomplete({cancel: true});
- +        self.set('emojiPickerIsActive', true);
+          self.set('emojiPickerIsActive', true);
           return "";
         }
       },
@@ -205,21 +201,8 @@ export default Ember.Component.extend({
     });
   },
 
-  _setupMousetrap($editorInput) {
-    const mouseTrap = Mousetrap($editorInput[0]);
-    const shortcuts = this.get('toolbar.shortcuts');
-    Object.keys(shortcuts).forEach(sc => {
-      const button = shortcuts[sc];
-      mouseTrap.bind(sc, () => {
-        this.send(button.action, button);
-        return false;
-      });
-    });
-    this._mouseTrap = mouseTrap;
-  },
-
   _bindUploadTarget() {
-    this._unbindUploadTarget(); // in case it's still bound, let's clean it up first
+    this._unbindUploadTarget();
 
     const $element = this.$();
     const csrf = this.session.get('csrfToken');
@@ -266,13 +249,12 @@ export default Ember.Component.extend({
     });
 
     this.messageBus.subscribe("/uploads/composer", upload => {
-      // replace upload placeholder
       if (upload && upload.url) {
         if (!this._xhr || !this._xhr._userCancelled) {
           const markdown = getUploadMarkdown(upload);
           this.set('value', this.get('value').replace(uploadPlaceholder, markdown));
           this._resetUpload(false);
-          this.set('dockedUpload', false)
+          this.set('dockedUpload', false);
         } else {
           this._resetUpload(true);
         }
@@ -288,7 +270,6 @@ export default Ember.Component.extend({
   @on('willDestroyElement')
   _unbindUploadTarget() {
     this._validUploads = 0;
-    this.messageBus.unsubscribe("/uploads/composer");
     const $uploadTarget = this.$();
     try { $uploadTarget.fileupload("destroy"); }
     catch (e) { }
@@ -529,7 +510,7 @@ export default Ember.Component.extend({
     },
 
     addText(text) {
-      this._addText(this._getSelected(), text)
+      this._addText(this._getSelected(), text);
     },
 
     cancelUpload() {
@@ -541,7 +522,7 @@ export default Ember.Component.extend({
     },
 
     upload() {
-      this.set('dockedUpload', true)
+      this.set('dockedUpload', true);
     },
 
     emojiSelected(code) {

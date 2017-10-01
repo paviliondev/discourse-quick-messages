@@ -35,29 +35,29 @@ export default {
             }));
           }
           if (headerState.messagesVisible) {
-            contents.push(helper.attach('messages-menu'))
+            contents.push(helper.attach('messages-menu'));
           }
-          return contents
-        })
+          return contents;
+        });
 
         api.attachWidgetAction('header', 'toggleMessages', function() {
-          this.state.messagesVisible = !this.state.messagesVisible
-        })
+          this.state.messagesVisible = !this.state.messagesVisible;
+        });
 
         api.attachWidgetAction('header', 'addToDocked', function(id) {
           this.messagesClicked();
           getOwner(this).lookup('controller:application').send('addToDocked', id);
-        })
+        });
 
         api.attachWidgetAction('header', 'messagesClicked', function() {
-          this.linkClickedEvent()
-          this.state.messagesVisible = false
-        })
+          this.linkClickedEvent();
+          this.state.messagesVisible = false;
+        });
 
         api.attachWidgetAction('header', 'goToMessages', function() {
-          this.messagesClicked()
-          DiscourseURL.routeTo('/users/' + this.currentUser.get('username') + '/messages')
-        })
+          this.messagesClicked();
+          DiscourseURL.routeTo('/users/' + this.currentUser.get('username') + '/messages');
+        });
       });
 
       AppController.reopen({
@@ -65,12 +65,12 @@ export default {
 
         @on('didInsertElement')
         _setupQuickMessages() {
-          $(window).on('resize', Ember.run.bind(this, this.maxIndex))
+          $(window).on('resize', Ember.run.bind(this, this.maxIndex));
         },
 
         @on('willDestroyElement')
         _teardownQuickMessages() {
-          $(window).off('resize', Ember.run.bind(this, this.maxIndex))
+          $(window).off('resize', Ember.run.bind(this, this.maxIndex));
         },
 
         @computed()
@@ -94,7 +94,7 @@ export default {
           },
 
           removeDocked(index) {
-            this.get('docked').removeAt(index)
+            this.get('docked').removeAt(index);
           },
 
           updateId(index, id) {
@@ -102,7 +102,7 @@ export default {
             docked.replace(index, 1, id);
           }
         }
-      })
+      });
     }
   }
-}
+};

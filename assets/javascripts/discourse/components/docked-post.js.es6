@@ -13,13 +13,13 @@ export default Ember.Component.extend({
   testImages() {
     let imgs = this.$('img');
     if (imgs.length) {
-      imgs.each(function(i){
+      imgs.each(function(){
         $(this).one("load", function() {
           $('.docked-composer-top').scrollTop($('.docked-post-stream').height());
         }).each(function() {
           if(this.complete) $(this).load();
         });
-      })
+      });
     }
   }
-})
+});

@@ -14,7 +14,7 @@
     {{/each}}
   </div>
   {{#if isUploading}}
-    <div id="file-uploading">
+    <div id="docked-uploading">
       {{loading-spinner size="small"}} {{i18n 'upload_selector.uploading'}}
       {{uploadProgress}}%
       {{#if isCancellable}}

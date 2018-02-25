@@ -26,7 +26,7 @@ export default createWidget('message-list', {
       if (result.length) {
         let messages = result.slice(0,7);
 
-        messages.forEach((m, i) => {
+        messages.forEach((m) => {
           if (m.last_read_post_number < m.highest_post_number) {
             m.set('unread', true);
             m.set('newCount', m.highest_post_number - m.last_read_post_number);
@@ -34,17 +34,17 @@ export default createWidget('message-list', {
           if (m.message_excerpt) {
             let excerpt = new RawHtml({
               html: `<div class='message-excerpt'>${emojiUnescape(m.message_excerpt)}</div>`
-            })
+            });
             m.set('excerpt', excerpt);
           }
           state.messages = messages;
-        })
+        });
       } else {
         state.messages = 'empty';
       }
       state.loading = false;
       this.scheduleRerender();
-    })
+    });
   },
 
   html(attrs, state) {

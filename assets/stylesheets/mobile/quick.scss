@@ -1,0 +1,59 @@
+.d-header-icons .icon {
+  width: 10vw;
+  max-width: 2.2857em;
+}
+
+.docked-composer {
+  left: 0;
+  right: 0;
+  width: 100%;
+  height: calc(100vh - 60px);
+
+  .cancel {
+    font-size: 20px;
+    top: 10px;
+    right: 10px;
+  }
+
+  .toggler {
+    font-size: 25px;
+    top: 9px;
+    right: 37px;
+  }
+
+  .topic-link {
+    top: 13px;
+    font-size: 17px;
+    right: 66px;
+  }
+
+  .grippie {
+    height: 40px;
+  }
+
+  .docked-usernames-wrapper {
+    top: 10px;
+  }
+
+  .docked-composer-top {
+    height: calc(100% - 146px);
+  }
+
+  .docked-editor {
+    left: 0;
+    right: 0;
+  }
+
+  .d-editor-container {
+    width: 100%;
+  }
+
+  .d-editor-textarea-wrapper .d-editor-input {
+    margin-bottom: 40px;
+  }
+
+  .button-bar .btn {
+    padding: 6px 12px;
+    font-size: 1.2em;
+  }
+}

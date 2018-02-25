@@ -15,7 +15,7 @@ export default {
           const headerState = helper.widget.parentWidget.state;
 
           let contents = [];
-          if (!helper.widget.site.mobileView && currentUser) {
+          if (currentUser) {
             const unread = currentUser.get('unread_private_messages');
             contents.push(helper.attach('header-dropdown', {
               title: 'user.private_messages',
@@ -74,8 +74,8 @@ export default {
         },
 
         @computed()
-        maxIndex: function() {
-          return Math.floor(($(window).width() - 390) / 340);
+        maxIndex() {
+          return this.site.mobileView ? 1 : Math.floor(($(window).width() - 390) / 340);
         },
 
         actions: {
@@ -86,7 +86,7 @@ export default {
             if (docked.includes(id)) return;
 
             let max = this.get('maxIndex');
-            if (docked.length > max) {
+            if (docked.length >= max) {
               docked.replace(0, 1, id);
             } else {
               docked.pushObject(id);

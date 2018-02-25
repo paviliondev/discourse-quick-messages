@@ -8,7 +8,7 @@ export default {
     component.setProperties({
       docked: docked,
       maxIndex: maxIndex
-    })
+    });
   },
 
   actions: {
@@ -22,4 +22,4 @@ export default {
       appController.send('updateId', index, id);
     }
   }
-}
+};

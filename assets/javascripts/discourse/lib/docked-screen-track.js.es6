@@ -29,7 +29,7 @@ let dockedScreenTrack = function(context, topic) {
     headers: {
       'X-SILENCE-LOGGER': 'true'
     }
-  })
-}
+  });
+};
 
 export { dockedScreenTrack };

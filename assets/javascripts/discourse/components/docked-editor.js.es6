@@ -30,6 +30,11 @@ export default DEditor.extend({
 
     openEmojiPicker() {
       this.sendAction('toggleEmojiPicker');
+    },
+
+    emojiSelected(code){
+      this._super(code);
+      this.sendAction('toggleEmojiPicker');
     }
   }
 

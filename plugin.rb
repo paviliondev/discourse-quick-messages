@@ -3,7 +3,8 @@
 # version: 0.1
 # authors: Angus McLeod
 
-register_asset 'stylesheets/quick.scss', :desktop
+register_asset 'stylesheets/common/quick.scss'
+register_asset 'stylesheets/mobile/quick.scss', :mobile
 
 after_initialize do
 

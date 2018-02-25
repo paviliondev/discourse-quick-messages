@@ -41,7 +41,9 @@ export default Ember.Component.extend({
     this.set('topic', this.getTopic(id));
     this.subscribeToTopic();
 
-    this.appEvents.on('composer:opened', () => this.collapse());
+    if (!this.site.mobileView) {
+      this.appEvents.on('composer:opened', () => this.collapse());
+    }
   },
 
   getTopic(id) {
@@ -106,11 +108,13 @@ export default Ember.Component.extend({
   @on('didInsertElement')
   @observes('index')
   _arrangeComposers() {
-    Ember.run.scheduleOnce('afterRender', () => {
-      const index = this.get('index');
-      let right = 340 * index + 100;
-      this.$().css('right', right);
-    });
+    if (!this.site.mobileView) {
+      Ember.run.scheduleOnce('afterRender', () => {
+        const index = this.get('index');
+        let right = 340 * index + 100;
+        this.$().css('right', right);
+      });
+    }
   },
 
   @observes('composeState')
@@ -202,6 +206,17 @@ export default Ember.Component.extend({
     return dest;
   },
 
+  @observes('emojiPickerOpen')
+  setupEmojiPickerCss() {
+    const emojiPickerOpen = this.get('emojiPickerOpen');
+    if (emojiPickerOpen) {
+      this.$().css('z-index', 100);
+    } else {
+      $('.emoji-picker').css('visibility', 'hidden');
+      this.$().css('z-index', 0);
+    }
+  },
+
   actions: {
     save() {
       this.save();
@@ -234,20 +249,29 @@ export default Ember.Component.extend({
 
       if (this.get('emojiPickerOpen')) {
         Ember.run.next(() => {
-          const composerWidth = 300;
-          const emojiModalWidth = 400;
-          const composerOffset = this.$().offset();
-          const composerLeftOffset = composerOffset.left;
+          let css = { visibility: 'visible' };
 
-          let css = { bottom: 20, visibility: 'visible' };
-
-          if (composerLeftOffset > emojiModalWidth) {
-            css['left'] = composerLeftOffset - emojiModalWidth;
-          } else if (($(window).width() - (composerLeftOffset - composerWidth)) > emojiModalWidth) {
-            css['left'] = composerLeftOffset + composerWidth;
+          if (this.site.mobileView) {
+            const editorHeight = this.$().find('.docked-editor').height();
+            css['left'] = 5;
+            css['right'] = 5;
+            css['bottom'] = editorHeight + 5;
           } else {
-            css['left'] = composerLeftOffset;
-            css['bottom'] = this.$().height();
+            const composerWidth = 300;
+            const emojiModalWidth = 400;
+            const composerOffset = this.$().offset();
+            const composerLeftOffset = composerOffset.left;
+
+            css['bottom'] = 20;
+
+            if (composerLeftOffset > emojiModalWidth) {
+              css['left'] = composerLeftOffset - emojiModalWidth;
+            } else if (($(window).width() - (composerLeftOffset - composerWidth)) > emojiModalWidth) {
+              css['left'] = composerLeftOffset + composerWidth;
+            } else {
+              css['left'] = composerLeftOffset;
+              css['bottom'] = this.$().height();
+            }
           }
 
           $('.emoji-picker').css(css);
@@ -282,20 +306,21 @@ export default Ember.Component.extend({
   },
 
   open() {
+    const height = this.site.mobileView ? $(window).height() - 60 : 400;
     this.set('composeState', 'open');
-    this.$().animate({ height: 400 }, 300, () => {
+    this.$().animate({ height }, 200, () => {
       this.afterStreamRender();
     });
   },
 
   collapse() {
     this.set('composeState', 'minimized');
-    this.$().animate({ height: 40 }, 300);
+    this.$().animate({ height: 40 }, 200);
   },
 
   close() {
     this.set('composeState', 'closed');
-    this.$().animate({ height: 0 }, 300, () => {
+    this.$().animate({ height: 0 }, 200, () => {
       this.sendAction('removeDocked', this.get('index'));
     });
   },

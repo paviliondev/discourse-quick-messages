@@ -1,27 +1,8 @@
-<div class='d-editor-modals'>
-  {{docked-upload addText="addText" visible=dockedUpload}}
-</div>
-
 <div class='d-editor-container'>
-  <div class='d-editor-button-bar'>
-    {{#each toolbar.groups as |group|}}
-      {{#each group.buttons as |b|}}
-        {{d-button action=b.action actionParam=b translatedTitle=b.title icon=b.icon class=b.className disabled=disabled}}
-      {{/each}}
-      {{#unless group.lastGroup}}
-        <div class='d-editor-spacer'></div>
-      {{/unless}}
-    {{/each}}
+  <div class='button-bar'>
+    {{d-button action='openEmojiPicker' class='btn' icon='smile-o'}}
+    {{docked-upload addText='addText'}}
   </div>
-  {{#if isUploading}}
-    <div id="docked-uploading">
-      {{loading-spinner size="small"}} {{i18n 'upload_selector.uploading'}}
-      {{uploadProgress}}%
-      {{#if isCancellable}}
-        <a href id="cancel-file-upload" {{action "cancelUpload"}}>{{d-icon "times"}}</a>
-      {{/if}}
-    </div>
-  {{/if}}
   <div class="d-editor-textarea-wrapper">
     {{docked-expanding-textarea tabindex=tabindex
                                 value=value
@@ -31,5 +12,5 @@
     {{popup-input-tip validation=validation}}
   </div>
 
-  {{emoji-picker active=emojiPickerIsActive emojiSelected=(action 'emojiSelected')}}
+  {{emoji-picker active=emojiPickerOpen automaticPositioning=false emojiSelected=(action 'emojiSelected')}}
 </div>

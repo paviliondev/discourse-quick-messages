@@ -29,6 +29,7 @@ export default Ember.Component.extend({
   archetypeId: 'private_message',
   reply: '',
   topic: null,
+  emojiPickerOpen: false,
 
   @on('init')
   setTopic() {
@@ -222,6 +223,36 @@ export default Ember.Component.extend({
 
     showUsernames() {
       this.toggleProperty('showUsernames');
+    },
+
+    toggleEmojiPicker(state) {
+      if (state) {
+        this.set('emojiPickerOpen', state);
+      } else {
+        this.toggleProperty('emojiPickerOpen');
+      }
+
+      if (this.get('emojiPickerOpen')) {
+        Ember.run.next(() => {
+          const composerWidth = 300;
+          const emojiModalWidth = 400;
+          const composerOffset = this.$().offset();
+          const composerLeftOffset = composerOffset.left;
+
+          let css = { bottom: 20, visibility: 'visible' };
+
+          if (composerLeftOffset > emojiModalWidth) {
+            css['left'] = composerLeftOffset - emojiModalWidth;
+          } else if (($(window).width() - (composerLeftOffset - composerWidth)) > emojiModalWidth) {
+            css['left'] = composerLeftOffset + composerWidth;
+          } else {
+            css['left'] = composerLeftOffset;
+            css['bottom'] = this.$().height();
+          }
+
+          $('.emoji-picker').css(css);
+        });
+      }
     }
   },
 
@@ -252,19 +283,19 @@ export default Ember.Component.extend({
 
   open() {
     this.set('composeState', 'open');
-    this.$().animate({ height: 400 }, 400, () => {
+    this.$().animate({ height: 400 }, 300, () => {
       this.afterStreamRender();
     });
   },
 
   collapse() {
     this.set('composeState', 'minimized');
-    this.$().animate({ height: 40 }, 400);
+    this.$().animate({ height: 40 }, 300);
   },
 
   close() {
     this.set('composeState', 'closed');
-    this.$().animate({ height: 0 }, 400, () => {
+    this.$().animate({ height: 0 }, 300, () => {
       this.sendAction('removeDocked', this.get('index'));
     });
   },

@@ -1,16 +1,8 @@
-import { on, observes } from 'ember-addons/ember-computed-decorators';
-import autosize from 'discourse/lib/autosize';
+import { observes } from 'ember-addons/ember-computed-decorators';
+import ExpandingTextArea from 'discourse/components/expanding-text-area';
 
-export default Ember.TextArea.extend({
+export default ExpandingTextArea.extend({
   attributeBindings: ['disabled'],
-
-  @on('didInsertElement')
-  _startWatching() {
-    Ember.run.scheduleOnce('afterRender', () => {
-      this.$().focus();
-      autosize(this.element);
-    });
-  },
 
   @observes('value')
   _updateAutosize() {
@@ -19,12 +11,7 @@ export default Ember.TextArea.extend({
       evt.initEvent('autosize:update', true, false);
       this.element.dispatchEvent(evt);
     });
-  },
-
-  @on('willDestroyElement')
-  _disableAutosize() {
-    autosize.destroy(this.$());
   }
 });
 
-// necessary because the expanding textarea in core is an admin component
+// necessary because the expanding textarea in core doesnt apply autosize after render

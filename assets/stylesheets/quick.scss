@@ -170,8 +170,8 @@
   bottom: 0;
   width: 300px;
   background-color: $secondary;
-  box-shadow: 0 0px 15px -2px rgba(0, 0, 0, 0.25);
-  border: 2px solid dark-light-diff($primary, $secondary, 88%, -55%);
+  box-shadow: shadow("menu-panel");
+  border: 1px solid $primary-low;
   height: 400px;
 
   &.minimized {
@@ -200,50 +200,53 @@
   }
 
   .grippie {
-    height: 30px;
-    margin-bottom: 5px;
-    background-color: dark-light-diff($primary, $secondary, 88%, -55%);
+    height: 20px;
+    margin-bottom: 2px;
+    background-color: $primary-low;
+    box-shadow: shadow("header");
+
+    &:before {
+      content: initial;
+    }
   }
 
   .toggler {
     position: absolute;
-    top: 2px;
-    right: 23px;
+    top: 4px;
+    right: 28px;
     padding: 0;
     font-size: 19px;
-    color: dark-light-choose(scale-color($primary, $lightness: 50%), scale-color($secondary, $lightness: 50%));
+    color: $primary-medium;
     font-weight: 900;
   }
 
   .cancel {
     position: absolute;
-    right: 3px;
-    top: 3px;
+    right: 8px;
+    top: 5px;
     font-size: 15px;
-    color: dark-light-choose(scale-color($primary, $lightness: 50%), scale-color($secondary, $lightness: 50%));
+    color: $primary-medium;
     z-index: 20;
   }
 
   .topic-link {
     position: absolute;
-    top: 5px;
-    right: 45px;
+    top: 8px;
+    right: 50px;
     padding: 0;
-    color: dark-light-choose(scale-color($primary, $lightness: 50%), scale-color($secondary, $lightness: 50%));
+    color: $primary-medium;
     font-weight: 900;
   }
 
   .ac-wrap {
-    position: absolute;
-    top: 21px;
-    width: 97% !important;
-    z-index: 2;
-    overflow: visible;
+    width: initial !important;
+    border: none;
+    box-shadow: shadow("header");
   }
 
   .docked-usernames-wrapper {
     position: absolute;
-    top: 10px;
+    top: 4px;
     left: 10px;
     max-width: 200px;
     z-index: 1;
@@ -327,7 +330,7 @@
 
         &.yours {
           float: right;
-          background-color: dark-light-diff($primary, $secondary, 88%, -55%);
+          background-color: $tertiary-low;
           padding: 3px 6px;
           border-radius: 6px;
           display: block;
@@ -349,9 +352,9 @@
   .d-editor-textarea-wrapper {
     padding: 0;
     width: 100%;
+    border: none;
 
     .d-editor-input {
-      height: 100%;
       border-top: 2px solid dark-light-diff($primary, $secondary, 88%, -55%);
       border-bottom: none;
       border-left: none;
@@ -359,58 +362,6 @@
       margin-bottom: 30px;
       box-shadow: none;
       border-radius: 0;
-      width: 97%;
-    }
-  }
-
-  .d-editor-modals {
-    position: absolute;
-    top: -240px;
-    height: calc(100% - 100px);
-  }
-
-  .docked-modal {
-    background-color: black;
-    opacity: 0.9;
-    z-index: 1000;
-    color: white;
-
-    .modal-body {
-      opacity: 1;
-    }
-
-    .radios {
-      height: 30px;
-      padding: 5px 0;
-      line-height: 30px;
-
-      > * {
-        display: inline-block;
-      }
-
-      #filename-input {
-        display: inline-block;
-        width: 85px;
-      }
-
-      .radio {
-        padding-left: 5px;
-      }
-
-      .inputs {
-        input[type="text"] {
-          width: 150px;
-        }
-      }
-    }
-
-    .hint {
-      font-size: 0.929em;
-    }
-
-    .modal-footer {
-      border: none;
-      padding: 10px 15px;
     }
   }
 
@@ -444,7 +395,7 @@
     color: #919191;
   }
 
-  .d-editor-button-bar {
+  .button-bar {
     position: absolute;
     bottom: 10px;
     left: 5px;
@@ -452,22 +403,22 @@
     top: initial;
     width: auto;
     border: none;
+    z-index: 99;
 
-    button {
-      display: none;
-      margin-right: 2px;
+    .btn {
+      padding: 3px 6px;
+      background-color: $secondary;
 
-      &.upload, &.emoji {
-        display: block;
+      .fa {
+        line-height: 18px;
+        width: 15px;
+        margin-right: 0;
       }
 
-      i {
+      &:hover {
+        background-color: $primary-low;
         color: $primary;
       }
-    }
-
-    .d-editor-spacer {
-      display: none;
     }
   }
 
@@ -490,10 +441,16 @@
     height: 100%;
 
     .emoji-picker {
-      top: 50% !important;
-      left: 50% !important;
-      margin-top: -150px;
-      margin-left: -200px;
+      visibility: hidden;
+      box-shadow: shadow('menu-panel');
     }
+  }
+}
+
+.docked-upload {
+  display: inline-block;
+
+  .docked-uploading {
+    display: inline-block;
   }
 }

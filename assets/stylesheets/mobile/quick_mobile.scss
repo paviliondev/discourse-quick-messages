@@ -15,7 +15,7 @@
     top: 0;
   }
 
-  .docked-composer-header {
+  .docked-composer-header, &.minimized .docked-composer-header {
     height: 50px;
     line-height: 50px;
 
@@ -30,7 +30,7 @@
 
     a.toggler {
       font-size: 30px;
-      margin-bottom: 2px;
+      margin-bottom: 5px;
     }
 
     a.topic-link {

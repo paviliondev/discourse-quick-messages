@@ -35,7 +35,7 @@
       </div>
     {{else}}
       {{#if loading}}
-        {{loading-spinner size="small"}}
+        {{loading-spinner size=spinnerSize}}
       {{else}}
         <div class='docked-post-stream'>
           {{#each postStream.posts as |post|}}

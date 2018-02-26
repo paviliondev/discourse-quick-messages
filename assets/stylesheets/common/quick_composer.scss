@@ -27,7 +27,9 @@
     .docked-composer-header {
       height: 40px;
       line-height: 30px;
+      margin-bottom: 0;
       cursor: pointer;
+      box-shadow: 0 -2px 4px -1px rgba(0,0,0,0.25);
     }
 
     .docked-draft-wrapper {

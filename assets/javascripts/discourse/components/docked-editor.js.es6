@@ -63,20 +63,20 @@ export default DEditor.extend({
       Ember.run.scheduleOnce('afterRender', () => $('.d-editor-input').click());
     },
 
-    textareaFocus(e) {
-      this.handleIOSPositioning(e.type);
-      if (e.type === 'focus') {
+    focusChange(state) {
+      this.handleIOSPositioning(state);
+      if (state === 'focus') {
         this.sendAction('toggleEmojiPicker', false);
       }
       Ember.run.scheduleOnce('afterRender', () => {
         if (this._state === 'destroying') return;
-        this.set('textareaFocus', e.type);
+        this.set('focusState', state);
       });
     },
 
     // focus/blur events in textarea prevent normal clicks on buttons from working the first time
     buttonMousedown(e) {
-      if (this.site.mobileView && this.get('textareaFocus') === 'focus') {
+      if (this.site.mobileView && this.get('focusState') === 'focus') {
         Ember.run.next(() => {
           const $target = $(e.target);
           if ($target.hasClass('fa-picture-o')) {

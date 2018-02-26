@@ -38,9 +38,14 @@
     }
   }
 
+  .docked-usernames {
+    font-size: 1.1em;
+  }
+
   .docked-editor {
     left: 0;
     right: 0;
+    margin-bottom: 2px;
   }
 
   .docked-editor-container {

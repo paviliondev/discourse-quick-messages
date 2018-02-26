@@ -6,21 +6,26 @@ export default ExpandingTextArea.extend({
   rows: 1,
 
   @on('didInsertElement')
-  setupFocus() {
+  setupListners() {
+    const focus = () => this.sendAction('focusChange', 'focus');
+    const blur = () => this.sendAction('focusChange', 'blur');
+    this.setProperties({ focus, blur });
+
     Ember.run.scheduleOnce('afterRender', () => {
-      this.$().on('focus', Ember.run.bind(this, this.handleFocus));
-      this.$().on('blur', Ember.run.bind(this, this.handleFocus));
+      this.$().one('click', Ember.run.bind(this, focus));
+      this.$().on('focus', Ember.run.bind(this, focus));
+      this.$().on('blur', Ember.run.bind(this, blur));
+
+      // for iOS
+      $(document).on('visibilitychange', Ember.run.bind(this, blur));
     });
   },
 
   @on('willDestroyElement')
-  destroyFocus() {
-    this.$().off('focus', Ember.run.bind(this, this.handleFocus));
-    this.$().off('blur', Ember.run.bind(this, this.handleFocus));
-  },
-
-  handleFocus(e) {
-    this.sendAction('textareaFocus', e);
+  destroyListners() {
+    this.$().off('focus', Ember.run.bind(this, this.get('focus')));
+    this.$().off('blur', Ember.run.bind(this, this.get('blur')));
+    $(document).off('visibilitychange', Ember.run.bind(this, this.get('blur')));
   },
 
   @observes('value')

@@ -103,6 +103,11 @@ export default Ember.Component.extend({
     return this.site.mobileView ? null : index + 1;
   },
 
+  @computed()
+  spinnerSize() {
+    return this.site.mobileView ? 'large' : 'small';
+  },
+
   @observes('emojiPickerOpen')
   setupEmojiPickerCss() {
     const emojiPickerOpen = this.get('emojiPickerOpen');
@@ -237,6 +242,17 @@ export default Ember.Component.extend({
     const $container = this.$('.docked-composer-posts');
     const $stream = this.$('.docked-post-stream');
     const streamHeight = $stream.height();
+    let self = this;
+
+    // ensure stream is scrolled after images are loaded
+    this.$('.docked-post-stream img:not(.avatar)').each(function() {
+      if ($(this).height() === 0) {
+        $(this).on("load", function() {
+          if (this.complete) self.scrollPoststream();
+        });
+      }
+    });
+
     $container.scrollTop(streamHeight);
   },
 
@@ -330,7 +346,7 @@ export default Ember.Component.extend({
     });
   },
 
-  @observes('topic.postStream.hasLoadedData')
+  @observes('topic.postStream.loadedAllPosts')
   afterStreamRender() {
     const postStream = this.get('postStream');
     if (postStream) {
@@ -416,15 +432,6 @@ export default Ember.Component.extend({
   save() {
     if (this.get('cantSubmitPost')) return;
 
-    let imageSizes = {};
-    this.$('.docked-editor img').each((i, e) => {
-      const $img = $(e);
-      const src = $img.prop('src');
-      if (src && src.length) {
-        imageSizes[src] = { width: $img.width(), height: $img.height() };
-      }
-    });
-
     const store = getOwner(this).lookup('store:main');
     const postStream = this.get('postStream');
     const user = this.get('currentUser');
@@ -434,8 +441,7 @@ export default Ember.Component.extend({
           yours: true
         });
     let postOpts = {
-          custom_fields: { 'quick_message': true },
-          imageSizes
+          custom_fields: { 'quick_message': true }
         };
 
     this.serialize(_create_serializer, postOpts);

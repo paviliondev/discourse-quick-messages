@@ -1,0 +1,275 @@
+.messages-container {
+  z-index: 998;
+  position: fixed;
+}
+
+.docked-composer {
+  position: fixed;
+  bottom: 0;
+  width: 300px;
+  background-color: $secondary;
+  box-shadow: shadow("menu-panel");
+  border: 1px solid $primary-low;
+  height: 400px;
+  display: flex;
+  flex-direction: column;
+
+  &.minimized {
+    height: auto;
+    position: fixed;
+    display: block;
+
+    .docked-post-stream,
+    .grippie  {
+      display: none;
+    }
+
+    .docked-composer-header {
+      height: 40px;
+      line-height: 30px;
+      cursor: pointer;
+    }
+
+    .docked-draft-wrapper {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      cursor: pointer;
+      background-color: dark-light-diff($primary, $secondary, 88%, -55%);
+    }
+  }
+
+  &.closed {
+    height: auto;
+  }
+
+  &#new .docked-composer-header  {
+    height: auto;
+  }
+
+  .grippie {
+    background-color: $primary-low;
+
+    &:before {
+      border-top: 3px double $primary;
+    }
+  }
+
+  .docked-composer-posts {
+    flex: 1;
+    width: 100%;
+    overflow-x: hidden;
+    overflow-y: scroll;
+    margin-bottom: 2px;
+
+    .spinner {
+      position: absolute;
+      top: calc(50% - 40px);
+      left: calc(50% - 10px);
+    }
+  }
+}
+
+.docked-composer-header {
+  width: inherit;
+  height: 30px;
+  line-height: 25px;
+  padding: 0 12px;
+  margin-bottom: 2px;
+  box-sizing: border-box;
+  background-color: $primary-low;
+  box-shadow: shadow("header");
+  z-index: 100;
+
+  .controls {
+    margin-left: 5px;
+    float: right;
+
+    > a {
+      margin: 0 5px;
+      display: inline-block;
+      vertical-align: middle;
+
+      &:last-of-type {
+        margin-right: 0;
+      }
+    }
+
+    .toggler {
+      padding: 0;
+      font-size: 19px;
+      color: $primary-medium;
+      font-weight: 900;
+    }
+
+    .cancel {
+      font-size: 15px;
+      color: $primary-medium;
+      z-index: 20;
+      margin-bottom: 2px;
+    }
+
+    .topic-link {
+      padding: 0;
+      color: $primary-medium;
+      font-weight: 900;
+    }
+  }
+
+  .ac-wrap {
+    width: initial !important;
+    background-color: $primary-very-low;
+    margin-bottom: 10px;
+  }
+
+  .docked-usernames-wrapper {
+    position: relative;
+    max-width: 200px;
+    z-index: 1;
+    overflow: hidden;
+
+    .docked-usernames {
+      white-space: nowrap;
+      display: inline-block;
+    }
+  }
+
+  .docked-usernames-toggle {
+    padding: 0 5px;
+  }
+
+  .extra-usernames {
+    position: absolute;
+    width: 80px;
+    z-index: 100;
+    padding: 10px;
+    box-shadow: 0 2px 4px -1px rgba(0, 0, 0, 0.25);
+    background-color: dark-light-diff($primary, $secondary, 88%, -55%);
+
+    .cancel {
+      float: right;
+    }
+  }
+}
+
+.docked-post-stream {
+  padding: 10px;
+
+  .docked-post {
+    width: 100%;
+    display: inline-block;
+    padding: 5px 0;
+    color: #333;
+
+    .docked-post-user {
+      display: inline-block;
+      vertical-align: top;
+      width: 11%;
+    }
+
+    .docked-post-content {
+      display: inline-block;
+      word-wrap: break-word;
+      vertical-align: middle;
+      max-width: 80%;
+
+      &.yours {
+        float: right;
+        background-color: $tertiary-low;
+        padding: 3px 6px;
+        border-radius: 6px;
+        display: block;
+      }
+
+      p {
+        margin: 0;
+        color: $primary;
+      }
+
+      img {
+        max-width: 100%;
+        height: auto;
+      }
+    }
+  }
+}
+
+.docked-editor {
+  flex-grow: 0;
+  box-shadow: 0 -2px 4px -1px rgba(0,0,0,0.25);
+
+  .docked-editor-container {
+    border: none;
+    bottom: 0;
+    width: 300px;
+    left: 0;
+    right: 0;
+    padding: 0;
+    background-color: $secondary;
+    position: relative;
+  }
+
+  .docked-editor-textarea-wrapper {
+    padding: 0;
+    width: 100%;
+    border: none;
+
+    .d-editor-input {
+      border-bottom: none;
+      border-left: none;
+      border-right: none;
+      margin-bottom: 30px;
+      box-shadow: none;
+      border-radius: 0;
+    }
+  }
+
+  .button-bar {
+    position: absolute;
+    bottom: 10px;
+    left: 5px;
+    margin: 0;
+    top: initial;
+    width: auto;
+    border: none;
+    z-index: 99;
+
+    .btn {
+      padding: 3px 6px;
+      background-color: $secondary;
+
+      .fa {
+        line-height: 18px;
+        margin-right: 0;
+      }
+
+      &:hover {
+        background-color: $primary-low;
+        color: $primary;
+      }
+    }
+  }
+
+  .d-editor-preview-header,
+  .d-editor-preview-wrapper {
+    display: none;
+  }
+
+  .emoji-picker {
+    visibility: hidden;
+    box-shadow: shadow('menu-panel');
+  }
+}
+
+.docked-upload {
+  display: inline-block;
+
+  .docked-uploading {
+    display: inline-block;
+  }
+}
+
+.noscroll {
+  height: 100%;
+  overflow: auto;
+}

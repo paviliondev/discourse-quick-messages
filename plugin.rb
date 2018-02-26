@@ -3,8 +3,9 @@
 # version: 0.1
 # authors: Angus McLeod
 
-register_asset 'stylesheets/common/quick.scss'
-register_asset 'stylesheets/mobile/quick.scss', :mobile
+register_asset 'stylesheets/common/quick_menu.scss'
+register_asset 'stylesheets/common/quick_composer.scss'
+register_asset 'stylesheets/mobile/quick_mobile.scss', :mobile
 
 after_initialize do
 

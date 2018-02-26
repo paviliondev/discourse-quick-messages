@@ -1,0 +1,161 @@
+#toggle-messages-menu {
+  position: relative;
+
+  .unread-private-messages {
+    top: -2px;
+    right: -2px;
+  }
+}
+
+.current-user .unread-private-messages, .current-user .ring {
+  display: none;
+}
+
+.user-menu .notifications .user-message {
+  display: none;
+}
+
+.messages-menu .panel-body-contents {
+  overflow: hidden;
+
+  .spinner {
+    position: absolute;
+    left: 150px;
+    top: 8px;
+    width: 15px;
+    height: 15px;
+    border-width: 2px;
+    margin: 0 auto;
+  }
+}
+
+.message-list {
+  text-align: left;
+  min-height: 35px;
+}
+
+.no-messages {
+  text-align: center;
+  padding: 10px 0;
+}
+
+.message-item {
+  padding: 0 2px;
+  font-size: 14px;
+  list-style: none;
+  margin: 0;
+  line-height: 17px;
+  display: inline-block;
+  padding: 5px;
+  width: 97%;
+
+  .item-contents {
+    color: $primary;
+    cursor: pointer;
+    display: flex;
+
+    div.badge-notification {
+      position: relative;
+      top: 4px;
+      display: initial;
+      background-color: $success;
+      height: 12px;
+      width: 8px;
+    }
+  }
+
+  .message-avatar {
+    margin-right: 3px;
+  }
+
+  .message-excerpt {
+    flex: 1;
+    padding: 0 8px;
+    line-height: 25px;
+    white-space: nowrap;
+    word-break: break-all;
+    text-overflow: ellipsis;
+    overflow: hidden;
+
+    i.fa {
+      font-size: 18px;
+      width: 18px;
+      height: 18px;
+      line-height: 18px;
+      padding: 0;
+      vertical-align: middle;
+    }
+  }
+
+  .new-count {
+    line-height: 25px;
+  }
+
+  &:hover {
+    background-color: dark-light-diff($highlight, $secondary, 50%, -55%);
+  }
+
+  span {
+    color: $primary;
+  }
+
+  .fa {
+    padding-right: 6px;
+
+  }
+
+  .icon {
+    color: dark-light-choose(scale-color($primary, $lightness: 30%), scale-color($secondary, $lightness: 70%));
+  }
+
+  .is-warning {
+    i.fa-envelope-o {
+      &:before {
+        content: "\f0e0";
+      }
+
+      color: $danger;
+    }
+  }
+
+  .read {
+    background-color: $secondary;
+  }
+
+  .none {
+    padding-top: 5px;
+  }
+}
+
+.message-item.unread .item-contents {
+  color: #0088cc;
+}
+
+.menu-links {
+  .all-messages {
+    float: left;
+    text-align: left;
+
+    a {
+      line-height: 32px;
+    }
+  }
+
+  .new-message {
+    float: right;
+    text-align: right;
+
+    .widget-link {
+      white-space: nowrap;
+      word-break: break-all;
+      text-overflow: ellipsis;
+      overflow: hidden;
+
+      i {
+        font-size: 17px;
+        display: initial;
+        padding: 5px;
+      }
+    }
+  }
+}

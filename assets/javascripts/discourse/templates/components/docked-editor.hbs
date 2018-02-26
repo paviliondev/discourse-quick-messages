@@ -1,14 +1,16 @@
-<div class='d-editor-container'>
+<div class='docked-editor-container'>
   <div class='button-bar'>
-    {{d-button action='openEmojiPicker' class='btn' icon='smile-o'}}
-    {{docked-upload addText='addText'}}
+    {{d-button action='openEmojiPicker' class='btn' icon='smile-o' mouseDown=(action 'buttonMousedown')}}
+    {{docked-upload uploadDone=(action 'uploadDone') mouseDown=(action 'buttonMousedown')}}
   </div>
-  <div class="d-editor-textarea-wrapper">
-    {{docked-expanding-textarea tabindex=tabindex
+  <div class="docked-editor-textarea-wrapper">
+    {{docked-expanding-textarea tabindex=null
                                 value=value
                                 class="d-editor-input"
                                 placeholder=placeholderTranslated
-                                disabled=disabled}}
+                                disabled=disabled
+                                scrollPoststream='scrollPoststream'
+                                textareaFocus='textareaFocus'}}
     {{popup-input-tip validation=validation}}
   </div>
 

@@ -13,9 +13,9 @@ export default Ember.Component.extend({
   testImages() {
     let imgs = this.$('img');
     if (imgs.length) {
-      imgs.each(function(){
-        $(this).one("load", function() {
-          $('.docked-composer-top').scrollTop($('.docked-post-stream').height());
+      imgs.each(() => {
+        $(this).one("load", () => {
+          Ember.run.scheduleOnce('afterRender', () => this.sendAction('scrollPoststream'));
         }).each(function() {
           if(this.complete) $(this).load();
         });

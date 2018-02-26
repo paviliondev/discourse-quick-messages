@@ -1,47 +1,57 @@
-<a href class='cancel fa fa-times' {{action "cancel"}} tabindex="6"></a>
-<a href class='toggler fa {{togglerIcon}}' {{action "toggle" bubbles=false}} title={{i18n 'composer.toggler'}}></a>
-<a href class='topic-link fa fa-external-link' {{action "openTopic"}} title={{i18n 'composer.open_message_topic'}}></a>
-{{#if firstPost}}
-  {{user-selector topicId=topic.id
-                  excludeCurrentUser="true"
-                  id="private-message-users"
-                  includeMentionableGroups="true"
-                  placeholderKey="composer.users_placeholder"
-                  tabindex="1"
-                  usernames=targetUsernames}}
-{{else}}
-  <div class="docked-usernames-wrapper">
-    <div class="docked-usernames">{{otherUsernames}}</div>
+<div class="docked-composer-header">
+  <div class="controls">
+    <a href class='cancel fa fa-times' {{action "cancel"}} tabindex="6"></a>
+    <a href class='toggler fa {{togglerIcon}}' {{action "toggle" bubbles=false}} title={{i18n 'composer.toggler'}}></a>
+    <a href class='topic-link fa fa-external-link' {{action "openTopic"}} title={{i18n 'composer.open_message_topic'}}></a>
   </div>
-  {{#if hiddenUsernames}}
-    {{d-button class="docked-usernames-toggle" icon='ellipsis-h' action="showUsernames"}}
-    {{#if showUsernames}}
-      <div class="extra-usernames">
-        {{otherUsernames}}
-        <a href class='cancel fa fa-times' {{action "showUsernames"}}></a>
-      </div>
+  {{#if firstPost}}
+    {{user-selector topicId=topic.id
+                    excludeCurrentUser="true"
+                    id="private-message-users"
+                    includeMentionableGroups="true"
+                    placeholderKey="composer.users_placeholder"
+                    tabindex="1"
+                    usernames=targetUsernames}}
+  {{else}}
+    <div class="docked-usernames-wrapper">
+      <div class="docked-usernames">{{otherUsernames}}</div>
+    </div>
+    {{#if hiddenUsernames}}
+      {{d-button class="docked-usernames-toggle" icon='ellipsis-h' action="showUsernames"}}
+      {{#if showUsernames}}
+        <div class="extra-usernames">
+          {{otherUsernames}}
+          <a href class='cancel fa fa-times' {{action "showUsernames"}}></a>
+        </div>
+      {{/if}}
     {{/if}}
   {{/if}}
-{{/if}}
-<div class='docked-composer-top'>
-  {{#if composerMinimized}}
-    <div class='docked-draft-wrapper' {{action "toggle"}}></div>
-  {{else}}
+</div>
+{{#if composerOpen}}
+  <div class='docked-composer-posts'>
     {{#if disableEditor}}
       <div class=docked-composer-tip>
         <span>{{i18n 'composer.quick_duplicate'}}</span>
       </div>
     {{else}}
-      {{docked-post-stream posts=postStream.posts loadingStream=loadingStream}}
+      {{#if loading}}
+        {{loading-spinner size="small"}}
+      {{else}}
+        <div class='docked-post-stream'>
+          {{#each postStream.posts as |post|}}
+            {{docked-post post=post scrollPoststream='scrollPoststream'}}
+          {{/each}}
+        </div>
+      {{/if}}
     {{/if}}
-  {{/if}}
-</div>
-{{#if composerReady}}
-  {{docked-editor  tabindex="4"
-                   value=reply
-                   composer=this
-                   placeholder="composer.quick_placeholder"
-                   disabled=disableEditor
-                   toggleEmojiPicker='toggleEmojiPicker'
-                   emojiPickerOpen=emojiPickerOpen}}
+  </div>
+
+  {{docked-editor tabindex=editorTabIndex
+                  value=reply
+                  composer=this
+                  placeholder="composer.quick_placeholder"
+                  disabled=disableEditor
+                  toggleEmojiPicker='toggleEmojiPicker'
+                  emojiPickerOpen=emojiPickerOpen
+                  scrollPoststream='scrollPoststream'}}
 {{/if}}

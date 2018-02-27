@@ -132,13 +132,13 @@
 }
 
 .menu-links {
+  a {
+    line-height: 26px;
+  }
+
   .all-messages {
     float: left;
     text-align: left;
-
-    a {
-      line-height: 32px;
-    }
   }
 
   .new-message {

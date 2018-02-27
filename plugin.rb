@@ -36,7 +36,7 @@ after_initialize do
         max_setting = SiteSetting.send("quick_message_rate_limit_create")
       else
         limit_key = "create_#{self.class.name.underscore}"
-        max_setting = if user && user.new_user? and SiteSetting.has_setting?("rate_limit_new_user_#{limit_key}")
+        max_setting = if user && user.new_user? && SiteSetting.has_setting?("rate_limit_new_user_#{limit_key}")
           SiteSetting.send("rate_limit_new_user_#{limit_key}")
         else
           SiteSetting.send("rate_limit_#{limit_key}")
@@ -72,22 +72,20 @@ after_initialize do
           User.exec_sql(sql, user_id: id,
                              subtype: TopicSubtype.user_to_user,
                              type:  Notification.types[:private_message])
-              .getvalue(0,0).to_i
+            .getvalue(0, 0).to_i
         end
     end
   end
 
   require 'topic_list_item_serializer'
   class ::TopicListItemSerializer
-    attributes :message_excerpt,
-               :subtype
+    attributes :message_excerpt, :subtype
 
     def message_excerpt
       if object.custom_fields["quick_message"] || object.archetype == Archetype.private_message
-        cooked = Post.where(topic_id: object.id, post_number: object.highest_post_number).pluck('cooked')
-        excerpt = PrettyText.excerpt(cooked[0], 200, keep_emoji_images: true)
-        excerpt.gsub!(/(\[#{I18n.t 'excerpt_image'}\])/, "<i class='fa fa-picture-o'></i>") if excerpt
-        excerpt
+        raw = Post.where(topic_id: object.id, post_number: object.highest_post_number).pluck('raw')[0]
+        raw.gsub!(/(\!\[)(.*?)\)/, "<i class='fa fa-picture-o'></i>")
+        raw.truncate(150)
       else
         return false
       end

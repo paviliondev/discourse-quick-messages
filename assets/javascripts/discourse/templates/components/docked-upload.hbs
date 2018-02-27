@@ -1,9 +1,10 @@
-<label class="btn btn-small" disabled={{uploading}}>
-  {{d-icon "picture-o"}}
-  <input disabled={{uploading}} type="file" style="visibility: hidden; position: absolute;" multiple/>
-</label>
 {{#if uploading}}
   <div class="docked-uploading">
     {{uploadProgress}}%
   </div>
+{{else}}
+  <label class="btn btn-small" disabled={{uploading}}>
+    {{d-icon "picture-o"}}
+    <input disabled={{uploading}} type="file" style="visibility: hidden; position: absolute;" multiple/>
+  </label>
 {{/if}}

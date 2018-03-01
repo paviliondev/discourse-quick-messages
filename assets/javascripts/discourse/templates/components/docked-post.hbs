@@ -1,8 +1,12 @@
-<div class="docked-post-user" data-user-card="{{post.username}}">
-  {{#unless post.yours}}
-    {{avatar post avatarTemplatePath="avatar_template" usernamePath="username" imageSize="small"}}
-  {{/unless}}
-</div>
-<div class="docked-post-content {{contentClass}}">
-  {{mount-widget widget='docked-post' args=post}}
-</div>
+{{#if isSmallAction}}
+  {{mount-widget widget='docked-small-action' args=post}}
+{{else}}
+  <div class="docked-post-user" data-user-card="{{post.username}}">
+    {{#unless post.yours}}
+      {{avatar post avatarTemplatePath="avatar_template" usernamePath="username" imageSize="small"}}
+    {{/unless}}
+  </div>
+  <div class="docked-post-content {{contentClass}}">
+    {{mount-widget widget='docked-post' args=post}}
+  </div>
+{{/if}}

@@ -7,5 +7,11 @@ export default Ember.Component.extend({
   @computed('post.yours')
   contentClass(yours) {
     return yours ? 'yours' : '';
+  },
+
+  @computed('post.post_type')
+  isSmallAction(type) {
+    const postTypes = this.site.post_types;
+    return type === postTypes.small_action;
   }
 });

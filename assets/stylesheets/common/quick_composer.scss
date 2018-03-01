@@ -275,3 +275,16 @@
   height: 100%;
   overflow: auto;
 }
+
+.docked-small-action {
+  border-top: 1px solid $primary-low;
+  border-bottom: 1px solid $primary-low;
+  padding: 10px 0;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+
+  .icon, &> span:not(:last-of-type) {
+    margin-right: 6px;
+  }
+}

@@ -352,13 +352,15 @@ export default Ember.Component.extend({
     if (postStream) {
       const nearPost = this.get("topic.highest_post_number");
       postStream.refresh({ nearPost }).then(() => {
-        this.set('loading', false);
-        Ember.run.scheduleOnce('afterRender', () => {
-          if (this.$()) {
-            this.scrollPoststream();
-            dockedScreenTrack(this, this.get('topic'));
-          }
-        });
+        if (this._state !== 'destroying') {
+          this.set('loading', false);
+          Ember.run.scheduleOnce('afterRender', () => {
+            if (this.$()) {
+              this.scrollPoststream();
+              dockedScreenTrack(this, this.get('topic'));
+            }
+          });
+        }
       });
     }
   },

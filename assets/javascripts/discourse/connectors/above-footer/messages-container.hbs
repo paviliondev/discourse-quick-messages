@@ -4,5 +4,9 @@
                     maxIndex=maxIndex
                     index=index
                     removeDocked="removeDocked"
-                    updateId="updateId"}}
+                    updateId="updateId"
+                    targetUsernames=targetUsernames}}
 {{/each}}
+{{#if showQuickButton}}
+  {{d-button class='quick-button' action="openQuick" icon=siteSettings.quick_message_quick_button_icon}}
+{{/if}}

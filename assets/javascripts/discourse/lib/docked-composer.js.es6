@@ -1,21 +1,25 @@
 const getUsernames = function(participants) {
   let usernames = [];
+
   participants.forEach((participant) => {
     let username = participant.user ? participant.user.username : participant.username;
     usernames.push(username);
   });
+
   return usernames;
 };
 
 const formatUsernames = function(usernames) {
   let formatted = '';
   let length = usernames.length;
+
   usernames.forEach((username, i) => {
     formatted += username;
     if (i < length - 1) {
       formatted += i === (length - 2) ? ' & ' : ', ';
     }
   });
+  
   return formatted;
 };
 

@@ -292,3 +292,14 @@
     margin-right: 6px;
   }
 }
+
+.quick-button {
+  position: fixed;
+  right: 50px;
+  bottom: 50px;
+  padding: 14px 20px;
+  border-radius: 50%;
+  font-size: 1.3em;
+  box-shadow: shadow('card');
+  border: 1px solid $primary-low;
+}

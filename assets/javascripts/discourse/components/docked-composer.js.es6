@@ -368,10 +368,19 @@ export default Ember.Component.extend({
   @computed('topic.details.loaded')
   otherUsernames(loaded) {
     if (loaded) {
-      const usernames = getUsernames(this.get('topic.details.allowed_users'));
+      const details = this.get('topic.details');
+      let usernames = getUsernames(details.get('allowed_users'));
+
+      const groupNames = details.get('allowed_groups');
+      if (groupNames && groupNames.length) {
+        usernames.push(...groupNames.map((g) => g.name));
+      }
+
       usernames.splice(usernames.indexOf(this.get('currentUser.username')), 1);
+
       return formatUsernames(usernames);
     }
+
     return '';
   },
 
@@ -389,16 +398,25 @@ export default Ember.Component.extend({
     }
   },
 
+  @on('init')
   @observes('targetUsernames')
   createOrContinue() {
+    let targetUsernames = this.get('targetUsernames');
+
+    if (!targetUsernames) return;
+
     const currentUsername = this.get('currentUser.username');
     let existingId = null;
-    let targetUsernames = this.get('targetUsernames').split(',');
+
+    targetUsernames = targetUsernames.split(',');
     targetUsernames.push(currentUsername);
 
     getCurrentUserMessages(this).then((result) => {
       result.forEach((message) => {
+        console.log(message);
+
         let usernames = getUsernames(message.participants);
+
         if (usernames.indexOf(currentUsername) === -1) {
           usernames.push(currentUsername);
         }

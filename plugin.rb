@@ -7,8 +7,9 @@ register_asset 'stylesheets/common/quick_menu.scss'
 register_asset 'stylesheets/common/quick_composer.scss'
 register_asset 'stylesheets/mobile/quick_mobile.scss', :mobile
 
-after_initialize do
+load File.expand_path('../lib/quick_target_validator.rb', __FILE__)
 
+after_initialize do
   Post.register_custom_field_type('quick_message', :boolean)
   PostRevisor.track_topic_field(:custom_fields)
 

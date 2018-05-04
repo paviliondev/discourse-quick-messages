@@ -3,3 +3,8 @@ en:
     quick_message_enabled: "Enable Quick Messages."
     quick_message_rate_limit_create: "After posting, users must wait (n) seconds before creating another quick message."
     quick_message_min_post_length: "Minimum allowed quick message length in characters."
+    quick_message_quick_button_enabled: "Show a button in the bottom right corner that opens a quick message with the quick button target."
+    quick_message_quick_button_icon: "Icon for the quick button."
+    quick_message_quick_button_target: "Target user or group of the quick button message."
+    errors:
+      invalid_username_or_group: "Invalid username or group name."

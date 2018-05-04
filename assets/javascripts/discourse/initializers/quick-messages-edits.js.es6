@@ -100,6 +100,10 @@ export default {
           updateId(index, id) {
             const docked = this.get('docked');
             docked.replace(index, 1, id);
+          },
+
+          openQuick() {
+            this.send('addToDocked');
           }
         }
       });

@@ -8,3 +8,13 @@ plugins:
   quick_message_min_post_length:
     default: 1
     client: true
+  quick_message_quick_button_enabled:
+    default: false
+    client: true
+  quick_message_quick_button_icon:
+    default: 'question'
+    client: true
+  quick_message_quick_button_target:
+    default: 'moderators'
+    validator: QuickTargetValidator
+    client: true

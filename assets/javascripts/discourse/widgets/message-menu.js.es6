@@ -2,7 +2,7 @@ import {createWidget} from 'discourse/widgets/widget';
 import { h } from 'virtual-dom';
 
 export default createWidget('messages-menu', {
-  tagName: 'li.messages-menu',
+  tagName: 'div.messages-menu',
   panelContents() {
     return [
       this.attach('message-list'),

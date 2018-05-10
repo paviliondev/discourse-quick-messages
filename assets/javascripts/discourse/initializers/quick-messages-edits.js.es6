@@ -34,10 +34,12 @@ export default {
               }
             }));
           }
-          if (headerState.messagesVisible) {
-            contents.push(helper.attach('messages-menu'));
-          }
+
           return contents;
+        });
+
+        api.addHeaderPanel('messages-menu', 'messagesVisible', function(attrs, state) {
+          return {};
         });
 
         api.attachWidgetAction('header', 'toggleMessages', function() {

@@ -8,3 +8,6 @@ plugins:
   quick_message_min_post_length:
     default: 1
     client: true
+  quick_message_icon:
+    default: 'envelope'
+    client: true

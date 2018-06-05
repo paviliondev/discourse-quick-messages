@@ -19,7 +19,7 @@ export default {
             const unread = currentUser.get('unread_private_messages');
             contents.push(helper.attach('header-dropdown', {
               title: 'user.private_messages',
-              icon: 'envelope',
+              icon: Discourse.SiteSettings.quick_message_icon,
               iconId: 'toggle-messages-menu',
               active: headerState.messagesVisible,
               action: 'toggleMessages',

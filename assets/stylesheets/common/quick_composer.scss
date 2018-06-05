@@ -292,3 +292,9 @@
     margin-right: 6px;
   }
 }
+
+html.whos-online-ring {
+  .docked-avatar.user-online {
+    @extend .topic-avatar.user-online !optional;
+  }
+}

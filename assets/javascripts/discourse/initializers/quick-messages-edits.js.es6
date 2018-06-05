@@ -58,6 +58,12 @@ export default {
           this.messagesClicked();
           DiscourseURL.routeTo('/users/' + this.currentUser.get('username') + '/messages');
         });
+
+        if (Discourse.SiteSettings.whos_online_enabled) {
+          api.modifyClass('component:docked-post', {
+            onlineService: Ember.inject.service('online-service')
+          })
+        }
       });
 
       AppController.reopen({

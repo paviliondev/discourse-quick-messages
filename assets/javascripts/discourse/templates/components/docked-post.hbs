@@ -3,7 +3,9 @@
 {{else}}
   <div class="docked-post-user" data-user-card="{{post.username}}">
     {{#unless post.yours}}
-      {{avatar post avatarTemplatePath="avatar_template" usernamePath="username" imageSize="small"}}
+      <div class='{{avatarClasses}}'>
+        {{avatar post avatarTemplatePath="avatar_template" usernamePath="username" imageSize="small"}}
+      </div>
     {{/unless}}
   </div>
   <div class="docked-post-content {{contentClass}}">

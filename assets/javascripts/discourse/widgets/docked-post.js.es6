@@ -4,7 +4,15 @@ import DecoratorHelper from 'discourse/widgets/decorator-helper';
 import { longDate } from 'discourse/lib/formatter';
 
 class QuickPostCooked extends PostCooked {
-  // Ensure staged posts get updated;
+  init() {
+    const $html = $(`<div class='cooked'>${this.attrs.cooked}</div>`);
+    this._insertQuoteControls($html);
+    this._showLinkCounts($html);
+    this._fixImageSizes($html);
+    this._applySearchHighlight($html);
+    return $html[0];
+  }
+
   update(prev) {
     return this.init();
   }

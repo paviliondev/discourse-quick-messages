@@ -293,8 +293,28 @@
   }
 }
 
+.docked-avatar {
+  position: relative;
+}
+
+html.whos-online-glow {
+  .docked-avatar.user-online {
+    @extend .topic-avatar.user-online !optional;
+  }
+}
+
 html.whos-online-ring {
   .docked-avatar.user-online {
     @extend .topic-avatar.user-online !optional;
+  }
+}
+
+html.whos-online-flair {
+  .docked-avatar.user-online::before {
+    @extend .whos-online-flair-prototype !optional;
+    top: -3px;
+    left: -2px;
+    height: 6px !important;
+    width: 6px !important;
   }
 }

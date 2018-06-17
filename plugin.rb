@@ -11,6 +11,10 @@ after_initialize do
 
   Post.register_custom_field_type('quick_message', :boolean)
   PostRevisor.track_topic_field(:custom_fields)
+  
+  DiscoursePluginRegistry.serialized_current_user_fields << "show_quick_message"
+  User.register_custom_field_type("show_quick_message", :boolean)
+  add_to_serializer(:current_user, :show_quick_message) { object.custom_fields["show_quick_message"] }
 
   SiteSetting.class_eval do
     def self.min_private_message_post_length

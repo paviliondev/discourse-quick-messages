@@ -2,13 +2,21 @@ import { default as computed, on } from 'ember-addons/ember-computed-decorators'
 import { withPluginApi } from 'discourse/lib/plugin-api';
 import DiscourseURL from 'discourse/lib/url';
 import AppController from 'discourse/controllers/application';
+import PreferencesInterface from "discourse/controllers/preferences/interface";
 import { getOwner } from 'discourse-common/lib/get-owner';
 
 export default {
   name: 'quick-messages-edits',
   initialize(){
+    let user_quick_message_preference = 0;
+    if ( Discourse.User ) {
+      let cu = Discourse.User.current();
+      if ( cu.custom_fields.show_quick_message ) {
+        user_quick_message_preference = 1;
+      }
+    }
 
-    if (Discourse.SiteSettings.quick_message_enabled) {
+    if (Discourse.SiteSettings.quick_message_enabled && user_quick_message_preference) {
       withPluginApi('0.1', api => {
         api.decorateWidget('header-icons:before', function(helper) {
           const currentUser = api.getCurrentUser();
@@ -64,6 +72,22 @@ export default {
             onlineService: Ember.inject.service('online-service')
           })
         }
+      });
+
+      PreferencesInterface.reopen({
+        saveAttrNames: function() {
+          const attrs = this._super(...arguments);
+          if (!attrs.includes("custom_fields")) attrs.push("custom_fields");
+          return attrs;
+        }.property(),
+        _updateShowQuickMessage: function() {
+          const saved = this.get("saved");
+          const currentUser = this.get("currentUser");
+
+          if (saved && currentUser && this.get("model.id") == currentUser.get("id")) {
+            currentUser.set("show_quick_message", this.get("model.custom_fields.show_quick_message"));
+          }
+        }.observes("saved")
       });
 
       AppController.reopen({

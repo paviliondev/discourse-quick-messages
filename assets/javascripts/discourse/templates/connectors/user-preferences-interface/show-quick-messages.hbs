@@ -1,0 +1,8 @@
+{{#if siteSettings.quick_message_enabled}}
+  <div class="controls">
+    <label class="checkbox-label">
+      {{input type="checkbox" checked=model.custom_fields.show_quick_messages}}
+      {{i18n "user_preferences.quick_messages_preference"}}
+    </label>
+  </div>
+{{/if}}

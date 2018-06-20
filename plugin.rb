@@ -12,9 +12,9 @@ after_initialize do
   Post.register_custom_field_type('quick_message', :boolean)
   PostRevisor.track_topic_field(:custom_fields)
   
-  DiscoursePluginRegistry.serialized_current_user_fields << "show_quick_message"
-  User.register_custom_field_type("show_quick_message", :boolean)
-  add_to_serializer(:current_user, :show_quick_message) { object.custom_fields["show_quick_message"] }
+  DiscoursePluginRegistry.serialized_current_user_fields << "show_quick_messages"
+  User.register_custom_field_type("show_quick_messages", :boolean)
+  add_to_serializer(:current_user, :show_quick_messages) { object.show_quick_messages }
 
   SiteSetting.class_eval do
     def self.min_private_message_post_length
@@ -59,6 +59,12 @@ after_initialize do
   end
 
   User.class_eval do
+    def show_quick_messages
+      if self.custom_fields["show_quick_messages"]
+        # user.badges.map(&:name)
+        return true
+      end
+    end
     def unread_private_messages
       @unread_pms ||=
         begin

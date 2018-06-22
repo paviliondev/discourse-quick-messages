@@ -58,21 +58,22 @@ after_initialize do
     def unread_private_messages
       @unread_pms ||=
         begin
-          # perf critical, much more efficient than AR
-          sql = "
-             SELECT COUNT(*) FROM notifications n
-             LEFT JOIN topics t ON n.topic_id = t.id
-             WHERE
-              t.deleted_at IS NULL AND
-              t.subtype = :subtype AND
-              n.notification_type = :type AND
-              n.user_id = :user_id AND
-              NOT read"
+          sql = <<~SQL
+              SELECT COUNT(*)
+                FROM notifications n
+           LEFT JOIN topics t ON t.id = n.topic_id
+               WHERE t.deleted_at IS NULL
+                 AND t.subtype = :subtype
+                 AND n.notification_type = :type
+                 AND n.user_id = :user_id
+                 AND NOT read
+          SQL
 
-          User.exec_sql(sql, user_id: id,
-                             subtype: TopicSubtype.user_to_user,
-                             type:  Notification.types[:private_message])
-            .getvalue(0, 0).to_i
+          DB.query_single(sql,
+            user_id: id,
+            subtype: TopicSubtype.user_to_user,
+            type: Notification.types[:private_message]
+          )[0].to_i
         end
     end
   end

@@ -60,14 +60,23 @@ after_initialize do
 
   User.class_eval do
     def show_quick_messages
-      if !self.custom_fields.key?("show_quick_messages") || self.custom_fields["show_quick_messages"].nil?
-        puts "If it's undefined, do we assume the user level preference is off or on?"
-        # until we talk with Angus, let's assume that it should be on...
-        return true
-      elsif !self.custom_fields["show_quick_messages"].blank?
-        # it's not empty, undefined or nil...
-        return true
+      if SiteSetting.quick_message_enabled
+        if SiteSetting.quick_message_user_preference
+          if ActiveModel::Type::Boolean.new.cast(custom_fields['show_quick_messages'])
+            return true
+          end
+        else
+          return true
+        end
       end
+      #if !self.custom_fields.key?("show_quick_messages") || self.custom_fields["show_quick_messages"].nil?
+      #  puts "If it's undefined, do we assume the user level preference is off or on?"
+        # until we talk with Angus, let's assume that it should be on...
+      #  return true
+      #elsif !self.custom_fields["show_quick_messages"].blank?
+        # it's not empty, undefined or nil...
+      #  return true
+      #end
     end
     def unread_private_messages
       @unread_pms ||=

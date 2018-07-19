@@ -67,22 +67,6 @@ export default {
         }
       });
 
-      PreferencesInterface.reopen({
-        saveAttrNames: function() {
-          const attrs = this._super(...arguments);
-          if (!attrs.includes("custom_fields")) attrs.push("custom_fields");
-          return attrs;
-        }.property(),
-        _updateShowQuickMessage: function() {
-          const saved = this.get("saved");
-          const currentUser = this.get("currentUser");
-
-          if (saved && currentUser && this.get("model.id") == currentUser.get("id")) {
-            currentUser.set("show_quick_messages", this.get("model.custom_fields.show_quick_messages"));
-          }
-        }.observes("saved")
-      });
-
       AppController.reopen({
         docked: Ember.A(),
 
@@ -127,5 +111,24 @@ export default {
         }
       });
     }
+
+    PreferencesInterface.reopen({
+
+      saveAttrNames: function() {
+        const attrs = this._super(...arguments);
+        if (!attrs.includes("custom_fields")) attrs.push("custom_fields");
+        return attrs;
+      }.property(),
+
+      _updateShowQuickMessages: function() {
+        const saved = this.get("saved");
+        const currentUser = this.get("currentUser");
+
+        if (saved && currentUser && this.get("model.id") == currentUser.get("id")) {
+          currentUser.set("quick_messages_pref", this.get("model.custom_fields.quick_messages_pref"));
+        }
+      }.observes("saved")
+
+    });
   }
 };

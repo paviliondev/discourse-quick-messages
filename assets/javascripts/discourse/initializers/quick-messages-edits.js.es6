@@ -2,12 +2,11 @@ import { default as computed, on } from 'ember-addons/ember-computed-decorators'
 import { withPluginApi } from 'discourse/lib/plugin-api';
 import DiscourseURL from 'discourse/lib/url';
 import AppController from 'discourse/controllers/application';
-import PreferencesInterface from "discourse/controllers/preferences/interface";
 import { getOwner } from 'discourse-common/lib/get-owner';
 
 export default {
   name: 'quick-messages-edits',
-  initialize(container, app){
+  initialize(container){
     if (Discourse.SiteSettings.quick_message_enabled) {
       withPluginApi('0.1', api => {
         const currentUser = api.getCurrentUser();
@@ -66,14 +65,28 @@ export default {
             })
           }
         }
+
+        api.modifyClass('controller:preferences:interface', {
+          saveAttrNames: function() {
+            const attrs = this._super(...arguments);
+            if (!attrs.includes("custom_fields")) attrs.push("custom_fields");
+            return attrs;
+          }.property(),
+
+          _updateShowQuickMessages: function() {
+            const saved = this.get("saved");
+            const currentUser = this.get("currentUser");
+
+            if (saved && currentUser && this.get("model.id") == currentUser.get("id")) {
+              currentUser.set("quick_messages_pref", this.get("model.custom_fields.quick_messages_pref"));
+            }
+          }.observes("saved")
+
+        });
       });
 
-
       const currentUser = container.lookup("current-user:main");
-      console.log("We are NOT going to reopen the AppController... I think");
-      console.log(currentUser.show_quick_messages);
       if ( currentUser && currentUser.show_quick_messages ) {
-        console.log("WE SHOULD NOT BE HERE...");
         AppController.reopen({
           docked: Ember.A(),
 
@@ -120,23 +133,5 @@ export default {
       }
     }
 
-    PreferencesInterface.reopen({
-
-      saveAttrNames: function() {
-        const attrs = this._super(...arguments);
-        if (!attrs.includes("custom_fields")) attrs.push("custom_fields");
-        return attrs;
-      }.property(),
-
-      _updateShowQuickMessages: function() {
-        const saved = this.get("saved");
-        const currentUser = this.get("currentUser");
-
-        if (saved && currentUser && this.get("model.id") == currentUser.get("id")) {
-          currentUser.set("quick_messages_pref", this.get("model.custom_fields.quick_messages_pref"));
-        }
-      }.observes("saved")
-
-    });
   }
 };

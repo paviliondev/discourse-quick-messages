@@ -1,5 +1,3 @@
-console.log("lib/docked-composer");
-
 const getUsernames = function(participants) {
   let usernames = [];
   participants.forEach((participant) => {

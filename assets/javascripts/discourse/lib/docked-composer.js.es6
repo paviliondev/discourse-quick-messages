@@ -1,7 +1,7 @@
 const getUsernames = function(participants) {
   let usernames = [];
   participants.forEach((participant) => {
-    let username = participant.user ? participant.user.username : participant.username; 
+    let username = participant.user ? participant.user.username : participant.username;
     usernames.push(username);
   });
   return usernames;

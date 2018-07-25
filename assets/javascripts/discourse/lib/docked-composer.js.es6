@@ -3,26 +3,13 @@ console.log("lib/docked-composer");
 const getUsernames = function(participants) {
   let usernames = [];
   participants.forEach((participant) => {
-    let username = "";
-    console.log(participant);
-    if ( Discourse.SiteSettings.prioritize_username_in_ux ) {
-      username = participant.user ? participant.user.username : participant.username;
-    } else {
-      username = participant.user ? participant.user.name : participant.name;
-    }
+    let username = participant.user ? participant.user.username : participant.username; 
     usernames.push(username);
   });
-  console.log("Usernames are:", usernames);
   return usernames;
 };
 
 const formatUsernames = function(usernames) {
-  /* if ( Discourse.SiteSettings.prioritize_username_in_ux == false) {
-    usernames = usernames.forEach((username) => {
-      username.name
-    } );
-    console.log( usernames );
-  } */
   let formatted = '';
   let length = usernames.length;
   usernames.forEach((username, i) => {
@@ -32,7 +19,6 @@ const formatUsernames = function(usernames) {
     }
   });
   return formatted;
-  // return "Super Cool Dude";
 };
 
 // based on discourse/lib/safari-hacks calcHeight

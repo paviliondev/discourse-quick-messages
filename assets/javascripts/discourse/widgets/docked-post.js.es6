@@ -3,6 +3,8 @@ import PostCooked from 'discourse/widgets/post-cooked';
 import DecoratorHelper from 'discourse/widgets/decorator-helper';
 import { longDate } from 'discourse/lib/formatter';
 
+console.log("widgets/docked-post");
+
 class QuickPostCooked extends PostCooked {
   init() {
     const $html = $(`<div class='cooked'>${this.attrs.cooked}</div>`);

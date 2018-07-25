@@ -64,33 +64,54 @@ after_initialize do
         if SiteSetting.quick_message_user_preference
           if ActiveModel::Type::Boolean.new.cast(custom_fields['show_quick_messages'])
             return true
+          else
+             return false
           end
         else
           return true
         end
+      else
+        return false
       end
     end
-    def unread_private_messages
-      @unread_pms ||=
-        begin
-          # perf critical, much more efficient than AR
-          sql = "
-             SELECT COUNT(*) FROM notifications n
-             LEFT JOIN topics t ON n.topic_id = t.id
-             WHERE
-              t.deleted_at IS NULL AND
-              t.subtype = :subtype AND
-              n.notification_type = :type AND
-              n.user_id = :user_id AND
-              NOT read"
+  end
 
-          User.exec_sql(sql, user_id: id,
-                             subtype: TopicSubtype.user_to_user,
-                             type:  Notification.types[:private_message])
-            .getvalue(0, 0).to_i
-        end
+  module UserUnreadPrivateMessagesExtension
+    def unread_private_messages
+      puts "\n\n\n\n\n\n\nHERE WE ARE self.show_quick_messages:\n"
+      puts self.show_quick_messages
+      puts "\n\n"
+      if self.show_quick_messages
+        @unread_pms ||=
+          begin
+            # perf critical, much more efficient than AR
+            sql = "
+              SELECT COUNT(*) FROM notifications n
+              LEFT JOIN topics t ON n.topic_id = t.id
+              WHERE
+                t.deleted_at IS NULL AND
+                t.subtype = :subtype AND
+                n.notification_type = :type AND
+                n.user_id = :user_id AND
+                NOT read"
+
+            User.exec_sql(sql, user_id: id,
+                              subtype: TopicSubtype.user_to_user,
+                              type:  Notification.types[:private_message])
+              .getvalue(0, 0).to_i
+          end
+      else
+        puts "\n\n Get Quick Messages from Super "
+        super
+      end
     end
   end
+
+  require 'user'
+  class ::User
+    prepend UserUnreadPrivateMessagesExtension
+  end
+
 
   require 'topic_list_item_serializer'
   class ::TopicListItemSerializer

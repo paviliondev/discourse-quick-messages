@@ -5,6 +5,8 @@ import { on } from 'ember-addons/ember-computed-decorators';
 import { isAppleDevice } from 'discourse/lib/utilities';
 import { calcHeightWithKeyboard } from '../lib/docked-composer';
 
+console.log("components/docked-editor");
+
 export default DEditor.extend({
   classNames: ['docked-editor'],
   dockedUpload: false,

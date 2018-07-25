@@ -7,8 +7,6 @@ import { getOwner } from 'discourse-common/lib/get-owner';
 import DiscourseURL from 'discourse/lib/url';
 import { getUsernames, formatUsernames } from '../lib/docked-composer';
 
-console.log("components/docked-composer");
-
 const _create_serializer = {
         raw: 'reply',
         title: 'title',

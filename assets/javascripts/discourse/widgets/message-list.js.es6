@@ -4,8 +4,6 @@ import { h } from 'virtual-dom';
 import RawHtml from 'discourse/widgets/raw-html';
 import { emojiUnescape } from 'discourse/lib/text';
 
-console.log("widgets/message-list");
-
 export default createWidget('message-list', {
   tagName: 'div.message-list',
   buildKey: () => 'message-list',

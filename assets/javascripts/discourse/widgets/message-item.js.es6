@@ -2,8 +2,6 @@ import { createWidget } from 'discourse/widgets/widget';
 import { h } from 'virtual-dom';
 import { avatarImg } from 'discourse/widgets/post';
 
-console.log("widgets/message-item");
-
 createWidget('message-item', {
   tagName: 'li.message-item',
 

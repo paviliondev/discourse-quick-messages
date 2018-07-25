@@ -44,7 +44,6 @@ const icons = {
   'public_topic': 'comment',
   'private_topic': 'envelope'
 };
-console.log("widgets/docked-small-action");
 
 export default createWidget('docked-small-action', {
   tagName: 'div.docked-small-action',

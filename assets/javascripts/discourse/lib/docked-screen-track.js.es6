@@ -1,6 +1,8 @@
 import { ajax } from 'discourse/lib/ajax';
 import { getOwner } from 'discourse-common/lib/get-owner';
 
+console.log("lib/docked-screen-track");
+
 let dockedScreenTrack = function(context, topic) {
   if (!topic) { return; }
 

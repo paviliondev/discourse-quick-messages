@@ -7,8 +7,6 @@ import { getOwner } from 'discourse-common/lib/get-owner';
 import DiscourseURL from 'discourse/lib/url';
 import { getUsernames, formatUsernames } from '../lib/docked-composer';
 
-console.log("components/docked-composer");
-
 const _create_serializer = {
         raw: 'reply',
         title: 'title',
@@ -371,6 +369,7 @@ export default Ember.Component.extend({
   otherUsernames(loaded) {
     if (loaded) {
       const usernames = getUsernames(this.get('topic.details.allowed_users'));
+      console.log(usernames);
       usernames.splice(usernames.indexOf(this.get('currentUser.username')), 1);
       return formatUsernames(usernames);
     }

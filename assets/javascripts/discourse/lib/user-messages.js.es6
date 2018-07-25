@@ -1,7 +1,5 @@
 import { getOwner } from 'discourse-common/lib/get-owner';
 
-console.log("lib/user-message");
-
 let getCurrentUserMessages = function(context) {
   const store = getOwner(context).lookup('store:main'),
         username = context.currentUser.get('username');

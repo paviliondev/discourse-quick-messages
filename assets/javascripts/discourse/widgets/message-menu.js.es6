@@ -1,8 +1,6 @@
 import {createWidget} from 'discourse/widgets/widget';
 import { h } from 'virtual-dom';
 
-console.log("widgets/message-menu");
-
 export default createWidget('messages-menu', {
   tagName: 'li.messages-menu',
   panelContents() {

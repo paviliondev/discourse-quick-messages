@@ -11,7 +11,7 @@ after_initialize do
 
   Post.register_custom_field_type('quick_message', :boolean)
   PostRevisor.track_topic_field(:custom_fields)
-  
+
   DiscoursePluginRegistry.serialized_current_user_fields << "show_quick_messages"
   User.register_custom_field_type("show_quick_messages", :boolean)
   add_to_serializer(:current_user, :show_quick_messages) { object.show_quick_messages }
@@ -65,7 +65,7 @@ after_initialize do
           if ActiveModel::Type::Boolean.new.cast(custom_fields['show_quick_messages'])
             return true
           else
-             return false
+            return false
           end
         else
           return true
@@ -105,13 +105,12 @@ after_initialize do
     end
   end
 
-  require 'user'
+  require_dependency 'user'
   class ::User
     prepend UserUnreadPrivateMessagesExtension
   end
 
-
-  require 'topic_list_item_serializer'
+  require_dependency 'topic_list_item_serializer'
   class ::TopicListItemSerializer
     attributes :message_excerpt, :subtype
 

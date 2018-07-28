@@ -7,4 +7,4 @@ en:
     user:
       no_quick_messages: "No messages yet."
     user_preferences:
-      quick_messages_preference: "Show Messages."
+      quick_messages_preference: "Enable messages menu in header."

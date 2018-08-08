@@ -10,6 +10,27 @@ export default {
 
     if (Discourse.SiteSettings.quick_message_enabled) {
       withPluginApi('0.1', api => {
+
+        api.reopenWidget('header-notifications', {
+          html(attrs) {
+            let nodes = this._super(attrs);
+            nodes = nodes.filter(n => {
+              if ('attrs' in n && 'className' in n.attrs) {
+                if (n.attrs.className !== 'badge-notification unread-private-messages') {
+                  return true
+                }
+              } else if ('properties' in n && 'className' in n.properties) {
+                if ( !['ring', 'ring-backdrop', 'ring-backdrop-spotlight'].includes(n.properties.className) ) {
+                  return true
+                }
+              } else {
+                return true;
+              }
+            });
+            return nodes;
+          }
+        });
+
         api.decorateWidget('header-icons:before', function(helper) {
           const currentUser = api.getCurrentUser();
           const headerState = helper.widget.parentWidget.state;

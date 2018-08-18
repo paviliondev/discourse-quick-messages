@@ -6,3 +6,5 @@ en:
       open_message_topic: "Navigate to the message topic."
     user:
       no_quick_messages: "No messages yet."
+    user_preferences:
+      quick_messages_preference: "Show Messages."

@@ -12,6 +12,10 @@ after_initialize do
   Post.register_custom_field_type('quick_message', :boolean)
   PostRevisor.track_topic_field(:custom_fields)
 
+  DiscoursePluginRegistry.serialized_current_user_fields << "show_quick_messages"
+  User.register_custom_field_type("show_quick_messages", :boolean)
+  add_to_serializer(:current_user, :show_quick_messages) { object.show_quick_messages }
+
   SiteSetting.class_eval do
     def self.min_private_message_post_length
       quick_message_min_post_length
@@ -55,30 +59,58 @@ after_initialize do
   end
 
   User.class_eval do
-    def unread_private_messages
-      @unread_pms ||=
-        begin
-          sql = <<~SQL
-              SELECT COUNT(*)
-                FROM notifications n
-           LEFT JOIN topics t ON t.id = n.topic_id
-               WHERE t.deleted_at IS NULL
-                 AND t.subtype = :subtype
-                 AND n.notification_type = :type
-                 AND n.user_id = :user_id
-                 AND NOT read
-          SQL
-
-          DB.query_single(sql,
-            user_id: id,
-            subtype: TopicSubtype.user_to_user,
-            type: Notification.types[:private_message]
-          )[0].to_i
+    def show_quick_messages
+      if SiteSetting.quick_message_enabled
+        if SiteSetting.quick_message_user_preference
+          if ActiveModel::Type::Boolean.new.cast(custom_fields['show_quick_messages'])
+            return true
+          else
+            return false
+          end
+        else
+          return true
         end
+      else
+        return false
+      end
     end
   end
 
-  require 'topic_list_item_serializer'
+  module UserUnreadPrivateMessagesExtension
+    def unread_private_messages
+      if self.show_quick_messages
+        @unread_pms ||=
+          begin
+            # perf critical, much more efficient than AR
+            sql = <<~SQL
+                SELECT COUNT(*)
+                  FROM notifications n
+            LEFT JOIN topics t ON t.id = n.topic_id
+                WHERE t.deleted_at IS NULL
+                  AND t.subtype = :subtype
+                  AND n.notification_type = :type
+                  AND n.user_id = :user_id
+                  AND NOT read
+            SQL
+
+            DB.query_single(sql,
+              user_id: id,
+              subtype: TopicSubtype.user_to_user,
+              type: Notification.types[:private_message]
+            )[0].to_i
+          end
+      else
+        super
+      end
+    end
+  end
+
+  require_dependency 'user'
+  class ::User
+    prepend UserUnreadPrivateMessagesExtension
+  end
+
+  require_dependency 'topic_list_item_serializer'
   class ::TopicListItemSerializer
     attributes :message_excerpt, :subtype
 

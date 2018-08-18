@@ -1,17 +1,28 @@
-import { default as computed, on } from 'ember-addons/ember-computed-decorators';
+import { default as computed, observes } from 'ember-addons/ember-computed-decorators';
 import { withPluginApi } from 'discourse/lib/plugin-api';
 import DiscourseURL from 'discourse/lib/url';
-import AppController from 'discourse/controllers/application';
 import { getOwner } from 'discourse-common/lib/get-owner';
 
 export default {
-  name: 'quick-messages-edits',
-  initialize(){
+  name: 'quick-messages-initializer',
+  initialize(container){
+    const currentUser = container.lookup('current-user:main');
 
-    if (Discourse.SiteSettings.quick_message_enabled) {
-      withPluginApi('0.1', api => {
+    withPluginApi('0.8.12', api => {
+
+      if (currentUser && currentUser.show_quick_messages) {
+
+        api.reopenWidget('header-notifications', {
+          html(attrs) {
+            let nodes = this._super(attrs);
+            nodes.filter((n) => {
+              let obj = n.properties || n.attrs;
+              return !obj.className.match( /(messages|ring)/ );
+            });
+          }
+        });
+
         api.decorateWidget('header-icons:before', function(helper) {
-          const currentUser = api.getCurrentUser();
           const headerState = helper.widget.parentWidget.state;
 
           let contents = [];
@@ -62,53 +73,31 @@ export default {
         if (Discourse.SiteSettings.whos_online_enabled) {
           api.modifyClass('component:docked-post', {
             onlineService: Ember.inject.service('online-service')
-          })
+          });
         }
-      });
 
-      AppController.reopen({
-        docked: Ember.A(),
+      }
 
-        @on('didInsertElement')
-        _setupQuickMessages() {
-          $(window).on('resize', Ember.run.bind(this, this.maxIndex));
-        },
+      if (Discourse.SiteSettings.quick_message_enabled) {
+        api.modifyClass('controller:preferences/interface', {
+          @computed('makeThemeDefault')
+          saveAttrNames() {
+            const attrs = this._super(...arguments);
+            if (!attrs.includes("custom_fields")) attrs.push("custom_fields");
+            return attrs;
+          },
 
-        @on('willDestroyElement')
-        _teardownQuickMessages() {
-          $(window).off('resize', Ember.run.bind(this, this.maxIndex));
-        },
+          @observes('saved')
+          _updateShowQuickMessages() {
+            const saved = this.get("saved");
 
-        @computed()
-        maxIndex() {
-          return this.site.mobileView ? 1 : Math.floor(($(window).width() - 390) / 340);
-        },
-
-        actions: {
-          addToDocked(id) {
-            id = id ? id : 'new';
-            let docked = this.get('docked');
-
-            if (docked.includes(id)) return;
-
-            let max = this.get('maxIndex');
-            if (docked.length >= max) {
-              docked.replace(0, 1, id);
-            } else {
-              docked.pushObject(id);
+            if (saved && currentUser && this.get("model.id") === currentUser.get("id")) {
+              currentUser.set("quick_messages_pref", this.get("model.custom_fields.quick_messages_pref"));
             }
-          },
-
-          removeDocked(index) {
-            this.get('docked').removeAt(index);
-          },
-
-          updateId(index, id) {
-            const docked = this.get('docked');
-            docked.replace(index, 1, id);
           }
-        }
-      });
-    }
+        });
+      }
+
+    });
   }
 };

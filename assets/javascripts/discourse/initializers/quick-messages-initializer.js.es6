@@ -12,6 +12,16 @@ export default {
 
       if (currentUser && currentUser.show_quick_messages) {
 
+        api.reopenWidget('header-notifications', {
+          html(attrs) {
+            let nodes = this._super(attrs);
+            nodes.filter((n) => {
+              let obj = n.properties || n.attrs;
+              return !obj.className.match( /(messages|ring)/ );
+            });
+          }
+        });
+
         api.decorateWidget('header-icons:before', function(helper) {
           const headerState = helper.widget.parentWidget.state;
 

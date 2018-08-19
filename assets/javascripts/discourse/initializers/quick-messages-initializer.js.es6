@@ -15,7 +15,7 @@ export default {
         api.reopenWidget('header-notifications', {
           html(attrs) {
             let nodes = this._super(attrs);
-            nodes.filter((n) => {
+            return nodes.filter((n) => {
               let obj = n.properties || n.attrs;
               return !obj.className.match( /(messages|ring)/ );
             });

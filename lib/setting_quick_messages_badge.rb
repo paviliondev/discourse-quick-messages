@@ -1,0 +1,18 @@
+require_dependency 'enum_site_setting'
+
+# Adds an Enum type used in the Admin to select a badge by name.
+# Examples see: https://github.com/discourse/discourse/blob/master/config/site_settings.yml
+class SettingQuickMessagesBadge < EnumSiteSetting
+  def self.valid_value?(_any)
+    true
+  end
+
+  def self.values
+    @values = Badge.where(enabled: true).map { |b| { name: b.name, value: b.id } }
+    @values.unshift(name: 'None', value: 0)
+  end
+
+  def self.translate_names?
+    false
+  end
+end

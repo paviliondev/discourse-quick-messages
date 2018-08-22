@@ -6,6 +6,7 @@
 register_asset 'stylesheets/common/quick_menu.scss'
 register_asset 'stylesheets/common/quick_composer.scss'
 register_asset 'stylesheets/mobile/quick_mobile.scss', :mobile
+require_relative "lib/setting_quick_messages_badge"
 
 after_initialize do
 
@@ -15,6 +16,7 @@ after_initialize do
   DiscoursePluginRegistry.serialized_current_user_fields << "show_quick_messages"
   User.register_custom_field_type("show_quick_messages", :boolean)
   add_to_serializer(:current_user, :show_quick_messages) { object.show_quick_messages }
+  add_to_serializer(:current_user, :quick_messages_access) { object.quick_messages_access }
 
   SiteSetting.class_eval do
     def self.min_private_message_post_length
@@ -63,15 +65,26 @@ after_initialize do
       if SiteSetting.quick_message_enabled
         if SiteSetting.quick_message_user_preference
           if ActiveModel::Type::Boolean.new.cast(custom_fields['show_quick_messages'])
-            return true
+            return self.quick_messages_access
           else
             return false
           end
         else
-          return true
+          return self.quick_messages_access
         end
       else
         return false
+      end
+    end
+    def quick_messages_access
+      if SiteSetting.quick_message_required_badge > 0
+        if self.badge_ids.include?(SiteSetting.quick_message_required_badge)
+          return true
+        else
+          return false
+        end
+      else
+        return true
       end
     end
   end

@@ -14,3 +14,7 @@ plugins:
   quick_message_icon:
     default: 'envelope'
     client: true
+  quick_message_required_badge:
+    default: 0
+    client: true
+    enum: SettingQuickMessagesBadge

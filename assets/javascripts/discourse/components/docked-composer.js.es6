@@ -183,23 +183,32 @@ export default Ember.Component.extend({
   open() {
     const height = this.site.mobileView ? $(window).height() : 400;
     this.set('composeState', 'open');
-    this.$(".d-editor-input").blur();
-    this.$().animate({ height }, 200, () => {
-      this.afterStreamRender();
-    });
+
+    if (this.$()) {
+      this.$(".d-editor-input").blur();
+      this.$().animate({ height }, 200, () => {
+        this.afterStreamRender();
+      });
+    }
   },
 
   collapse() {
     const height = this.site.mobileView ? 50 : 40;
     this.set('composeState', 'minimized');
-    this.$().animate({ height }, 200);
+
+    if (this.$()) {
+      this.$().animate({ height }, 200);
+    }
   },
 
   close() {
     this.set('composeState', 'closed');
-    this.$().animate({ height: 0 }, 200, () => {
-      this.sendAction('removeDocked', this.get('index'));
-    });
+
+    if (this.$()) {
+      this.$().animate({ height: 0 }, 200, () => {
+        this.sendAction('removeDocked', this.get('index'));
+      });
+    }
   },
 
   cancel() {

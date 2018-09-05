@@ -15,6 +15,7 @@ after_initialize do
   DiscoursePluginRegistry.serialized_current_user_fields << "show_quick_messages"
   User.register_custom_field_type("show_quick_messages", :boolean)
   add_to_serializer(:current_user, :show_quick_messages) { object.show_quick_messages }
+  register_editable_user_custom_field :show_quick_messages if defined? register_editable_user_custom_field
 
   SiteSetting.class_eval do
     def self.min_private_message_post_length

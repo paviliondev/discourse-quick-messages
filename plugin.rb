@@ -6,6 +6,7 @@
 register_asset 'stylesheets/common/quick_menu.scss'
 register_asset 'stylesheets/common/quick_composer.scss'
 register_asset 'stylesheets/mobile/quick_mobile.scss', :mobile
+require_relative 'lib/setting_quick_messages_badge'
 
 after_initialize do
 
@@ -59,17 +60,28 @@ after_initialize do
     end
   end
 
-  User.class_eval do
+  class ::User
     def show_quick_messages
       if SiteSetting.quick_message_enabled
         if SiteSetting.quick_message_user_preference
           if ActiveModel::Type::Boolean.new.cast(custom_fields['show_quick_messages'])
-            return true
+            # return true - would have called self.quick_messages_access
+            if SiteSetting.quick_message_required_badge > 0
+              return self.badge_ids.include? (SiteSetting.quick_message_required_badge)
+            else
+              return true
+            end
           else
             return false
           end
         else
-          return true
+          # return true - would have called self.quick_messages_access
+          # Badge Access is enabed, but the user preference is not
+          if SiteSetting.quick_message_required_badge > 0
+            return self.badge_ids.include? (SiteSetting.quick_message_required_badge)
+          else
+            return true
+          end
         end
       else
         return false

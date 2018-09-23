@@ -6,6 +6,7 @@
 register_asset 'stylesheets/common/quick_menu.scss'
 register_asset 'stylesheets/common/quick_composer.scss'
 register_asset 'stylesheets/mobile/quick_mobile.scss', :mobile
+require_relative 'lib/setting_quick_messages_badge'
 
 after_initialize do
 
@@ -59,21 +60,11 @@ after_initialize do
     end
   end
 
-  User.class_eval do
+  class ::User
     def show_quick_messages
-      if SiteSetting.quick_message_enabled
-        if SiteSetting.quick_message_user_preference
-          if ActiveModel::Type::Boolean.new.cast(custom_fields['show_quick_messages'])
-            return true
-          else
-            return false
-          end
-        else
-          return true
-        end
-      else
-        return false
-      end
+      return false unless SiteSetting.quick_message_enabled
+      return false if SiteSetting.quick_message_required_badge > 0 && self.badge_ids.exclude?(SiteSetting.quick_message_required_badge)
+      !SiteSetting.quick_message_user_preference || ActiveModel::Type::Boolean.new.cast(custom_fields['show_quick_messages'])
     end
   end
 

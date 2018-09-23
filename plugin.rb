@@ -62,30 +62,9 @@ after_initialize do
 
   class ::User
     def show_quick_messages
-      if SiteSetting.quick_message_enabled
-        if SiteSetting.quick_message_user_preference
-          if ActiveModel::Type::Boolean.new.cast(custom_fields['show_quick_messages'])
-            # return true - would have called self.quick_messages_access
-            if SiteSetting.quick_message_required_badge > 0
-              return self.badge_ids.include? (SiteSetting.quick_message_required_badge)
-            else
-              return true
-            end
-          else
-            return false
-          end
-        else
-          # return true - would have called self.quick_messages_access
-          # Badge Access is enabed, but the user preference is not
-          if SiteSetting.quick_message_required_badge > 0
-            return self.badge_ids.include? (SiteSetting.quick_message_required_badge)
-          else
-            return true
-          end
-        end
-      else
-        return false
-      end
+      return false unless SiteSetting.quick_message_enabled
+      return false if SiteSetting.quick_message_required_badge > 0 && self.badge_ids.exclude?(SiteSetting.quick_message_required_badge)
+      !SiteSetting.quick_message_user_preference || ActiveModel::Type::Boolean.new.cast(custom_fields['show_quick_messages'])
     end
   end
 

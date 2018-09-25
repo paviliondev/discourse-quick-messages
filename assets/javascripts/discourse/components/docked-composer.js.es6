@@ -185,7 +185,11 @@ export default Ember.Component.extend({
     this.set('composeState', 'open');
 
     if (this.$()) {
-      this.$(".d-editor-input").blur();
+      Ember.run.scheduleOnce('afterRender', () => {
+        this.$(".d-editor-input").one('focus', () => {
+          this.$(".d-editor-input").blur();
+        });
+      });
       this.$().animate({ height }, 200, () => {
         this.afterStreamRender();
       });

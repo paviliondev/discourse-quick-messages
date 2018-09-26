@@ -14,9 +14,13 @@ after_initialize do
   PostRevisor.track_topic_field(:custom_fields)
 
   DiscoursePluginRegistry.serialized_current_user_fields << "show_quick_messages"
+  DiscoursePluginRegistry.serialized_current_user_fields << "quick_messages_access"
   User.register_custom_field_type("show_quick_messages", :boolean)
+  User.register_custom_field_type("quick_messages_access", :boolean)
   add_to_serializer(:current_user, :show_quick_messages) { object.show_quick_messages }
+  add_to_serializer(:current_user, :quick_messages_access) { object.quick_messages_access }
   register_editable_user_custom_field :show_quick_messages if defined? register_editable_user_custom_field
+  register_editable_user_custom_field :quick_messages_access if defined? register_editable_user_custom_field
 
   SiteSetting.class_eval do
     def self.min_private_message_post_length
@@ -63,8 +67,12 @@ after_initialize do
   class ::User
     def show_quick_messages
       return false unless SiteSetting.quick_message_enabled
-      return false if SiteSetting.quick_message_required_badge > 0 && self.badge_ids.exclude?(SiteSetting.quick_message_required_badge)
+      return false unless quick_messages_access
       !SiteSetting.quick_message_user_preference || ActiveModel::Type::Boolean.new.cast(custom_fields['show_quick_messages'])
+    end
+
+    def quick_messages_access
+      SiteSetting.quick_message_required_badge == 0 || self.badge_ids.include?(SiteSetting.quick_message_required_badge)
     end
   end
 

@@ -126,13 +126,14 @@
 
   .docked-usernames-wrapper {
     position: relative;
-    max-width: 200px;
     z-index: 1;
     overflow: hidden;
+    text-overflow: ellipsis;
 
     .docked-usernames {
       white-space: nowrap;
       display: inline-block;
+      color: $primary;
     }
   }
 
@@ -142,7 +143,7 @@
 
   .extra-usernames {
     position: absolute;
-    width: 80px;
+    max-width: 200px;
     z-index: 100;
     padding: 10px;
     box-shadow: 0 2px 4px -1px rgba(0, 0, 0, 0.25);

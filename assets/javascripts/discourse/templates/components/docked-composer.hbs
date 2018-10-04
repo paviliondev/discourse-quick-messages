@@ -14,16 +14,19 @@
                     usernames=targetUsernames}}
   {{else}}
     <div class="docked-usernames-wrapper">
-      <div class="docked-usernames">{{otherUsernames}}</div>
-    </div>
-    {{#if hiddenUsernames}}
-      {{d-button class="docked-usernames-toggle" icon='ellipsis-h' action="showUsernames"}}
-      {{#if showUsernames}}
-        <div class="extra-usernames">
+      {{#if hiddenUsernames}}
+        <a class="docked-usernames" {{action "showUsernames"}}>
           {{otherUsernames}}
-          <a href class='cancel fa fa-times' {{action "showUsernames"}}></a>
-        </div>
+        </a>
+      {{else}}
+        <span class="docked-usernames">{{otherUsernames}}</span>
       {{/if}}
+    </div>
+    {{#if showUsernames}}
+      <div class="extra-usernames">
+        {{otherUsernames}}
+        <a href class='cancel fa fa-times' {{action "showUsernames"}}></a>
+      </div>
     {{/if}}
   {{/if}}
 </div>

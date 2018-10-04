@@ -1,0 +1,10 @@
+es:
+  js:
+    composer:
+      quick_placeholder: "Escribe un mensaje."
+      quick_duplicate: "Tu conversación con este usuario está abierta en otra ventana."
+      open_message_topic: "Navegar al tema de mensajes."
+    user:
+      no_quick_messages: "Ningún mensaje todavía."
+    user_preferences:
+      quick_messages_preference: "Activar mensajes en el menú de cabecera."

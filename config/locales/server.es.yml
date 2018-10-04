@@ -1,0 +1,8 @@
+es:
+  site_settings:
+    quick_message_enabled: "Activar mensajes rápidos."
+    quick_message_user_preference: "El menú de mensajes estará activado conforme al ajuste de interfaz del usuario 'Activar mensajes en el menú de cabecera'."
+    quick_message_required_badge: "Requerir una medalla para acceder a los mensajes rápidos, como por ejemplo la de 'Certificado' para premiar a los que completen el tutorial de inicio"
+    quick_message_rate_limit_create: "Después de publicar, los usuarios deben esperar (n) segundos antes de crear otro mensaje rápido."
+    quick_message_min_post_length: "Número mínimo de caracteres en los mensajes rápidos."
+    quick_message_icon: "Nombre del icono de Font Awesome de los mensajes rápidos. <a href='http://fontawesome.io/cheatsheet/'>Lista de Font Awesome</a>."

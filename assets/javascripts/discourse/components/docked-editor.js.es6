@@ -79,10 +79,10 @@ export default DEditor.extend({
       if (this.site.mobileView && this.get('focusState') === 'focus') {
         Ember.run.next(() => {
           const $target = $(e.target);
-          if ($target.hasClass('fa-picture-o')) {
+          if ($target.hasClass('qm-upload-picture')) {
             this.$('.docked-upload input').click();
           };
-          if ($target.hasClass('fa-smile-o')) {
+          if ($target.hasClass('qm-emoji')) {
             this.sendAction('toggleEmojiPicker');
           }
         });

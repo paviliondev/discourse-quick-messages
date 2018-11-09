@@ -105,6 +105,7 @@
   }
 
   .is-warning {
+    // TODO: replace this with an icon in DOM, Discourse no longer supports FA4.7 font icons
     i.fa-envelope-o {
       &:before {
         content: "\f0e0";
@@ -151,6 +152,13 @@
         font-size: 17px;
         display: initial;
         padding: 5px;
+      }
+
+      svg.d-icon {
+        width: 24px;
+        margin-right: 5px;
+        vertical-align: middle;
+        display: inline-block;
       }
     }
   }

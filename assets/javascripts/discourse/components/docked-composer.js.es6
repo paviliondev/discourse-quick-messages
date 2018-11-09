@@ -248,7 +248,7 @@ export default Ember.Component.extend({
 
   @computed('composeState')
   togglerIcon(composeState) {
-    return composeState === 'minimized' ? 'fa-angle-up' : 'fa-angle-down';
+    return composeState === 'minimized' ? 'angle-up' : 'angle-down';
   },
 
   scrollPoststream() {

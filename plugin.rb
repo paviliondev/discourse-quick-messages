@@ -8,6 +8,13 @@ register_asset 'stylesheets/common/quick_composer.scss'
 register_asset 'stylesheets/mobile/quick_mobile.scss', :mobile
 require_relative 'lib/setting_quick_messages_badge'
 
+if respond_to?(:register_svg_icon)
+  register_svg_icon "angle-up"
+  register_svg_icon "angle-down"
+  register_svg_icon "external-link"
+  register_svg_icon "times"
+end
+
 after_initialize do
 
   Post.register_custom_field_type('quick_message', :boolean)

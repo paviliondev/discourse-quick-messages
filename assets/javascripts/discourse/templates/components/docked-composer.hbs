@@ -1,8 +1,14 @@
 <div class="docked-composer-header">
   <div class="controls">
-    <a href class='cancel fa fa-times' {{action "cancel"}} tabindex="6"></a>
-    <a href class='toggler fa {{togglerIcon}}' {{action "toggle" bubbles=false}} title={{i18n 'composer.toggler'}}></a>
-    <a href class='topic-link fa fa-external-link' {{action "openTopic"}} title={{i18n 'composer.open_message_topic'}}></a>
+    <a href class='cancel' {{action "cancel"}} tabindex="6">
+      {{d-icon 'times'}}
+    </a>
+    <a href class='toggler' {{action "toggle" bubbles=false}} title={{i18n 'composer.toggler'}}>
+      {{d-icon togglerIcon}}
+    </a>
+    <a href class='topic-link' {{action "openTopic"}} title={{i18n 'composer.open_message_topic'}}>
+      {{d-icon 'external-link'}}
+    </a>
   </div>
   {{#if firstPost}}
     {{user-selector topicId=topic.id
@@ -25,7 +31,9 @@
     {{#if showUsernames}}
       <div class="extra-usernames">
         {{otherUsernames}}
-        <a href class='cancel fa fa-times' {{action "showUsernames"}}></a>
+        <a href class='cancel' {{action "showUsernames"}}>
+          {{d-icon 'times'}}
+        </a>
       </div>
     {{/if}}
   {{/if}}

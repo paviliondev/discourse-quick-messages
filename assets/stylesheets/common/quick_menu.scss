@@ -104,16 +104,6 @@
     color: dark-light-choose(scale-color($primary, $lightness: 30%), scale-color($secondary, $lightness: 70%));
   }
 
-  .is-warning {
-    i.fa-envelope-o {
-      &:before {
-        content: "\f0e0";
-      }
-
-      color: $danger;
-    }
-  }
-
   .read {
     background-color: $secondary;
   }
@@ -151,6 +141,13 @@
         font-size: 17px;
         display: initial;
         padding: 5px;
+      }
+
+      svg.d-icon {
+        width: 24px;
+        margin-right: 5px;
+        vertical-align: middle;
+        display: inline-block;
       }
     }
   }

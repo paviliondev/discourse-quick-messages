@@ -104,17 +104,6 @@
     color: dark-light-choose(scale-color($primary, $lightness: 30%), scale-color($secondary, $lightness: 70%));
   }
 
-  .is-warning {
-    // TODO: replace this with an icon in DOM, Discourse no longer supports FA4.7 font icons
-    i.fa-envelope-o {
-      &:before {
-        content: "\f0e0";
-      }
-
-      color: $danger;
-    }
-  }
-
   .read {
     background-color: $secondary;
   }

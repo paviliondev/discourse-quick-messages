@@ -345,9 +345,8 @@ export default Ember.Component.extend({
             category_id: topic.category_id,
             notification_level: topic.notification_level
           };
-    const states = { 't#{topic.id}': row };
 
-    getOwner(this).lookup('topic-tracking-state:main').loadStates(states);
+    getOwner(this).lookup('topic-tracking-state:main').loadStates([row]);
 
     this.messageBus.subscribe("/topic/" + topic.id, data => {
       if (data.type === "created") {

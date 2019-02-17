@@ -1,0 +1,10 @@
+fr:
+  js:
+    composer:
+      quick_placeholder: "Saisir un message."
+      quick_duplicate: "Votre conversation avec cette personne est ouverte dans une autre fenêtre de messages."
+      open_message_topic: "Naviguer vers le sujet du message."
+    user:
+      no_quick_messages: "Pas encore de message."
+    user_preferences:
+      quick_messages_preference: "Activer le menu messages dans l'en-tête."

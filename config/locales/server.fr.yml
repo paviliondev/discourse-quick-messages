@@ -1,0 +1,8 @@
+fr:
+  site_settings:
+    quick_message_enabled: "Activer les messages rapides."
+    quick_message_user_preference: "Le menu Messages est activé en fonction du paramètre d'interface utilisateur \"Activer le menu des messages dans l'en-tête\"."
+    quick_message_required_badge: "Exiger un badge pour accéder aux messages rapides, par exemple requérir 'Certifié' pour récompenser les utilisateurs ayant terminé le nouveau tutoriel utilisateur"
+    quick_message_rate_limit_create: "Après la publication, les utilisateurs doivent attendre (n) secondes avant de créer un autre message rapide."
+    quick_message_min_post_length: "Longueur minimale autorisée des messages rapides en caractères."
+    quick_message_icon: "Police Nom génial de l'icône Quick Messages. <a href='http://fontawesome.io/cheatsheet/'>Police Awesome Cheatsheet</a>."

@@ -108,7 +108,6 @@
       font-size: 15px;
       color: $primary-medium;
       z-index: 20;
-      margin-bottom: 2px;
     }
 
     .topic-link {
@@ -129,6 +128,7 @@
     z-index: 1;
     overflow: hidden;
     text-overflow: ellipsis;
+    line-height: 30px;
 
     .docked-usernames {
       white-space: nowrap;

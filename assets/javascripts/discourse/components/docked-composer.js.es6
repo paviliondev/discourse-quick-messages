@@ -6,6 +6,7 @@ import { dockedScreenTrack } from '../lib/docked-screen-track';
 import { getOwner } from 'discourse-common/lib/get-owner';
 import DiscourseURL from 'discourse/lib/url';
 import { getUsernames, formatUsernames } from '../lib/docked-composer';
+import { popupAjaxError } from 'discourse/lib/ajax-error';
 
 const _create_serializer = {
         raw: 'reply',
@@ -14,6 +15,17 @@ const _create_serializer = {
         archetype: 'archetypeId',
         target_usernames: 'targetUsernames',
       };
+
+const START_EVENTS = "touchstart mousedown";
+const DRAG_EVENTS = "touchmove mousemove";
+const END_EVENTS = "touchend mouseup";
+
+const MIN_COMPOSER_SIZE = 240;
+const THROTTLE_RATE = 20;
+
+function mouseYPos(e) {
+  return e.clientY || (e.touches && e.touches[0] && e.touches[0].clientY);
+}
 
 export default Ember.Component.extend({
   tagName: "div",
@@ -39,14 +51,50 @@ export default Ember.Component.extend({
     this.set('composeState', 'open');
 
     if (!this.site.mobileView) {
-      const $replyControl = this.$();
-      const resize = () => Ember.run.scheduleOnce('afterRender', () => this._resize());
-      $replyControl.DivResizer({
-        resize,
-        maxHeight: winHeight => winHeight - headerHeight(),
-        onDrag: sizePx => this.movePanels(sizePx)
-      });
+      this.setupComposerResizeEvents()
     }
+  },
+
+  setupComposerResizeEvents() {
+    const $composer = this.$();
+    const $grippie = this.$(".docked-composer-header");
+    const $document = Ember.$(document);
+    let origComposerSize = 0;
+    let lastMousePos = 0;
+
+    const performDrag = event => {
+      $composer.trigger("div-resizing");
+      $composer.addClass("clear-transitions");
+      const currentMousePos = mouseYPos(event);
+      let size = origComposerSize + (lastMousePos - currentMousePos);
+
+      const winHeight = Ember.$(window).height();
+      size = Math.min(size, winHeight - headerHeight());
+      size = Math.max(size, MIN_COMPOSER_SIZE);
+      const sizePx = `${size}px`;
+      this.movePanels(sizePx);
+      $composer.height(sizePx);
+    };
+
+    const throttledPerformDrag = (event => {
+      event.preventDefault();
+      Ember.run.throttle(this, performDrag, event, THROTTLE_RATE);
+    }).bind(this);
+
+    const endDrag = () => {
+      $document.off(DRAG_EVENTS, throttledPerformDrag);
+      $document.off(END_EVENTS, endDrag);
+      $composer.removeClass("clear-transitions");
+      $composer.focus();
+    };
+
+    $grippie.on(START_EVENTS, event => {
+      event.preventDefault();
+      origComposerSize = $composer.height();
+      lastMousePos = mouseYPos(event);
+      $document.on(DRAG_EVENTS, throttledPerformDrag);
+      $document.on(END_EVENTS, endDrag);
+    });
   },
 
   @on('didInsertElement')
@@ -201,6 +249,7 @@ export default Ember.Component.extend({
     this.set('composeState', 'minimized');
 
     if (this.$()) {
+      $('.header-cloak').hide();
       this.$().animate({ height }, 200);
     }
   },
@@ -209,6 +258,7 @@ export default Ember.Component.extend({
     this.set('composeState', 'closed');
 
     if (this.$()) {
+      $('.header-cloak').hide();
       this.$().animate({ height: 0 }, 200, () => {
         this.sendAction('removeDocked', this.get('index'));
       });
@@ -484,9 +534,7 @@ export default Ember.Component.extend({
           user.set('topic_count', user.get('topic_count') + 1);
         }
       }
-    }).catch(function(error) {
-      bootbox.alert(error.jqXHR.responseJSON.errors[0]);
-    });
+    }).catch(popupAjaxError);
   },
 
   serialize(serializer, dest) {

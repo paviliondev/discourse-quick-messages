@@ -6,7 +6,9 @@ import { getOwner } from 'discourse-common/lib/get-owner';
 export default {
   name: 'quick-messages-initializer',
   initialize(container){
+    const siteSettings = container.lookup("site-settings:main");
     const currentUser = container.lookup('current-user:main');
+    const site = container.lookup("site:main");
 
     withPluginApi('0.8.12', api => {
 
@@ -26,11 +28,11 @@ export default {
           const headerState = helper.widget.parentWidget.state;
 
           let contents = [];
-          if (currentUser) {
+          if (currentUser && (!site.mobileView || siteSettings.quick_message_mobile)) {
             const unread = currentUser.get('unread_private_messages');
             contents.push(helper.attach('header-dropdown', {
               title: 'user.private_messages',
-              icon: Discourse.SiteSettings.quick_message_icon,
+              icon: siteSettings.quick_message_icon,
               iconId: 'toggle-messages-menu',
               active: headerState.messagesVisible,
               action: 'toggleMessages',
@@ -53,6 +55,9 @@ export default {
 
         api.attachWidgetAction('header', 'toggleMessages', function() {
           this.state.messagesVisible = !this.state.messagesVisible;
+          if (!this.state.messagesVisible) {
+            $('.header-cloak').hide();
+          }
         });
 
         api.attachWidgetAction('header', 'addToDocked', function(id) {

@@ -6,3 +6,4 @@ en:
     quick_message_rate_limit_create: "After posting, users must wait (n) seconds before creating another quick message."
     quick_message_min_post_length: "Minimum allowed quick message length in characters."
     quick_message_icon: "Font Awesome name of Quick Messages icon. <a href='http://fontawesome.io/cheatsheet/'>Font Awesome Cheatsheet</a>."
+    quick_message_mobile: "Enable Quick Messages on mobile."

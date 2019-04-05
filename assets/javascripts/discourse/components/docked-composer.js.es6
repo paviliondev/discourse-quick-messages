@@ -249,7 +249,6 @@ export default Ember.Component.extend({
     this.set('composeState', 'minimized');
 
     if (this.$()) {
-      $('.header-cloak').hide();
       this.$().animate({ height }, 200);
     }
   },
@@ -258,7 +257,6 @@ export default Ember.Component.extend({
     this.set('composeState', 'closed');
 
     if (this.$()) {
-      $('.header-cloak').hide();
       this.$().animate({ height: 0 }, 200, () => {
         this.sendAction('removeDocked', this.get('index'));
       });

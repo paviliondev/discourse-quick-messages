@@ -47,7 +47,12 @@ export default {
               }
             }));
           }
-          if (headerState.messagesVisible) {
+          return contents;
+        });
+
+        api.decorateWidget('header:before', function(helper) {
+          let contents = [];
+          if (helper.widget.state.messagesVisible) {
             contents.push(helper.attach('messages-menu'));
           }
           return contents;
@@ -55,9 +60,6 @@ export default {
 
         api.attachWidgetAction('header', 'toggleMessages', function() {
           this.state.messagesVisible = !this.state.messagesVisible;
-          if (!this.state.messagesVisible) {
-            $('.header-cloak').hide();
-          }
         });
 
         api.attachWidgetAction('header', 'addToDocked', function(id) {

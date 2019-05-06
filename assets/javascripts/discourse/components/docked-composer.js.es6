@@ -29,7 +29,7 @@ function mouseYPos(e) {
 
 export default Ember.Component.extend({
   tagName: "div",
-  classNameBindings: [':docked-composer', 'composeState'],
+  classNameBindings: [':docked-composer', 'composeState', "integratedCompose", "firstPost:new"],
   disableSubmit: Ember.computed.or("loading", "uploading"),
   composerOpen: Ember.computed.equal('composeState', 'open'),
   postStream: Ember.computed.alias('topic.postStream'),
@@ -100,7 +100,7 @@ export default Ember.Component.extend({
   @on('didInsertElement')
   @observes('index')
   _arrangeComposers() {
-    if (!this.site.mobileView) {
+    if (!this.get('singleWindow')) {
       Ember.run.scheduleOnce('afterRender', () => {
         const index = this.get('index');
         let right = 340 * index + 100;
@@ -146,12 +146,12 @@ export default Ember.Component.extend({
     return reply.replace(/\s+/img, " ").trim().length;
   },
 
-  @computed('index')
-  editorTabIndex(index) {
-    return this.site.mobileView ? null : index + 1;
+  @computed('index', 'singleWindow')
+  editorTabIndex(index, singleWindow) {
+    return singleWindow ? null : index + 1;
   },
 
-  @computed()
+  @computed
   spinnerSize() {
     return this.site.mobileView ? 'large' : 'small';
   },
@@ -352,6 +352,10 @@ export default Ember.Component.extend({
 
     scrollPoststream() {
       this.scrollPoststream();
+    },
+
+    back() {
+      this.back();
     }
   },
 
@@ -370,7 +374,7 @@ export default Ember.Component.extend({
     this.set('topic', this.getTopic(id));
     this.subscribeToTopic();
 
-    if (!this.site.mobileView) {
+    if (!this.get('singleWindow')) {
       this.appEvents.on('composer:opened', () => this.collapse());
     }
   },
@@ -452,6 +456,7 @@ export default Ember.Component.extend({
   @observes('targetUsernames')
   createOrContinue() {
     const currentUsername = this.get('currentUser.username');
+    const integratedCompose = this.get('integratedCompose');
     let existingId = null;
     let targetUsernames = this.get('targetUsernames').split(',');
     targetUsernames.push(currentUsername);
@@ -470,8 +475,7 @@ export default Ember.Component.extend({
 
       if (existingId) {
         const docked = this.get('docked');
-        let index = docked.indexOf(existingId);
-        if (index > -1) {
+        if (docked && docked.indexOf(existingId) > -1) {
           this.set('disableEditor', true);
         } else {
           this.setProperties({
@@ -481,6 +485,7 @@ export default Ember.Component.extend({
           this.subscribeToTopic();
         }
       } else {
+        consoleo
         this.setProperties({
           'id': 'new',
           'topic': null,

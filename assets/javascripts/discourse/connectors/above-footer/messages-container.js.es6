@@ -5,9 +5,12 @@ export default {
     const appController = getOwner(this).lookup('controller:application');
     const docked = appController.get('docked');
     const maxIndex = appController.get('maxIndex');
+    const singleWindow = component.get('mobileView');
+
     component.setProperties({
-      docked: docked,
-      maxIndex: maxIndex
+      docked,
+      maxIndex,
+      singleWindow
     });
   },
 

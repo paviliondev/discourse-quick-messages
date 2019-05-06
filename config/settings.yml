@@ -21,3 +21,6 @@ plugins:
   quick_message_mobile:
     default: true
     client: true
+  quick_message_integrated:
+    default: false
+    client: true

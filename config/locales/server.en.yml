@@ -7,3 +7,4 @@ en:
     quick_message_min_post_length: "Minimum allowed quick message length in characters."
     quick_message_icon: "Font Awesome name of Quick Messages icon. <a href='http://fontawesome.io/cheatsheet/'>Font Awesome Cheatsheet</a>."
     quick_message_mobile: "Enable Quick Messages on mobile."
+    quick_message_integrated: "Enable integrated Quick Messages (only turn this on if you know what it does)."

@@ -70,18 +70,75 @@
       left: calc(50% - 10px);
     }
   }
+
+  &.integrated-compose {
+    .docked-composer-header {
+      padding: 0;
+      position: relative;
+
+      .controls {
+        position: absolute;
+        z-index: 9999;
+        margin: 0 10px 0 0;
+        line-height: 30px;
+      }
+
+      .docked-usernames-wrapper {
+        text-align: center;
+      }
+    }
+
+    &.new {
+      .docked-composer-header {
+        padding: 0;
+
+        .controls {
+          position: relative;
+          float: left;
+        }
+
+        .ac-wrap {
+          margin: 0;
+        }
+      }
+    }
+  }
 }
 
-.docked-composer-header {
+.quick-messages-header {
   width: inherit;
   height: 30px;
   line-height: 25px;
-  padding: 0 12px;
   margin-bottom: 2px;
   box-sizing: border-box;
   background-color: $primary-low;
   box-shadow: shadow("header");
   z-index: 100;
+}
+
+.integrated-compose-header {
+  @extend .quick-messages-header;
+  position: relative;
+
+  a.back {
+    line-height: 30px;
+    margin: 0 5px;
+    position: absolute;
+    left: 0;
+    top: 2px;
+  }
+
+  .title {
+    padding-top: 2px;
+    line-height: 30px;
+    text-align: center;
+    overflow: hidden;
+  }
+}
+
+.docked-composer-header {
+  @extend .quick-messages-header;
+  padding: 0 12px;
 
   .controls {
     margin-left: 5px;

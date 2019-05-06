@@ -1,4 +1,5 @@
 import {createWidget} from 'discourse/widgets/widget';
+import { getOwner } from 'discourse-common/lib/get-owner';
 import { h } from 'virtual-dom';
 
 export default createWidget('messages-menu', {
@@ -20,8 +21,28 @@ export default createWidget('messages-menu', {
         )])];
   },
 
-  html() {
-    return this.attach('menu-panel', { contents: () => this.panelContents() });
+  html(attrs) {
+    const { notMenu } = attrs;
+    let contents = [];
+
+    if (notMenu) {
+      contents.push(this.panelContents());
+    } else {
+      contents.push(this.attach('menu-panel', { contents: () => this.panelContents() }));
+    }
+
+    return contents;
+  },
+
+  addToDocked(id) {
+    const appController = getOwner(this).lookup('controller:application');
+    appController.send('addToDocked', id);
+    this.sendWidgetAction('messagesClicked');
+  },
+
+  goToMessages() {
+    DiscourseURL.routeTo('/users/' + this.currentUser.get('username') + '/messages');
+    this.sendWidgetAction('messagesClicked');
   },
 
   clickOutsideMobile(e) {

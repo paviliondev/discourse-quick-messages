@@ -12,7 +12,7 @@ export default {
 
     withPluginApi('0.8.12', api => {
 
-      if (currentUser && currentUser.show_quick_messages) {
+      if (currentUser && currentUser.show_quick_messages && !siteSettings.quick_message_integrated) {
 
         api.reopenWidget('header-notifications', {
           html(attrs) {
@@ -58,19 +58,9 @@ export default {
           this.state.messagesVisible = !this.state.messagesVisible;
         });
 
-        api.attachWidgetAction('header', 'addToDocked', function(id) {
-          this.messagesClicked();
-          getOwner(this).lookup('controller:application').send('addToDocked', id);
-        });
-
         api.attachWidgetAction('header', 'messagesClicked', function() {
           this.linkClickedEvent();
           this.state.messagesVisible = false;
-        });
-
-        api.attachWidgetAction('header', 'goToMessages', function() {
-          this.messagesClicked();
-          DiscourseURL.routeTo('/users/' + this.currentUser.get('username') + '/messages');
         });
 
         if (Discourse.SiteSettings.whos_online_enabled) {

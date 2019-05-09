@@ -485,7 +485,6 @@ export default Ember.Component.extend({
           this.subscribeToTopic();
         }
       } else {
-        consoleo
         this.setProperties({
           'id': 'new',
           'topic': null,

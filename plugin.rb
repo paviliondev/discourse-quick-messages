@@ -2,6 +2,7 @@
 # about: A Discourse plugin that adds a menu and a chat-like compose for private messages
 # version: 0.1
 # authors: Angus McLeod
+# url: https://github.com/angusmcleod/discourse-quick-messages
 
 register_asset 'stylesheets/common/quick_menu.scss'
 register_asset 'stylesheets/common/quick_composer.scss'
@@ -14,6 +15,8 @@ if respond_to?(:register_svg_icon)
   register_svg_icon "external-link"
   register_svg_icon "times"
 end
+
+enabled_site_setting :quick_message_enabled
 
 after_initialize do
 

@@ -1,6 +1,7 @@
-import {createWidget} from 'discourse/widgets/widget';
+import { createWidget } from 'discourse/widgets/widget';
 import { getOwner } from 'discourse-common/lib/get-owner';
 import { h } from 'virtual-dom';
+import DiscourseURL from 'discourse/lib/url';
 
 export default createWidget('messages-menu', {
   tagName: 'div.messages-menu',

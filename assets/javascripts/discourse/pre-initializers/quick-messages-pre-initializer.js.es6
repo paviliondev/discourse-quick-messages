@@ -48,7 +48,7 @@ export default {
 
             updateId(index, id) {
               const docked = this.get('docked');
-              docked.replace(index, 1, id);
+              docked.replace(index, 1, [id]);
             }
           }
         });

@@ -48,10 +48,11 @@ export default Ember.Component.extend({
 
   @on('didInsertElement')
   _setupDisplay() {
+    const integratedCompose = this.get('integratedCompose');
     this.set('composeState', 'open');
 
-    if (!this.site.mobileView) {
-      this.setupComposerResizeEvents()
+    if (!this.site.mobileView && !integratedCompose) {
+      this.setupComposerResizeEvents();
     }
   },
 
@@ -103,7 +104,7 @@ export default Ember.Component.extend({
     if (!this.get('singleWindow')) {
       Ember.run.scheduleOnce('afterRender', () => {
         const index = this.get('index');
-        let right = 340 * index + 100;
+        let right = this.site.mobileView ? 0 : 340 * index + 100;
         this.$().css('right', right);
       });
     }

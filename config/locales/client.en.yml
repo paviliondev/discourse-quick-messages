@@ -4,6 +4,9 @@ en:
       quick_placeholder: "Type a message."
       quick_duplicate: "Your thread with this user is open in another message window."
       open_message_topic: "Navigate to the message topic."
+      toggler:
+        minimize: "Minimize"
+        maximize: "Maximiize"
     user:
       no_quick_messages: "No messages yet."
     user_preferences:

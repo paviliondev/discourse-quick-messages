@@ -300,6 +300,11 @@ export default Ember.Component.extend({
     return composeState === 'minimized' ? 'angle-up' : 'angle-down';
   },
 
+  @computed('composeState')
+  togglerTitle(composeState) {
+    return composeState === 'minimized' ? 'composer.toggler.maximize' : 'composer.toggler.minimize';
+  },
+
   scrollPoststream() {
     const $container = this.$('.docked-composer-posts');
     const $stream = this.$('.docked-post-stream');

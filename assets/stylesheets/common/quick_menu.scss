@@ -132,20 +132,12 @@
     text-align: right;
 
     .widget-link {
-      white-space: nowrap;
-      word-break: break-all;
-      text-overflow: ellipsis;
-      overflow: hidden;
-
-      i {
-        font-size: 17px;
-        display: initial;
-        padding: 5px;
-      }
+      display: flex;
+      align-items: center;
 
       svg.d-icon {
-        width: 24px;
         margin-right: 5px;
+        margin-bottom: 2px;
         vertical-align: middle;
         display: inline-block;
       }

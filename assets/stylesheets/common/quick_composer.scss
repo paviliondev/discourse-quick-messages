@@ -138,7 +138,11 @@
 
 .docked-composer-header {
   @extend .quick-messages-header;
-  padding: 0 12px;
+  padding: 6px 12px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  min-height: 40px;
 
   .controls {
     margin-left: 5px;
@@ -177,7 +181,6 @@
   .ac-wrap {
     width: initial !important;
     background-color: $primary-very-low;
-    margin-bottom: 10px;
   }
 
   .docked-usernames-wrapper {
@@ -297,6 +300,8 @@
     width: auto;
     border: none;
     z-index: 99;
+    display: flex;
+    align-items: center;
 
     .btn {
       padding: 3px 6px;
@@ -308,8 +313,11 @@
       }
 
       &:hover {
-        background-color: $primary-low;
-        color: $primary;
+        background-color: transparent;
+        
+        .fa {
+          color: $primary;
+        }
       }
     }
   }
@@ -327,9 +335,16 @@
 
 .docked-upload {
   display: inline-block;
+  position: relative;
 
   .docked-uploading {
     display: inline-block;
+  }
+  
+  input {
+    position: absolute;
+    display: none;
+    top: -100px;
   }
 }
 

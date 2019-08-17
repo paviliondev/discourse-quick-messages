@@ -4,6 +4,9 @@ es:
       quick_placeholder: "Escribe un mensaje."
       quick_duplicate: "Tu conversación con este usuario está abierta en otra ventana."
       open_message_topic: "Navegar al tema de mensajes."
+      toggler:
+        minimize: "Minimizar"
+        maximize: "Maximizar"
     user:
       no_quick_messages: "Ningún mensaje todavía."
     user_preferences:

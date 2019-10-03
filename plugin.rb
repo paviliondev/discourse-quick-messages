@@ -42,7 +42,7 @@ after_initialize do
     end
   end
 
-  Validators::PostValidator.class_eval do
+  ::PostValidator.class_eval do
     def private_message?(post)
       post.topic.try(:private_message?) || post.custom_fields['quick_message']
     end

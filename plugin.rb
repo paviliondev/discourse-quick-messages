@@ -41,8 +41,8 @@ after_initialize do
       quick_message_min_post_length..max_post_length
     end
   end
-
-  ::PostValidator.class_eval do
+  
+  (defined?(PostValidator) == 'constant' ? PostValidator : Validators::PostValidator).class_eval do
     def private_message?(post)
       post.topic.try(:private_message?) || post.custom_fields['quick_message']
     end

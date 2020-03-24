@@ -144,4 +144,90 @@ after_initialize do
   end
 
   TopicList.preloaded_custom_fields << "quick_message" if TopicList.respond_to? :preloaded_custom_fields
+
+  require_dependency 'post_creator'
+
+  class ::PostCreator
+
+    # The valid? function stops us from adding posts to existing topics.
+    # We can overwrite it here without the logic that blocks us.
+    def valid?
+    @topic = nil
+    @post = nil
+
+    if @user.suspended? && !skip_validations?
+      errors.add(:base, I18n.t(:user_is_suspended))
+      return false
+    end
+
+    if @opts[:target_usernames].present? && !skip_validations? && !@user.staff?
+      names = @opts[:target_usernames].split(',')
+
+      # Make sure max_allowed_message_recipients setting is respected
+      max_allowed_message_recipients = SiteSetting.max_allowed_message_recipients
+
+      if names.length > max_allowed_message_recipients
+        errors.add(
+          :base,
+          I18n.t(:max_pm_recipients, recipients_limit: max_allowed_message_recipients)
+        )
+
+        return false
+      end
+
+      # Make sure none of the users have muted the creator
+      users = User.where(username: names).pluck(:id, :username).to_h
+
+      User
+        .joins("LEFT JOIN user_options ON user_options.user_id = users.id")
+        .joins("LEFT JOIN muted_users ON muted_users.user_id = users.id AND muted_users.muted_user_id = #{@user.id.to_i}")
+        .joins("LEFT JOIN ignored_users ON ignored_users.user_id = users.id AND ignored_users.ignored_user_id = #{@user.id.to_i}")
+        .where("user_options.user_id IS NOT NULL")
+        .where("
+          (user_options.user_id IN (:user_ids) AND NOT user_options.allow_private_messages) OR
+          muted_users.user_id IN (:user_ids) OR
+          ignored_users.user_id IN (:user_ids)
+        ", user_ids: users.keys)
+        .pluck(:id).each do |m|
+
+        errors.add(:base, I18n.t(:not_accepting_pms, username: users[m]))
+      end
+
+      return false if errors[:base].present?
+    end
+
+    if new_topic?
+      topic_creator = TopicCreator.new(@user, guardian, @opts)
+      return false unless skip_validations? || validate_child(topic_creator)
+    else
+      @topic = Topic.find_by(id: @opts[:topic_id])
+
+
+      unless @topic.present? && (@opts[:skip_guardian] || guardian.can_create?(Post, @topic))
+        errors.add(:base, I18n.t(:topic_not_found))
+        return false
+      end
+    end
+
+    setup_post
+
+    return true if skip_validations?
+
+    if @post.has_host_spam?
+      @spam = true
+      errors.add(:base, I18n.t(:spamming_host))
+      return false
+    end
+
+    DiscourseEvent.trigger :before_create_post, @post
+    DiscourseEvent.trigger :validate_post, @post
+
+    post_validator = PostValidator.new(skip_topic: true)
+    post_validator.validate(@post)
+
+    valid = @post.errors.blank?
+    add_errors_from(@post) unless valid
+    valid
+    end
+  end
 end

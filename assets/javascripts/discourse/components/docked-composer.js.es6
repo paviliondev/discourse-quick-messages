@@ -12,7 +12,6 @@ const _create_serializer = {
         raw: 'reply',
         title: 'title',
         topic_id: 'topic.id',
-        archetype: 'archetypeId',
         target_usernames: 'targetUsernames',
       };
 
@@ -517,6 +516,9 @@ export default Ember.Component.extend({
         };
 
     this.serialize(_create_serializer, postOpts);
+    
+    postOpts.archetype = postOpts.topic_id ? 'regular' : 'private_message';
+    
     this.set('reply', '');
 
     let state = '';

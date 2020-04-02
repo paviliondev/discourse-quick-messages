@@ -2,5 +2,12 @@ pl:
   js:
     composer:
       quick_placeholder: "Wpisz wiadomość."
+      quick_duplicate: "Twój wątek z tym użytkownikiem otwarty jest w innym oknie wiadomośći."
+      open_message_topic: "Przejdź do tematu wiadomości."
+      toggler:
+        minimize: "Minimalizuj"
+        maximize: "Maksymalizuj"
     user:
       no_quick_messages: "Brak wiadomości."
+    user_preferences:
+      quick_messages_preference: "Włącz menu wiadomości w nagłówku."

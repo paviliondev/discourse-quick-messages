@@ -1,4 +1,10 @@
 pl:
   site_settings:
+    quick_message_enabled: "Włacz szybkie wiadomości."
+    quick_message_user_preference: "Menu Wiadomości jest włączone zgodnie z ustawieniem interfejsu użytkownika „Włącz menu wiadomości w nagłówku'."
+    quick_message_required_badge: "Wymagaj plakietki, aby uzyskać dostęp do szybkich wiadomości, na przykład wymagaj „Certyfikowanego”, aby nagradzać użytkowników, którzy ukończyli nowy samouczek użytkownika"
     quick_message_rate_limit_create: "Po wysłaniu, użytkownicy muszą czekać (n) sekund zanim utworzą kolejną szybką wiadomość."
     quick_message_min_post_length: "Minimalna dopuszczalna długość znaków szybkiej wiadomości."
+    quick_message_icon: "Nazwa ikonki Font Awesome dla ikony wiadomości w nagłówku. <a href='http://fontawesome.io/cheatsheet/'>Font Awesome Cheatsheet</a>."
+    quick_message_mobile: "Włącz szybkie wiadomośći na urządzeniach mobilnych."
+    quick_message_integrated: "Włącz wbudowane szybkie wiadomości (włącz to tylko, jeśli wiesz, co to robi)."

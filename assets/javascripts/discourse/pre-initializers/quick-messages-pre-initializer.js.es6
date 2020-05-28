@@ -1,5 +1,7 @@
-import { default as computed, on } from 'ember-addons/ember-computed-decorators';
+import { default as discourseComputed, on } from 'discourse-common/utils/decorators';
 import { withPluginApi } from 'discourse/lib/plugin-api';
+import { bind } from "@ember/runloop";
+import { A } from "@ember/array";
 
 export default {
   name: 'quick-messages-pre-initializer',
@@ -10,19 +12,19 @@ export default {
 
       withPluginApi('0.8.12', api => {
         api.modifyClass('controller:application', {
-          docked: Ember.A(),
+          docked: A(),
 
           @on('didInsertElement')
           _setupQuickMessages() {
-            $(window).on('resize', Ember.run.bind(this, this.maxIndex));
+            $(window).on('resize', bind(this, this.maxIndex));
           },
 
           @on('willDestroyElement')
           _teardownQuickMessages() {
-            $(window).off('resize', Ember.run.bind(this, this.maxIndex));
+            $(window).off('resize', bind(this, this.maxIndex));
           },
 
-          @computed()
+          @discourseComputed()
           maxIndex() {
             return this.site.mobileView ? 1 : Math.floor(($(window).width() - 390) / 340);
           },

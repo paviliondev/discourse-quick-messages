@@ -1,4 +1,4 @@
-import { default as computed, on, observes } from 'ember-addons/ember-computed-decorators';
+import { default as discourseComputed, on, observes } from 'discourse-common/utils/decorators';
 import { headerHeight } from 'discourse/components/site-header';
 import { getCurrentUserMessages } from '../lib/user-messages';
 import { emojiUnescape } from 'discourse/lib/text';
@@ -7,6 +7,11 @@ import { getOwner } from 'discourse-common/lib/get-owner';
 import DiscourseURL from 'discourse/lib/url';
 import { getUsernames, formatUsernames } from '../lib/docked-composer';
 import { popupAjaxError } from 'discourse/lib/ajax-error';
+import Component from '@ember/component';
+import { or, equal, alias } from "@ember/object/computed";
+import { throttle, scheduleOnce, next } from "@ember/runloop";
+import { Promise } from "rsvp";
+import { set } from "@ember/object";
 
 const _create_serializer = {
         raw: 'reply',
@@ -26,12 +31,12 @@ function mouseYPos(e) {
   return e.clientY || (e.touches && e.touches[0] && e.touches[0].clientY);
 }
 
-export default Ember.Component.extend({
+export default Component.extend({
   tagName: "div",
   classNameBindings: [':docked-composer', 'composeState', "integratedCompose", "firstPost:new"],
-  disableSubmit: Ember.computed.or("loading", "uploading"),
-  composerOpen: Ember.computed.equal('composeState', 'open'),
-  postStream: Ember.computed.alias('topic.postStream'),
+  disableSubmit: or("loading", "uploading"),
+  composerOpen: equal('composeState', 'open'),
+  postStream: alias('topic.postStream'),
   loading: true,
   composeState: null,
   targetUsernames: null,
@@ -58,7 +63,7 @@ export default Ember.Component.extend({
   setupComposerResizeEvents() {
     const $composer = this.$();
     const $grippie = this.$(".docked-composer-header");
-    const $document = Ember.$(document);
+    const $document = $(document);
     let origComposerSize = 0;
     let lastMousePos = 0;
 
@@ -68,7 +73,7 @@ export default Ember.Component.extend({
       const currentMousePos = mouseYPos(event);
       let size = origComposerSize + (lastMousePos - currentMousePos);
 
-      const winHeight = Ember.$(window).height();
+      const winHeight = $(window).height();
       size = Math.min(size, winHeight - headerHeight());
       size = Math.max(size, MIN_COMPOSER_SIZE);
       const sizePx = `${size}px`;
@@ -78,7 +83,7 @@ export default Ember.Component.extend({
 
     const throttledPerformDrag = (event => {
       event.preventDefault();
-      Ember.run.throttle(this, performDrag, event, THROTTLE_RATE);
+      throttle(this, performDrag, event, THROTTLE_RATE);
     }).bind(this);
 
     const endDrag = () => {
@@ -101,7 +106,7 @@ export default Ember.Component.extend({
   @observes('index')
   _arrangeComposers() {
     if (!this.get('singleWindow')) {
-      Ember.run.scheduleOnce('afterRender', () => {
+      scheduleOnce('afterRender', () => {
         const index = this.get('index');
         let right = this.site.mobileView ? 0 : 340 * index + 100;
         this.$().css('right', right);
@@ -134,24 +139,24 @@ export default Ember.Component.extend({
     $('#main-outlet').css('padding-bottom', sizePx);
   },
 
-  @computed('targetUsernames', 'missingReplyCharacters')
+  @discourseComputed('targetUsernames', 'missingReplyCharacters')
   cantSubmitPost() {
     if (this.get('replyLength') < 1) return true;
     return this.get('targetUsernames') && (this.get('targetUsernames').trim() + ',').indexOf(',') === 0;
   },
 
-  @computed('reply')
+  @discourseComputed('reply')
   replyLength() {
     let reply = this.get('reply') || "";
     return reply.replace(/\s+/img, " ").trim().length;
   },
 
-  @computed('index', 'singleWindow')
+  @discourseComputed('index', 'singleWindow')
   editorTabIndex(index, singleWindow) {
     return singleWindow ? null : index + 1;
   },
 
-  @computed
+  @discourseComputed
   spinnerSize() {
     return this.site.mobileView ? 'large' : 'small';
   },
@@ -162,7 +167,7 @@ export default Ember.Component.extend({
     if (emojiPickerOpen) {
       this.$().css('z-index', 100);
 
-      Ember.run.next(() => {
+      next(() => {
         let css = { visibility: 'visible' };
 
         if (this.site.mobileView) {
@@ -233,7 +238,7 @@ export default Ember.Component.extend({
     this.set('composeState', 'open');
 
     if (this.$()) {
-      Ember.run.scheduleOnce('afterRender', () => {
+      scheduleOnce('afterRender', () => {
         this.$(".d-editor-input").one('focus', () => {
           this.$(".d-editor-input").blur();
         });
@@ -265,7 +270,7 @@ export default Ember.Component.extend({
 
   cancel() {
     const self = this;
-    return new Ember.RSVP.Promise(function (resolve) {
+    return new Promise(function (resolve) {
       if (self.get('reply')) {
         bootbox.confirm(I18n.t("post.abandon.confirm"), I18n.t("post.abandon.no_value"),
             I18n.t("post.abandon.yes_value"), function(result) {
@@ -294,12 +299,12 @@ export default Ember.Component.extend({
     return false;
   },
 
-  @computed('composeState')
+  @discourseComputed('composeState')
   togglerIcon(composeState) {
     return composeState === 'minimized' ? 'angle-up' : 'angle-down';
   },
 
-  @computed('composeState')
+  @discourseComputed('composeState')
   togglerTitle(composeState) {
     return composeState === 'minimized' ? 'composer.toggler.maximize' : 'composer.toggler.minimize';
   },
@@ -423,7 +428,7 @@ export default Ember.Component.extend({
       postStream.refresh({ nearPost }).then(() => {
         if (this._state !== 'destroying') {
           this.set('loading', false);
-          Ember.run.scheduleOnce('afterRender', () => {
+          scheduleOnce('afterRender', () => {
             if (this.$()) {
               this.scrollPoststream();
               dockedScreenTrack(this, this.get('topic'));
@@ -434,7 +439,7 @@ export default Ember.Component.extend({
     }
   },
 
-  @computed('topic.details.loaded')
+  @discourseComputed('topic.details.loaded')
   otherUsernames(loaded) {
     if (loaded) {
       const usernames = getUsernames(this.get('topic.details.allowed_users'));
@@ -448,7 +453,7 @@ export default Ember.Component.extend({
   @observes('otherUsernames')
   handleLongUsernames() {
     if (this.get('otherUsernames')) {
-      Ember.run.scheduleOnce('afterRender', this, () => {
+      scheduleOnce('afterRender', this, () => {
         const usernamesWidth = this.$(".docked-usernames").width();
         const wrapperWidth = this.$('.docked-usernames-wrapper').width();
         if (usernamesWidth > wrapperWidth) {
@@ -552,7 +557,7 @@ export default Ember.Component.extend({
     Object.keys(serializer).forEach(f => {
       const val = this.get(serializer[f]);
       if (typeof val !== 'undefined') {
-        Ember.set(dest, f, val);
+        set(dest, f, val);
       }
     });
     return dest;

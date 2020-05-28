@@ -1,6 +1,7 @@
 import UploadMixin from "discourse/mixins/upload";
+import Component from "@ember/component";
 
-export default Ember.Component.extend(UploadMixin, {
+export default Component.extend(UploadMixin, {
   tagName: 'button',
   classNames: 'docked-upload btn btn-small',
   attributeBindings: ['uploading:disabled'],

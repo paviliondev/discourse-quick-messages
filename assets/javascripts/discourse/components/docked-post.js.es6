@@ -1,15 +1,16 @@
-import { default as computed } from 'ember-addons/ember-computed-decorators';
+import { default as discourseComputed } from 'discourse-common/utils/decorators';
+import Component from "@ember/component";
 
-export default Ember.Component.extend({
+export default Component.extend({
   tagName: "div",
   classNames: 'docked-post',
 
-  @computed('post.yours')
+  @discourseComputed('post.yours')
   contentClass(yours) {
     return yours ? 'yours' : '';
   },
 
-  @computed('onlineService.users.@each', 'post.user_id')
+  @discourseComputed('onlineService.users.@each', 'post.user_id')
   avatarClasses(onlineUsers, userId) {
     let classes = 'docked-avatar';
 
@@ -21,7 +22,7 @@ export default Ember.Component.extend({
     return classes;
   },
 
-  @computed('post.post_type')
+  @discourseComputed('post.post_type')
   isSmallAction(type) {
     const postTypes = this.site.post_types;
     return type === postTypes.small_action;

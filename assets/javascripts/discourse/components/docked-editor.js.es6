@@ -1,9 +1,10 @@
 import DEditor from 'discourse/components/d-editor';
 import userSearch from 'discourse/lib/user-search';
 import { findRawTemplate } from 'discourse/lib/raw-templates';
-import { on } from 'ember-addons/ember-computed-decorators';
+import { on } from 'discourse-common/utils/decorators';
 import { isAppleDevice } from 'discourse/lib/utilities';
 import { calcHeightWithKeyboard } from '../lib/docked-composer';
+import { scheduleOnce, next } from "@ember/runloop";
 
 export default DEditor.extend({
   classNames: ['docked-editor'],
@@ -50,7 +51,7 @@ export default DEditor.extend({
     uploadDone(upload) {
       const text = `![${upload.original_filename}](${upload.url})`;
       this._addText(this._getSelected(), text);
-      Ember.run.scheduleOnce('afterRender', () => $('.d-editor-input').blur());
+      scheduleOnce('afterRender', () => $('.d-editor-input').blur());
     },
 
     openEmojiPicker() {
@@ -60,7 +61,7 @@ export default DEditor.extend({
     emojiSelected(code){
       this._super(code);
       this.sendAction('toggleEmojiPicker');
-      Ember.run.scheduleOnce('afterRender', () => $('.d-editor-input').click());
+      scheduleOnce('afterRender', () => $('.d-editor-input').click());
     },
 
     focusChange(state) {
@@ -68,7 +69,7 @@ export default DEditor.extend({
       if (state === 'focus') {
         this.sendAction('toggleEmojiPicker', false);
       }
-      Ember.run.scheduleOnce('afterRender', () => {
+      scheduleOnce('afterRender', () => {
         if (this._state === 'destroying') return;
         this.set('focusState', state);
       });
@@ -77,7 +78,7 @@ export default DEditor.extend({
     // focus/blur events in textarea prevent normal clicks on buttons from working the first time
     buttonMousedown(e) {
       if (this.site.mobileView && this.get('focusState') === 'focus') {
-        Ember.run.next(() => {
+        next(() => {
           const $target = $(e.target);
           if ($target.hasClass('qm-upload-picture')) {
             this.$('.docked-upload input').click();

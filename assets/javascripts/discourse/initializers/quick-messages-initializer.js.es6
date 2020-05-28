@@ -1,7 +1,8 @@
-import { default as computed, observes } from 'ember-addons/ember-computed-decorators';
+import { default as discourseComputed, observes } from 'discourse-common/utils/decorators';
 import { withPluginApi } from 'discourse/lib/plugin-api';
 import DiscourseURL from 'discourse/lib/url';
 import { getOwner } from 'discourse-common/lib/get-owner';
+import { inject as service } from "@ember/service";
 
 export default {
   name: 'quick-messages-initializer',
@@ -65,7 +66,7 @@ export default {
 
         if (Discourse.SiteSettings.whos_online_enabled) {
           api.modifyClass('component:docked-post', {
-            onlineService: Ember.inject.service('online-service')
+            onlineService: service('online-service')
           });
         }
 
@@ -73,7 +74,7 @@ export default {
 
       if (Discourse.SiteSettings.quick_message_enabled) {
         api.modifyClass('controller:preferences/interface', {
-          @computed('makeThemeDefault')
+          @discourseComputed('makeThemeDefault')
           saveAttrNames() {
             const attrs = this._super(...arguments);
             if (!attrs.includes("custom_fields")) attrs.push("custom_fields");

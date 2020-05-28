@@ -2,6 +2,7 @@ import { createWidget } from 'discourse/widgets/widget';
 import { getOwner } from 'discourse-common/lib/get-owner';
 import { h } from 'virtual-dom';
 import DiscourseURL from 'discourse/lib/url';
+import { later } from "@ember/runloop";
 
 export default createWidget('messages-menu', {
   tagName: 'div.messages-menu',
@@ -63,7 +64,7 @@ export default createWidget('messages-menu', {
       const $headerCloak = $(".header-cloak");
       $headerCloak.addClass("animate");
       $headerCloak.css("opacity", 0);
-      Ember.run.later(() => this.sendWidgetAction("toggleMessages"), 200);
+      later(() => this.sendWidgetAction("toggleMessages"), 200);
     }
   },
 

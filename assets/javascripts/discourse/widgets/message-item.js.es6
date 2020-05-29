@@ -1,6 +1,7 @@
 import { createWidget } from 'discourse/widgets/widget';
 import { h } from 'virtual-dom';
 import { avatarImg } from 'discourse/widgets/post';
+import I18n from "I18n";
 
 createWidget('message-item', {
   tagName: 'li.message-item',

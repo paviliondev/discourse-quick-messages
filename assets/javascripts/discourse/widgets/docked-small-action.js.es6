@@ -4,6 +4,7 @@ import { iconNode } from 'discourse-common/lib/icon-library';
 import { autoUpdatingRelativeAge } from 'discourse/lib/formatter';
 import { userPath } from 'discourse/lib/url';
 import { h } from 'virtual-dom';
+import I18n from "I18n";
 
 const actionDescriptionHtml = function(actionCode, createdAt, username) {
   const dt = new Date(createdAt);

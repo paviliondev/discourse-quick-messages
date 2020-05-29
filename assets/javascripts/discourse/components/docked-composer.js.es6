@@ -12,6 +12,7 @@ import { or, equal, alias } from "@ember/object/computed";
 import { throttle, scheduleOnce, next } from "@ember/runloop";
 import { Promise } from "rsvp";
 import { set } from "@ember/object";
+import I18n from "I18n";
 
 const _create_serializer = {
         raw: 'reply',

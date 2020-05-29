@@ -1,6 +1,6 @@
 import DEditor from 'discourse/components/d-editor';
 import userSearch from 'discourse/lib/user-search';
-import { findRawTemplate } from 'discourse/lib/raw-templates';
+import { findRawTemplate } from 'discourse-common/lib/raw-templates';
 import { on } from 'discourse-common/utils/decorators';
 import { isAppleDevice } from 'discourse/lib/utilities';
 import { calcHeightWithKeyboard } from '../lib/docked-composer';

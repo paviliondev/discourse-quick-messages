@@ -3,6 +3,7 @@ import { getCurrentUserMessages } from '../lib/user-messages';
 import { h } from 'virtual-dom';
 import RawHtml from 'discourse/widgets/raw-html';
 import { emojiUnescape } from 'discourse/lib/text';
+import I18n from "I18n";
 
 export default createWidget('message-list', {
   tagName: 'div.message-list',

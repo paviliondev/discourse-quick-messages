@@ -43,7 +43,7 @@ export default createWidget('messages-menu', {
   },
 
   goToMessages() {
-    DiscourseURL.routeTo('/users/' + this.currentUser.get('username') + '/messages');
+    DiscourseURL.routeTo('/u/' + this.currentUser.get('username') + '/messages');
     this.sendWidgetAction('messagesClicked');
   },
 

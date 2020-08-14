@@ -3,6 +3,7 @@ import { getOwner } from 'discourse-common/lib/get-owner';
 import { h } from 'virtual-dom';
 import DiscourseURL from 'discourse/lib/url';
 import { later } from "@ember/runloop";
+import { userPath } from "discourse/lib/url";
 
 export default createWidget('messages-menu', {
   tagName: 'div.messages-menu',
@@ -43,7 +44,8 @@ export default createWidget('messages-menu', {
   },
 
   goToMessages() {
-    DiscourseURL.routeTo('/users/' + this.currentUser.get('username') + '/messages');
+    const username = this.get("currentUser.username_lower");
+    DiscourseURL.routeTo(userPath(`${username}/messages`));
     this.sendWidgetAction('messagesClicked');
   },
 

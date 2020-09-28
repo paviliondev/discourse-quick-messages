@@ -4,6 +4,7 @@ import { getCurrentUserMessages } from '../lib/user-messages';
 import { emojiUnescape } from 'discourse/lib/text';
 import { dockedScreenTrack } from '../lib/docked-screen-track';
 import { getOwner } from 'discourse-common/lib/get-owner';
+import { deepEqual } from "discourse-common/lib/object";
 import DiscourseURL from 'discourse/lib/url';
 import { getUsernames, formatUsernames } from '../lib/docked-composer';
 import { popupAjaxError } from 'discourse/lib/ajax-error';
@@ -479,7 +480,7 @@ export default Component.extend({
           usernames.push(currentUsername);
         }
 
-        if (_.isEqual(_.sortBy(usernames), _.sortBy(targetUsernames))) {
+        if (deepEqual([...usernames].sort(), [...targetUsernames].sort())) {
           existingId = message.id;
         }
       });

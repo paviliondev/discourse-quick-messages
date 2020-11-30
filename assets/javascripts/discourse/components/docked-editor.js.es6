@@ -12,7 +12,8 @@ export default DEditor.extend({
 
   @on('didInsertElement')
   setupDocked() {
-    const $editorInput = this.$('.d-editor-input');
+    const $element = $(this.element);
+    const $editorInput = $element.find('.d-editor-input');
     this._applyMentionAutocomplete($editorInput);
   },
 
@@ -79,9 +80,10 @@ export default DEditor.extend({
     buttonMousedown(e) {
       if (this.site.mobileView && this.get('focusState') === 'focus') {
         next(() => {
+          const $element = $(this.element);
           const $target = $(e.target);
           if ($target.hasClass('qm-upload-picture')) {
-            this.$('.docked-upload input').click();
+            $element.find('.docked-upload input').click();
           };
           if ($target.hasClass('qm-emoji')) {
             this.sendAction('toggleEmojiPicker');

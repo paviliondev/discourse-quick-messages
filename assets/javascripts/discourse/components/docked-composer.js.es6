@@ -63,8 +63,8 @@ export default Component.extend({
   },
 
   setupComposerResizeEvents() {
-    const $composer = this.$();
-    const $grippie = this.$(".docked-composer-header");
+    const $composer = $(this.element);
+    const $grippie = $composer.find(".docked-composer-header");
     const $document = $(document);
     let origComposerSize = 0;
     let lastMousePos = 0;
@@ -111,14 +111,14 @@ export default Component.extend({
       scheduleOnce('afterRender', () => {
         const index = this.get('index');
         let right = this.site.mobileView ? 0 : 340 * index + 100;
-        this.$().css('right', right);
+        $(this.element).css('right', right);
       });
     }
   },
 
   @observes('composeState')
   _resize() {
-    const h = this.$() ? this.$().height() : 0;
+    const h = $(this.element) ? $(this.element).height() : 0;
     this.movePanels(h + "px");
   },
 
@@ -167,20 +167,20 @@ export default Component.extend({
   setupEmojiPickerCss() {
     const emojiPickerOpen = this.get('emojiPickerOpen');
     if (emojiPickerOpen) {
-      this.$().css('z-index', 100);
+      $(this.element).css('z-index', 100);
 
       next(() => {
         let css = { visibility: 'visible' };
 
         if (this.site.mobileView) {
-          const editorHeight = this.$().find('.docked-editor').height();
+          const editorHeight = $(this.element).find('.docked-editor').height();
           css['left'] = 5;
           css['right'] = 5;
           css['bottom'] = editorHeight + 5;
         } else {
           const composerWidth = 300;
           const emojiModalWidth = 400;
-          const composerOffset = this.$().offset();
+          const composerOffset = $(this.element).offset();
           const composerLeftOffset = composerOffset.left;
 
           css['bottom'] = 20;
@@ -191,7 +191,7 @@ export default Component.extend({
             css['left'] = composerLeftOffset + composerWidth;
           } else {
             css['left'] = composerLeftOffset;
-            css['bottom'] = this.$().height();
+            css['bottom'] = $(this.element).height();
           }
         }
 
@@ -199,7 +199,7 @@ export default Component.extend({
       });
     } else {
       $('.emoji-picker').css('visibility', 'hidden');
-      this.$().css('z-index', 0);
+      $(this.element).css('z-index', 0);
     }
   },
 
@@ -211,7 +211,7 @@ export default Component.extend({
   },
 
   closeAutocomplete() {
-    this.$('.d-editor-input').autocomplete({ cancel: true });
+    $(this.element).find('.d-editor-input').autocomplete({ cancel: true });
   },
 
   keyDown(e) {
@@ -236,35 +236,38 @@ export default Component.extend({
   },
 
   open() {
+    const $element = $(this.element);
     const height = this.site.mobileView ? $(window).height() : 400;
     this.set('composeState', 'open');
 
-    if (this.$()) {
+    if ($element) {
       scheduleOnce('afterRender', () => {
-        this.$(".d-editor-input").one('focus', () => {
-          this.$(".d-editor-input").blur();
+        $element.find(".d-editor-input").one('focus', () => {
+          $element.find(".d-editor-input").blur();
         });
       });
-      this.$().animate({ height }, 200, () => {
+      $element.animate({ height }, 200, () => {
         this.afterStreamRender();
       });
     }
   },
 
   collapse() {
+    const $element = $(this.element);
     const height = this.site.mobileView ? 50 : 40;
     this.set('composeState', 'minimized');
 
-    if (this.$()) {
-      this.$().animate({ height }, 200);
+    if ($element) {
+      $element.animate({ height }, 200);
     }
   },
 
   close() {
+    const $element = $(this.element);
     this.set('composeState', 'closed');
 
-    if (this.$()) {
-      this.$().animate({ height: 0 }, 200, () => {
+    if ($element) {
+      $element.animate({ height: 0 }, 200, () => {
         this.sendAction('removeDocked', this.get('index'));
       });
     }
@@ -312,13 +315,14 @@ export default Component.extend({
   },
 
   scrollPoststream() {
-    const $container = this.$('.docked-composer-posts');
-    const $stream = this.$('.docked-post-stream');
+    const $element = $(this.element);
+    const $container = $element.find('.docked-composer-posts');
+    const $stream = $element.find('.docked-post-stream');
     const streamHeight = $stream.height();
     let self = this;
 
     // ensure stream is scrolled after images are loaded
-    this.$('.docked-post-stream img:not(.avatar)').each(function() {
+    $element.find('.docked-post-stream img:not(.avatar)').each(function() {
       if ($(this).height() === 0) {
         $(this).on("load", function() {
           if (this.complete) self.scrollPoststream();
@@ -424,14 +428,18 @@ export default Component.extend({
 
   @observes('topic.postStream.loadedAllPosts')
   afterStreamRender() {
+    const $element = $(this.element);
     const postStream = this.get('postStream');
+    
     if (postStream) {
       const nearPost = this.get("topic.highest_post_number");
+      
       postStream.refresh({ nearPost }).then(() => {
         if (this._state !== 'destroying') {
           this.set('loading', false);
+          
           scheduleOnce('afterRender', () => {
-            if (this.$()) {
+            if ($element) {
               this.scrollPoststream();
               dockedScreenTrack(this, this.get('topic'));
             }
@@ -454,10 +462,13 @@ export default Component.extend({
   @on('didInsertElement')
   @observes('otherUsernames')
   handleLongUsernames() {
+    const $element = $(this.element);
+    
     if (this.get('otherUsernames')) {
       scheduleOnce('afterRender', this, () => {
-        const usernamesWidth = this.$(".docked-usernames").width();
-        const wrapperWidth = this.$('.docked-usernames-wrapper').width();
+        const usernamesWidth = $element.find(".docked-usernames").width();
+        const wrapperWidth = $element.find('.docked-usernames-wrapper').width();
+        
         if (usernamesWidth > wrapperWidth) {
           this.set("hiddenUsernames", true);
         }

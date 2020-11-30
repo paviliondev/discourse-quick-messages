@@ -15,22 +15,12 @@ export default {
 
       if (currentUser && currentUser.show_quick_messages && !siteSettings.quick_message_integrated) {
 
-        api.reopenWidget('header-notifications', {
-          html(attrs) {
-            let nodes = this._super(attrs);
-            return nodes.filter((n) => {
-              let obj = n.properties || n.attrs;
-              return !obj.className.match( /(messages|ring)/ );
-            });
-          }
-        });
-
         api.decorateWidget('header-icons:before', function(helper) {
           const headerState = helper.widget.parentWidget.state;
 
           let contents = [];
           if (currentUser && (!site.mobileView || siteSettings.quick_message_mobile)) {
-            const unread = currentUser.get('unread_private_messages');
+            const unread = currentUser.get('unread_high_priority_notifications');
             contents.push(helper.attach('header-dropdown', {
               title: 'user.private_messages',
               icon: siteSettings.quick_message_icon,
@@ -41,7 +31,7 @@ export default {
                 if (unread) {
                   return this.attach('link', {
                     action: 'toggleMessages',
-                    className: 'badge-notification unread-private-messages',
+                    className: 'badge-notification unread-high-priority-notifications',
                     rawLabel: `${unread}`
                   });
                 }

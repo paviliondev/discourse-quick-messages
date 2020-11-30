@@ -147,6 +147,8 @@
   .controls {
     margin-left: 5px;
     float: right;
+    display: flex;
+    align-items: center;
 
     > a {
       margin: 0 5px;

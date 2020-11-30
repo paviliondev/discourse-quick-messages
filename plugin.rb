@@ -33,11 +33,11 @@ after_initialize do
   register_editable_user_custom_field :quick_messages_access if defined? register_editable_user_custom_field
 
   SiteSetting.class_eval do
-    def self.min_private_message_post_length
+    def self.min_personal_message_post_length
       quick_message_min_post_length
     end
 
-    def self.private_message_post_length
+    def self.personal_message_post_length
       quick_message_min_post_length..max_post_length
     end
   end

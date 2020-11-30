@@ -9,34 +9,48 @@ export default {
   initialize(container){
     const siteSettings = container.lookup("site-settings:main");
     const currentUser = container.lookup('current-user:main');
+    const appEvents = container.lookup("service:app-events");
     const site = container.lookup("site:main");
+    const bus = container.lookup("message-bus:main");
+     
+    if (currentUser) {
+      bus.subscribe(`/notification/${currentUser.get("id")}`, data => {
+        if (data.unread_private_messages) {
+          const oldUnreadPMs = currentUser.get("unread_private_messages");
+          currentUser.set('unread_private_messages', data.unread_private_messages);
+          if (oldUnreadPMs !== data.unread_private_messages) {
+            appEvents.trigger("notifications:changed");
+          }
+        }
+      });
+    }
 
     withPluginApi('0.8.12', api => {
-
       if (currentUser && currentUser.show_quick_messages && !siteSettings.quick_message_integrated) {
-
         api.decorateWidget('header-icons:before', function(helper) {
           const headerState = helper.widget.parentWidget.state;
 
           let contents = [];
           if (currentUser && (!site.mobileView || siteSettings.quick_message_mobile)) {
-            const unread = currentUser.get('unread_high_priority_notifications');
-            contents.push(helper.attach('header-dropdown', {
-              title: 'user.private_messages',
-              icon: siteSettings.quick_message_icon,
-              iconId: 'toggle-messages-menu',
-              active: headerState.messagesVisible,
-              action: 'toggleMessages',
-              contents() {
-                if (unread) {
-                  return this.attach('link', {
-                    action: 'toggleMessages',
-                    className: 'badge-notification unread-high-priority-notifications',
-                    rawLabel: `${unread}`
-                  });
+            const unread = currentUser.get('unread_private_messages');
+            contents.push(
+              helper.attach('header-dropdown', {
+                title: 'user.private_messages',
+                icon: siteSettings.quick_message_icon,
+                iconId: 'toggle-messages-menu',
+                active: headerState.messagesVisible,
+                action: 'toggleMessages',
+                contents() {
+                  if (unread) {
+                    return this.attach('link', {
+                      action: 'toggleMessages',
+                      className: 'badge-notification unread-private-message-notifications',
+                      rawLabel: `${unread}`
+                    });
+                  }
                 }
-              }
-            }));
+              })
+            );
           }
           return contents;
         });
@@ -54,7 +68,7 @@ export default {
           this.state.messagesVisible = false;
         });
 
-        if (Discourse.SiteSettings.whos_online_enabled) {
+        if (siteSettings.whos_online_enabled) {
           api.modifyClass('component:docked-post', {
             onlineService: service('online-service')
           });
@@ -62,7 +76,7 @@ export default {
 
       }
 
-      if (Discourse.SiteSettings.quick_message_enabled) {
+      if (siteSettings.quick_message_enabled) {
         api.modifyClass('controller:preferences/interface', {
           @discourseComputed('makeThemeDefault')
           saveAttrNames() {
@@ -85,3 +99,6 @@ export default {
     });
   }
 };
+
+
+    

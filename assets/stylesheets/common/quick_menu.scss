@@ -1,10 +1,11 @@
 #toggle-messages-menu {
   position: relative;
 
-  .unread-high-priority-notifications {
+  .unread-private-message-notifications {
     top: -2px;
     right: -2px;
-    background-color: $danger;
+    left: initial;
+    background-color: $tertiary;
   }
 }
 

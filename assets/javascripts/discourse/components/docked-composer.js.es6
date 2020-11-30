@@ -420,7 +420,7 @@ export default Component.extend({
       if (data.type === "created") {
         postStream.triggerNewPostInStream(data.id).then(() => this.afterStreamRender());
         if (this.get('currentUser.id') !== data.user_id) {
-          Discourse.notifyBackgroundCountIncrement();
+          Discourse.incrementBackgroundContextCount();
         }
       }
     });

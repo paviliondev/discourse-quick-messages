@@ -1,0 +1,4 @@
+:root {
+    --quick-msg-primary-low: #{dark-light-diff($primary, $secondary, 88%, -55%)};
+    --quick-msg-icon: #{dark-light-choose(scale-color($primary, $lightness: 30%), scale-color($secondary, $lightness: 70%))};
+}

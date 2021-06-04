@@ -7,9 +7,9 @@
   position: fixed;
   bottom: 0;
   width: 300px;
-  background-color: $secondary;
+  background-color: var(--secondary, $secondary);
   box-shadow: shadow("menu-panel");
-  border: 1px solid $primary-low;
+  border: 1px solid var(--primary-low, $primary-low);
   height: 400px;
   display: flex;
   flex-direction: column;
@@ -37,7 +37,7 @@
       width: 100%;
       height: 100%;
       cursor: pointer;
-      background-color: dark-light-diff($primary, $secondary, 88%, -55%);
+      background-color: var(--quick-msg-primary-low, dark-light-diff($primary, $secondary, 88%, -55%));
     }
   }
 
@@ -50,10 +50,10 @@
   }
 
   .grippie {
-    background-color: $primary-low;
+    background-color: var(--primary-low, $primary-low);
 
     &:before {
-      border-top: 3px double $primary;
+      border-top: 3px double var(--primary, $primary);
     }
   }
 
@@ -111,7 +111,7 @@
   line-height: 25px;
   margin-bottom: 2px;
   box-sizing: border-box;
-  background-color: $primary-low;
+  background-color: var(--primary-low, $primary-low);
   box-shadow: shadow("header");
   z-index: 100;
 }
@@ -163,26 +163,26 @@
     .toggler {
       padding: 0;
       font-size: 19px;
-      color: $primary-medium;
+      color: var(--primary-medium, $primary-medium);
       font-weight: 900;
     }
 
     .cancel {
       font-size: 15px;
-      color: $primary-medium;
+      color: var(--primary-medium, $primary-medium);
       z-index: 20;
     }
 
     .topic-link {
       padding: 0;
-      color: $primary-medium;
+      color: var(--primary-medium, $primary-medium);
       font-weight: 900;
     }
   }
 
   .ac-wrap {
     width: initial !important;
-    background-color: $primary-very-low;
+    background-color: var(--primary-very-low, $primary-very-low);
   }
 
   .docked-usernames-wrapper {
@@ -195,7 +195,7 @@
     .docked-usernames {
       white-space: nowrap;
       display: inline-block;
-      color: $primary;
+      color: var(--primary, $primary);
     }
   }
 
@@ -209,7 +209,7 @@
     z-index: 100;
     padding: 10px;
     box-shadow: 0 2px 4px -1px rgba(0, 0, 0, 0.25);
-    background-color: dark-light-diff($primary, $secondary, 88%, -55%);
+    background-color: var(--quick-msg-primary-low, dark-light-diff($primary, $secondary, 88%, -55%));
 
     .cancel {
       float: right;
@@ -240,19 +240,19 @@
 
       &.yours {
         float: right;
-        background-color: $tertiary-low;
+        background-color: var(--tertiary-low, $tertiary-low);
         padding: 3px 6px;
         border-radius: 6px;
         display: block;
       }
 
       .cooked {
-        color: $primary-medium;
+        color: var(--primary-medium, $primary-medium);
       }
 
       p {
         margin: 0;
-        color: $primary;
+        color: var(--primary, $primary);
       }
 
       img {
@@ -274,7 +274,7 @@
     left: 0;
     right: 0;
     padding: 0;
-    background-color: $secondary;
+    background-color: var(--secondary, $secondary);
     position: relative;
   }
 
@@ -309,7 +309,7 @@
 
     .btn {
       padding: 3px 6px;
-      background-color: $secondary;
+      background-color: var(--secondary, $secondary);
 
       .fa {
         line-height: 18px;
@@ -320,7 +320,7 @@
         background-color: transparent;
         
         .fa {
-          color: $primary;
+          color: var(--primary, $primary);
         }
       }
     }
@@ -358,8 +358,8 @@
 }
 
 .docked-small-action {
-  border-top: 1px solid $primary-low;
-  border-bottom: 1px solid $primary-low;
+  border-top: 1px solid var(--primary-low, $primary-low);
+  border-bottom: 1px solid var(--primary-low, $primary-low);
   padding: 10px 0;
   display: flex;
   flex-wrap: wrap;

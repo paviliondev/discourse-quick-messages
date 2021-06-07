@@ -7,6 +7,7 @@
 register_asset 'stylesheets/common/quick_menu.scss'
 register_asset 'stylesheets/common/quick_composer.scss'
 register_asset 'stylesheets/mobile/quick_mobile.scss', :mobile
+register_asset "stylesheets/colors.scss", :color_definitions
 require_relative 'lib/setting_quick_messages_badge'
 
 if respond_to?(:register_svg_icon)

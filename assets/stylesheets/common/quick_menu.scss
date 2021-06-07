@@ -5,7 +5,7 @@
     top: -2px;
     right: -2px;
     left: initial;
-    background-color: $tertiary;
+    background-color: var(--tertiary, $tertiary);
   }
 }
 
@@ -48,7 +48,7 @@
   width: 97%;
 
   .item-contents {
-    color: $primary;
+    color: var(--primary, $primary);
     cursor: pointer;
     display: flex;
 
@@ -56,7 +56,7 @@
       position: relative;
       top: 4px;
       display: initial;
-      background-color: $success;
+      background-color: var(--success, $success);
       height: 12px;
       width: 8px;
     }
@@ -90,7 +90,7 @@
   }
 
   &:hover {
-    background-color: dark-light-diff($highlight, $secondary, 50%, -55%);
+    background-color: var(--highlight-medium, $highlight-medium);
   }
 
   span {
@@ -103,11 +103,11 @@
   }
 
   .icon {
-    color: dark-light-choose(scale-color($primary, $lightness: 30%), scale-color($secondary, $lightness: 70%));
+    color: var(--quick-msg-icon, dark-light-choose(scale-color($primary, $lightness: 30%), scale-color($secondary, $lightness: 70%)));
   }
 
   .read {
-    background-color: $secondary;
+    background-color: var(--secondary, $secondary);
   }
 
   .none {

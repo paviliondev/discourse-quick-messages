@@ -19,7 +19,7 @@ const _create_serializer = {
         raw: 'reply',
         title: 'title',
         topic_id: 'topic.id',
-        target_usernames: 'targetUsernames',
+        target_recipients: 'targetUsernames',
       };
 
 const START_EVENTS = "touchstart mousedown";

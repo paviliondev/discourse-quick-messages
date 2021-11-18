@@ -1,5 +1,4 @@
 import { createWidget } from 'discourse/widgets/widget';
-import { getOwner } from 'discourse-common/lib/get-owner';
 import { h } from 'virtual-dom';
 import DiscourseURL from 'discourse/lib/url';
 import { later } from "@ember/runloop";
@@ -38,7 +37,7 @@ export default createWidget('messages-menu', {
   },
 
   addToDocked(id) {
-    const appController = getOwner(this).lookup('controller:application');
+    const appController = this.register.lookup('controller:application');
     appController.send('addToDocked', id);
     this.sendWidgetAction('messagesClicked');
   },

@@ -3,7 +3,6 @@ import { headerHeight } from 'discourse/components/site-header';
 import { getCurrentUserMessages } from '../lib/user-messages';
 import { emojiUnescape } from 'discourse/lib/text';
 import { dockedScreenTrack } from '../lib/docked-screen-track';
-import { getOwner } from 'discourse-common/lib/get-owner';
 import { deepEqual } from "discourse-common/lib/object";
 import DiscourseURL from 'discourse/lib/url';
 import { getUsernames, formatUsernames } from '../lib/docked-composer';
@@ -396,8 +395,7 @@ export default Component.extend({
   },
 
   getTopic(id) {
-    const store = getOwner(this).lookup('store:main');
-    return store.createRecord('topic', { id });
+    return this.store.createRecord('topic', { id });
   },
 
   subscribeToTopic() {
@@ -414,7 +412,7 @@ export default Component.extend({
             notification_level: topic.notification_level
           };
 
-    getOwner(this).lookup('topic-tracking-state:main').loadStates([row]);
+    this.topicTrackingState.loadStates([row]);
 
     this.messageBus.subscribe("/topic/" + topic.id, data => {
       if (data.type === "created") {
@@ -521,11 +519,10 @@ export default Component.extend({
   save() {
     if (this.get('cantSubmitPost')) return;
 
-    const store = getOwner(this).lookup('store:main');
     const postStream = this.get('postStream');
     const user = this.get('currentUser');
 
-    let createdPost = store.createRecord('post', {
+    let createdPost = this.store.createRecord('post', {
           cooked: emojiUnescape(this.get('reply')),
           yours: true
         });

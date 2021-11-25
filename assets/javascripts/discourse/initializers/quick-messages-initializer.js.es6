@@ -1,7 +1,6 @@
 import { default as discourseComputed, observes } from 'discourse-common/utils/decorators';
 import { withPluginApi } from 'discourse/lib/plugin-api';
 import DiscourseURL from 'discourse/lib/url';
-import { getOwner } from 'discourse-common/lib/get-owner';
 import { inject as service } from "@ember/service";
 
 export default {

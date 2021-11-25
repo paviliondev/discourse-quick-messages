@@ -1,7 +1,5 @@
-import { getOwner } from 'discourse-common/lib/get-owner';
-
 let getCurrentUserMessages = function(context) {
-  const store = getOwner(context).lookup('store:main'),
+  const store = context.store,
         username = context.currentUser.get('username');
 
   return store.findFiltered("topicList", {filter: "topics/private-messages/" + username}).then((result) => {
@@ -33,26 +31,4 @@ let getCurrentUserMessages = function(context) {
   });
 };
 
-let getCurrentUserMessageCount = function(context, docked) {
-  const store = context.container.lookup('store:main'),
-        username = context.currentUser.get('username'),
-        topicController = context.container.lookup('controller:topic'),
-        topic = topicController ? topicController.get('model') : false;
-
-  return store.findFiltered("topicList", {filter: "topics/private-messages/" + username}).then((result) => {
-
-    let unreadMessages = result.topics.filter((m) => {
-      return m.subtype === 'user_to_user' && m.get('last_read_post_number') < m.get('highest_post_number')
-             && docked.indexOf(m.id) === -1 && (!topic || !topic.get('id') === m.id);
-    });
-
-    let unreadCount = 0;
-    unreadMessages.forEach((m) => {
-      unreadCount += m.get('highest_post_number') - m.get('last_read_post_number');
-    });
-
-    return unreadCount;
-  });
-};
-
-export { getCurrentUserMessages, getCurrentUserMessageCount };
+export { getCurrentUserMessages };

@@ -8,7 +8,10 @@ class QuickPostCooked extends PostCooked {
     const $html = $(`<div class='cooked'>${this.attrs.cooked}</div>`);
     this._insertQuoteControls($html);
     this._showLinkCounts($html);
-    this._fixImageSizes($html);
+
+    // removed inhttps://github.com/discourse/discourse/commit/e305365168528883872d4ce9efd109e41149ef0a
+    // this._fixImageSizes($html);
+
     this._applySearchHighlight($html);
     return $html[0];
   }

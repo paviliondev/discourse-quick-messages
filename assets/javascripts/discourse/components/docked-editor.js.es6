@@ -15,6 +15,9 @@ export default DEditor.extend({
     const $element = $(this.element);
     const $editorInput = $element.find('.d-editor-input');
     this._applyMentionAutocomplete($editorInput);
+    this._textarea = this.element.querySelector("textarea.d-editor-input");
+    this._$textarea = $(this._textarea);
+    this.set("ready", true);
   },
 
   _applyMentionAutocomplete($editorInput) {

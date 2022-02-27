@@ -416,7 +416,7 @@ export default Component.extend({
 
     this.messageBus.subscribe("/topic/" + topic.id, data => {
       if (data.type === "created") {
-        postStream.triggerNewPostInStream(data.id).then(() => this.afterStreamRender());
+        postStream.triggerNewPostsInStream([data.id]).then(() => this.afterStreamRender());
         if (this.get('currentUser.id') !== data.user_id) {
           Discourse.incrementBackgroundContextCount();
         }
